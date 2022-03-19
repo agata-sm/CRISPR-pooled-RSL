@@ -1,0 +1,28 @@
+<!-- 
+This is a child document for presentation of interactive scatterplots
+to be used with crispr_pipeline_report_v0.4.Rmd
+
+ -->
+
+
+
+```{r include=FALSE,cache=FALSE}
+
+library(knitr)
+library(bookdown)
+
+
+knitr::opts_chunk$set(echo = FALSE, 
+                      collapse = TRUE, 
+                      warning = FALSE, 
+                      message = FALSE)
+
+
+source("./crispr_pipeline_report_functions.R")
+
+fig.caption=paste0("Scatter plots depicting log2 fold changes in comparison ", i, ".")
+```
+
+```{r dev='png', echo=FALSE, fig.show='show',fig.width=8, cache=FALSE, fig.cap=fig.caption}
+scatters[[i]]
+```

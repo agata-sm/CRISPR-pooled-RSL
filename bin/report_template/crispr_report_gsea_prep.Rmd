@@ -1,0 +1,201 @@
+<!-- 
+This is a child document for presentation of GSEA in RRA results (Mageck)
+to be used with crispr_pipeline_report_v0.4.Rmd and crispr_report_rra.Rmd
+It is used to prep data for and perform GSEA
+The results are formatted and (conditionally) presented in child crispr_report_gsea.Rmd
+ -->
+
+
+
+```{r include=FALSE,cache=FALSE}
+
+# prep data and perform GSEA
+
+
+library(knitr)
+library(bookdown)
+
+
+knitr::opts_chunk$set(echo = FALSE, 
+                      collapse = TRUE, 
+                      warning = FALSE, 
+                      message = FALSE,
+                      error=TRUE)
+
+source("./crispr_pipeline_report_functions.R")
+
+
+require(org.Hs.eg.db)
+require(org.Mm.eg.db)
+
+require(clusterProfiler)
+require(enrichplot)
+require(DOSE)
+```
+
+
+
+```{r include=FALSE,cache=FALSE}
+
+# score for GSEA
+# score for "reads" is neg.score / pos.score; can also be log FC
+# score for "RSL" is neg.score / pos.score
+# the rank for GSEA (ranked list as input): higher values indicate larger effect size
+
+# rank only for log2FC, where ties need to be broken if necessary
+# RRA score is used after -log10 transformation
+# RRA score can be used for RSL (tested)
+# median log2FC for 4 guides / gene is used by default for RSL
+
+if (data.type == "RSL"){
+	score.type ="RRA"
+}
+
+if (score.type == "RRA"){
+
+	#this works in RStudio  ONLY
+	#rep.g.gsea$score.for.gsea=-log10(rep.g.gsea$score.for.gsea)
+	#this below not a great idea
+	#rep.g.gsea$score.for.gsea=rank(-log10(rep.g.gsea$score.for.gsea),ties.method="first") #using just -log10(score) gives "Not all stats values are finite numbers"
+	# 
+
+	rep.g.gsea=rep.g.gsea[order(rep.g.gsea$score.for.gsea, decreasing=TRUE),]
+}else if (score.type == "logFC"){
+	#rep.g.gsea$score.for.gsea=rank(rep.g.gsea$score.for.gsea,ties.method="first") #the data is already sorted by rank; lowest score means lowest p value thus higher rank
+	rep.g.gsea=rep.g.gsea[order(rep.g.gsea$score.for.gsea, decreasing=TRUE),]
+}
+
+
+
+# vectors for GSEA
+# GO using gene IDS
+original_gene_list <- rep.g.gsea$score.for.gsea
+names(original_gene_list) <- rep.g.gsea$id
+gene_list.nd<-na.omit(original_gene_list) #just in case remove NAs
+#reatome using entrez gene IDs
+original_gene_list_entrez =original_gene_list
+names(original_gene_list_entrez) <- rep.g.gsea$entrezgene_id
+gene_list_entrez<-na.omit(original_gene_list_entrez) #remove NAs
+gene_list_entrez.nd=gene_list_entrez[!duplicated(names(gene_list_entrez))]#remove duplicated entrez IDs
+
+
+if (data.type == "reads"){
+
+	#lFC for colouring in heatplot
+	lfc_vect=rep.g.gsea$lfc
+	names(lfc_vect)=rep.g.gsea$id
+
+} else if (data.type == "RSL"){
+
+	#for colouring in heatplot: rra test score
+	lfc_vect=rep.g.gsea$rra.score
+	names(lfc_vect)=rep.g.gsea$id
+}
+
+#vector for colouring with entrez gene IDs
+lfc_vect.entrez=lfc_vect
+names(lfc_vect.entrez)=rep.g.gsea$entrezgene_id
+
+print("Checking if scores are finite numbers")
+
+if (any(!is.finite(gene_list.nd))){
+	print("It's not finite in gene list")
+}
+if (any(!is.finite(gene_list_entrez.nd))){
+	print("It's not finite in gene list entrez")
+}
+
+```
+
+
+```{r include=FALSE,cache=FALSE}
+
+require(org.Mm.eg.db)
+require(org.Hs.eg.db)
+
+require(clusterProfiler)
+require(enrichplot)
+require(DOSE)
+
+gene_list=gene_list.nd
+
+if(functest=="GO"){
+
+	if (organism == "hs"){
+		gse.res <- gseGO(geneList=gene_list, 
+	             ont ="ALL", 
+	             keyType = "SYMBOL",
+	             nPermSimple = 50000,
+	             minGSSize = 3, 
+	             maxGSSize = 800, 
+	             pvalueCutoff = gseaPvalCO, 
+	             verbose = TRUE, 
+	             OrgDb = org.Hs.eg.db, 
+	             pAdjustMethod = "BH",
+	             scoreType = "pos")
+
+	}
+
+	if (organism == "mm"){
+		gse.res <- gseGO(geneList=gene_list, 
+	             ont ="ALL", 
+	             keyType = "SYMBOL",
+	             nPermSimple = 50000,
+	             minGSSize = 3, 
+	             maxGSSize = 800, 
+	             pvalueCutoff = gseaPvalCO, 
+	             verbose = TRUE, 
+	             OrgDb = org.Mm.eg.db, 
+	             pAdjustMethod = "BH",
+	             scoreType = "pos")
+
+	}
+
+
+gse.summary=as.data.frame(cbind(gse.res@result$Description,gse.res@result$ONTOLOGY,gse.res@result$ID,gse.res@result$NES,gse.res@result$p.adjust))
+colnames(gse.summary)=c("Description","ontology","ID","NES","p.adjust")
+lfc_vect=lfc_vect
+}
+if (functest=="reactome"){
+	
+	gse.res <- gsePathway(gene_list_entrez.nd, 
+                pvalueCutoff = 0.1,
+                nPermSimple = 50000,
+                pAdjustMethod = "BH", 
+                verbose = TRUE,
+                scoreType = "pos",
+                eps=0)
+
+gse.summary=as.data.frame(cbind(gse.res$Description,gse.res$ID,gse.res$NES,gse.res$p.adjust))
+colnames(gse.summary)=c("Description","ID","NES","p.adjust")
+
+lfc_vect=lfc_vect.entrez
+}
+
+# for plot printing conditionals
+n_sigCat=nrow(gse.summary)
+print_plots=n_sigCat>print.plots.CO
+print_treeplot=n_sigCat>print.treeplot.CO
+show_gsea=n_sigCat>0
+
+
+if (n_sigCat <20){
+	gse.summary=gse.summary[order(gse.summary$NES, decreasing=TRUE)[1:n_sigCat],]
+}else{
+	gse.summary=gse.summary[order(gse.summary$NES, decreasing=TRUE)[1:20],]
+}
+
+
+tab_n_sv=tab_n_sv+1
+fnametab=paste("Table",tab_n_sv,"GSEA",functest,i,selection,"tsv",sep=".")
+save_GSEA_GO(GSEAres=gse.res, file=fnametab, dir=resdir.i)
+
+```
+
+
+Significant `r functest` categories in comparison `r i` in genes under `r selection` selection: `r n_sigCat`. 
+
+
+```{r, child=if (show_gsea==TRUE) 'crispr_report_gsea.Rmd'}
+```
+

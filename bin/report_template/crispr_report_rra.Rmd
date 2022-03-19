@@ -1,0 +1,602 @@
+<!-- 
+This is a child document for presentation and analysis of RRA results (Mageck)
+to be used with crispr_pipeline_report_v0.4.Rmd
+
+ -->
+
+
+
+```{r include=FALSE,cache=FALSE}
+
+library(knitr)
+library(bookdown)
+
+
+knitr::opts_chunk$set(echo = FALSE, 
+                      collapse = TRUE, 
+                      warning = FALSE, 
+                      message = FALSE)
+
+
+source("./crispr_pipeline_report_functions.R")
+
+```
+
+
+### Comparison: `r i` {.tabset}
+
+```{r include=FALSE,cache=FALSE}
+indir.i=file.path(mageck_datadir,i)
+
+if (data.type == "RSL"){
+
+  infile.pth.gene.i=file.path(indir.i,paste(i,"gene_rra_summary.txt",sep="."))
+
+  gdata_i_lfc = ReadRRA(infile.pth.gene.i,score="lfc")
+  gdata_i_RRA = ReadRRA(infile.pth.gene.i,score="RRA")
+
+}else{
+
+  infile.pth.gene.i=file.path(indir.i,paste(i,"gene_summary.txt",sep="."))
+  infile.pth.sgRNA.i=file.path(indir.i,paste(i,"sgrna_summary.txt",sep="."))
+
+  gdata_i_lfc = ReadRRA(infile.pth.gene.i,score="lfc")
+  gdata_i_RRA = ReadRRA(infile.pth.gene.i,score="RRA")
+
+}
+
+
+ref.smpl=contrasts.tab$reference[contrasts.tab$name==i]
+treat.smpl=contrasts.tab$treatment[contrasts.tab$name==i]
+
+
+resdir.i=file.path(resdir,i)
+dir.create(resdir.i)
+plotdir.i=file.path(resdir.i,"plots")
+dir.create(plotdir.i)
+
+all.res.rra[[i]]=gdata_i_RRA
+```
+
+This section refers to the comparison **`r i` : `r treat.smpl` vs. `r ref.smpl`**
+
+<br />
+<br />
+
+```{r include=FALSE, cache=FALSE}
+rep.g.i=read.table(infile.pth.gene.i, sep="\t", header=TRUE)
+
+if (data.type == "reads"){
+
+  rep.sg.i=read.table(infile.pth.sgRNA.i, sep="\t", header=TRUE)
+}
+
+all.res[[i]]=rep.g.i
+```
+
+
+```{r include=FALSE, cache=TRUE}
+
+if (organism=="hs"){
+
+  ens_dataset="hsapiens_gene_ensembl"
+
+  ensembl <- useEnsembl(biomart = "genes")
+  ensembl <- useDataset(dataset=ens_dataset, mart=ensembl)
+
+  all_ids=rep.g.i$id
+
+  hs=getBM(attributes = c("hgnc_symbol","description","entrezgene_id"),
+        filters = "hgnc_symbol",
+        values = all_ids, 
+        mart = ensembl)
+  colnames(hs)=c("id","description","entrezgene_id")
+  hs$description=sub("\\[.+\\]", "", hs$description, ignore.case = FALSE, perl = TRUE, fixed = FALSE, useBytes = FALSE)
+  #rm duplicated entrezid for each hgnc - these will anyway have the same functional annot
+  hs=hs[!duplicated(hs$id, fromLast = TRUE), ]
+  geneannot=hs
+
+}
+
+if (organism=="mm"){
+
+  ens_dataset="mmusculus_gene_ensembl"
+
+  ensembl <- useEnsembl(biomart = "genes")
+  ensembl <- useDataset(dataset=ens_dataset, mart=ensembl)
+
+  all_ids=rep.g.i$id
+
+  mm=getBM(attributes = c("mgi_symbol","description","entrezgene_id"),
+        filters = "mgi_symbol",
+        values = all_ids, 
+        mart = ensembl)
+  colnames(mm)=c("id","description","entrezgene_id")
+  mm$description=sub("\\[.+\\]", "", mm$description, ignore.case = FALSE, perl = TRUE, fixed = FALSE, useBytes = FALSE)
+  #rm duplicated entrezid for each hgnc - these will anyway have the same functional annot
+  mm=mm[!duplicated(mm$id, fromLast = TRUE), ]
+  geneannot=mm
+
+}
+```
+
+```{r include=FALSE, cache=FALSE}
+rep.g.i.annot=left_join(rep.g.i,geneannot,by="id")
+
+if (data.type == "RSL"){
+  rep.g_neg=rep.g.i.annot[,c(1,15,2:7,16)]
+  rep.g_pos=rep.g.i.annot[,c(1,15,2,9:13,16)]
+}else if (data.type == "reads"){
+  rep.g_neg=rep.g.i.annot[,c(1,15,2:8,16)]
+  rep.g_pos=rep.g.i.annot[,c(1,15,2,9:14,16)]
+}
+
+rep.g_neg=rep.g_neg[order(rep.g_neg$neg.rank, decreasing=FALSE),]
+rep.g_pos=rep.g_pos[order(rep.g_pos$pos.rank, decreasing=FALSE),]
+
+tab_n_sv=tab_n_sv+1
+fname=paste("Table",tab_n_sv,"RRA_mageck",data.type,i,"tsv",sep=".")
+save.table(df=rep.g.i.annot, file=fname, dir=resdir.i)
+```
+
+
+#### Summary
+
+Results of robust rank aggregation (RRA) analysis (MAGeCK) to identify significantly enriched or depleted sgRNAs are presented separately in sections below.
+
+There are **n= `r nrow(rep.g_neg[rep.g_neg$neg.fdr<=0.05,])` ** hits with **FDR <= 0.05** in the test for **negative selection** in `r i`.
+
+There are **n= `r nrow(rep.g_pos[rep.g_pos$pos.fdr<=0.05,])` ** hits with **FDR <= 0.05** in the test for **positive selection** in `r i`.
+
+N = `r nrow(rep.g.i.annot)` genes were detected in the data.
+
+The entire table can be explored in file **`r fname`**.
+
+
+<br />
+<br />
+
+##### Negative Selection
+
+```{r cache=FALSE}
+tab_n=tab_n+1
+tablabel=paste(tab_n, "Table", sep="")
+```
+
+Results of robust rank aggregation (RRA) analysis (MAGeCK) to identify **depleted genes** are presented in Table \@ref(tab:`r tablabel`). Top 100 rows (by `neg.rank`) are included. 
+
+
+<br />
+
+```{r cache=FALSE, results='asis'}
+capt=paste("Summary of gene level analysis of ",i," negative selection (MAGeCK). Shown are top 100 genes (by \"neg.rank\").", sep="")
+test_table(capt, label=tablabel)
+DT::datatable(rep.g_neg[,1:8] %>% filter(neg.rank <=100), rownames = FALSE) %>% formatSignif(columns=c('neg.fdr','neg.score','neg.p.value'), digits=4)
+```
+
+
+<br />
+<br />
+
+##### Positive Selection
+
+```{r cache=FALSE}
+tab_n=tab_n+1
+tablabel=paste(tab_n, "Table", sep="")
+```
+
+Results of robust rank aggregation (RRA) analysis (MAGeCK) to identify **enriched genes** are presented in Table \@ref(tab:`r tablabel`). Top 100 rows (by `pos.rank`) are included. 
+
+
+<br />
+
+```{r cache=FALSE, results='asis'}
+capt=paste("Summary of gene level analysis of ",i," , positive selection (MAGeCK). Shown are top 100 genes (by \"pos.rank\").", sep="")
+test_table(capt, label=tablabel)
+DT::datatable(rep.g_pos[,1:8] %>% filter(pos.rank <=100), rownames = FALSE) %>% formatSignif(columns=c('pos.fdr','pos.score','pos.p.value'), digits=4)
+```
+
+<!-- 
+
+#### Interactive Volcano Plot
+
+ -->
+
+`r if(!is.RSL){"#### Interactive Volcano Plot"}`
+
+
+
+```{r eval=!is.RSL, include=FALSE, warning=FALSE}
+
+dat=gdata_i_lfc
+
+dat$group="ns"
+dat$group[dat$FDR<=FDR.CO] <-"sig"
+dat$logFDR=-(log10(dat$FDR))
+
+dat$group[dat$group=="sig" & dat$Score>0] <-"up"
+dat$group[dat$group=="sig" & dat$Score<0] <-"dn"
+
+
+p_v1=ggplot(dat, aes(x=Score, y=logFDR, color=group, text=paste(id,"; Score",round(Score, digits=3),"; FDR",round(FDR, digits=4)))) + 
+	geom_point(alpha=0.5) + scale_color_manual(values=mycolour) +
+	theme_bw() + theme(legend.position = "none")+
+	ylab("-log10(FDR)")
+
+# geom_vline(xintercept=1.5, linetype="dashed", color = "grey50") + geom_vline(xintercept=-1.5, linetype="dashed", color = "grey50") +  
+# geom_hline(yintercept=-log10(0.05), linetype="dashed", color = "grey50")
+
+figurecap=paste("Volcano plot for comparison ",i,". Genes with changes at FDR below the significance cutoff FDR=",FDR.CO, " are coloured.", sep="")
+
+
+fig_n=fig_n+1
+fname=paste("Figure",fig_n,"Volcano",i,"pdf",sep=".")
+pdf(file.path(plotdir.i,fname))
+p_v1 + ggtitle(figurecap)
+dev.off()
+
+
+
+p_v1=ggplotly(p_v1, tooltip=c("text"))
+
+
+```
+
+```{asis, echo=!is.RSL}
+
+Volcano plot shows statistical significance as False Discovery Rate, FDR (here shown as -log10(FDR)) versus magnitude of change (log2(fold change)). 
+It enables quick visual identification of genes with large fold changes that are also statistically significant.
+
+The results of abundance analysis at the gene level are visualised on the interactive volcano plot where the statistically significant genes
+(FDR<=0.05) are coloured.
+
+
+This plot is saved as a static plot in file
+```
+ `r if(!is.RSL){paste0(fname, " .")}`
+
+
+
+```{r eval=!is.RSL, dev='png', fig.show='show',fig.dim=c(6, 6), cache=FALSE, fig.cap=figurecap}
+p_v1
+```
+
+
+#### Rank Plots
+
+##### Gene Level
+
+```{r include=FALSE}
+
+if (data.type == "RSL"){
+  dat=gdata_i_RRA
+
+}else if (data.type == "reads"){
+  dat=gdata_i_lfc
+}
+
+
+
+dat$group="ns"
+dat$group[dat$FDR<=FDR.CO] <-"sig"
+dat$logFDR=-(log10(dat$FDR))
+
+dat$group[dat$group=="sig" & dat$Score>0] <-"up"
+dat$group[dat$group=="sig" & dat$Score<0] <-"dn"
+
+
+
+dat$Rank = rank(dat$Score)
+p4_v1=ggplot(dat, aes(x=Score, y=Rank, color=group, text=paste(id,"; Score",round(Score, digits=3),"; Rank",Rank))) +  geom_point(alpha=0.5) + scale_color_manual(values=mycolour) +
+theme_bw() + theme(legend.position = "none")# +
+# geom_vline(xintercept=1.5, linetype="dashed", color = "grey50") + geom_vline(xintercept=-1.5, linetype="dashed", color = "grey50") +  
+# geom_hline(yintercept=-log10(0.05), linetype="dashed", color = "grey50")
+
+
+figurecap=paste("Gene rank plot for comparison ",i,". Genes with changes at FDR below the significance cutoff FDR=",FDR.CO, " are coloured.", sep="")
+
+
+fig_n=fig_n+1
+fname=paste("Figure",fig_n,"GeneRank",i,"pdf",sep=".")
+pdf(file.path(plotdir.i,fname))
+p4_v1+ ggtitle(figurecap)
+dev.off()
+
+
+p4_v1=ggplotly(p4_v1, tooltip=c("text"))
+
+```
+
+
+Gene rank plot depicts the relationship of gene rank and its 
+`r if(is.RSL){"min (positive, negative score) from the pathway RRA test as implemented by MAGeCK"}else{"fold change in treatment vs control (presented as log2(fold change), log2FC)"}`.
+
+This plot is interactive. Its static version is saved in file `r fname`.
+
+
+```{r dev='png', echo=FALSE, fig.show='show',fig.dim=c(6, 6), cache=FALSE, fig.cap=figurecap}
+p4_v1
+```
+
+
+
+<br />
+<br />
+<!-- 
+##### sgRNA Level
+
+ -->
+
+`r if(!is.RSL){"##### sgRNA Level"}`
+
+
+```{r include=FALSE, warning=FALSE}
+
+if (data.type == "reads"){
+
+  sdata = ReadsgRRA(infile.pth.sgRNA.i)
+  p2 = sgRankView(sdata, top = 5, bottom = 5)
+
+  figurecap1=paste("sgRNA ranks for comparison ",i,".\nTop genes in negative selection (by neg.rank) are shown (top genes at the bottom of the plot).\n sgRNAs are coloured by their fold change direction.", sep="")
+  figurecap2=paste("sgRNA ranks for comparison ",i,".\nTop genes in positive selection (by pos.rank) are shown (top genes at the bottom of the plot).\n sgRNAs are coloured by their fold change direction.", sep="")
+
+  # here do this for top 10 and save to files for top 20
+  sel.dat=rep.g_neg %>% arrange(neg.rank) %>% filter(neg.rank <=20)
+  sel.genes=sel.dat$id[1:10]
+  p2.1 = sgRankView(sdata, gene=sel.genes, top=0, bottom=0)
+  sel.genes=sel.dat$id
+  p2.3 = sgRankView(sdata, gene=sel.genes, top=0, bottom=0) + ggtitle(figurecap1)
+
+
+  sel.dat=rep.g_pos %>% arrange(pos.rank) %>% filter(pos.rank <=20)
+  sel.genes=sel.dat$id[1:10]
+  p2.2 = sgRankView(sdata, gene=sel.genes, top=0, bottom=0)
+  sel.genes=sel.dat$id
+  p2.4 = sgRankView(sdata, gene=sel.genes, top=0, bottom=0) + ggtitle(figurecap2)
+
+
+
+  graphics.off()
+  fig_n=fig_n+1
+  ggsave(filename=paste("Figure",fig_n,"sgRNA_ranks_positive",i,"pdf",sep="."),plot=p2.4,path=plotdir.i,device="pdf")
+
+  graphics.off()
+  fig_n=fig_n+1
+  ggsave(filename=paste("Figure",fig_n,"sgRNA_ranks_negative",i,"pdf",sep="."),plot=p2.3,path=plotdir.i,device="pdf")
+
+
+}
+
+```
+
+
+```{asis, echo=!is.RSL}
+Visualisation of ranks of individual sgRNAs targeting each gene adds more information to gene level results.
+
+The guide rank plots visualize the rank of sgRNAs targeting top genes (n=10) under negative and positive selection. 
+Rank plots for top 20 genes changed in each direction are saved in file
+```
+ `r if(!is.RSL){paste0(fname, " .")}`
+
+
+
+```{r eval=!is.RSL, dev='png', echo=FALSE, fig.show='show',fig.dim=c(6, 6), cache=FALSE, fig.cap=figurecap1}
+p2.1
+```
+
+
+```{r eval=!is.RSL, dev='png', echo=FALSE, fig.show='show',fig.dim=c(6, 6), cache=FALSE, fig.cap=figurecap2}
+p2.2
+```
+
+
+#### Functional Analysis {.tabset}
+
+The goal of functional analysis is to determine whether members of a gene set ***S*** tend to occur toward the top (or bottom) of the list ***L***, 
+in which case the gene set ***S*** is correlated with the phenotypic class distinction.
+
+Preranked **Gene Set Enrichment Analysis (GSEA)** is a method for interpretation of gene expression data in terms of biological processes.
+
+Two sets of functional annotations are used in this report:
+[Gene Ontology](http://geneontology.org "GO")
+and
+[Reactome Pathways](https://reactome.org "Reactome").
+
+The **Gene Ontology (GO)** knowledgebase is the world’s largest source of information on the functions of genes,
+ranging from the molecular to the organism level, across the multiplicity of species in the tree of life.  
+
+**Reactome** is an open-source, open access, manually curated and peer-reviewed pathway database.
+
+Terms used in GSEA analysis:
+
+* The **Enrichment Score (ES)** reflects the degree of over-representation of a GO at the extremes of the ranked list. 
+A positive ES indicates gene set enrichment at the top of the ranked list; a negative ES indicates gene set enrichment at the bottom of the ranked list.
+
+* The **Normalized ES (NES)** is ES normalized to the mean enrichment of random samples of the same size. 
+The method employs random sampling of gene sets of the same size as the gene set being tested to assess significance and for normalization. 
+It can be used to compare analysis results across gene sets.
+
+* The FDR is the p-value adjusted for multiple testing.
+
+The enrichment plot shows a green line representing the running ES for a given GO as the analysis goes down the ranked list. The value at the peak is the final ES. The middle part shows where the members (GOs) of the dataset appear in the ranked list. Those genes that appear at or before the ES represent the Leading Edge Subset. The lower part shows the value of the ranking metric as it moves down the list of the ranked genes.
+
+For more information on the GSEA analysis please refer to [GSEA User Guide](https://www.gsea-msigdb.org/gsea/doc/GSEAUserGuideFrame.html), section "GSEA Statistics".
+
+
+
+```{r include=FALSE}
+#cutoffs for categories for plot printing and stat significance
+
+print.plots.CO=3
+print.treeplot.CO=5
+gseaPvalCO=0.1
+```
+
+
+```{asis, echo=is.RSL}
+***XXXX*** Rank score used for this analysis is -log10(score) from RRA analysis.
+```
+
+```{asis, echo=!is.RSL}
+Rank score used for this analysis is log2 fold change as reported in RRA analysis (MAGeCK), breaking ties by rank from RRA analysis.
+log2FC is used to test for enrichment amongst genes under positive selection and
+-log2(FC) is used to test for enrichment amongst genes under negative selection.
+```
+
+
+
+GSEA enrichment test adjusted p value (FDR) cutoff `r gseaPvalCO`.
+
+
+Please note that plots are only produced if the number of significant categories (FDR in the GSEA category enrichment test  < `r gseaPvalCO`) is larger than `r print.plots.CO`. 
+In addition, the treeplot is produced if the number of significant categories is larger than `r print.treeplot.CO`.
+
+
+
+<br />
+<br />
+
+##### Negative Selection {.tabset}
+
+
+```{r include=FALSE}
+#negative selection
+
+#selection for txt
+selection="negative"
+
+#variables
+rep.g.gsea=rep.g_neg
+rep.g.gsea$rra.score=rep.g.gsea$neg.score # possible score for the GSEA test
+rep.g.gsea$rra.rank=rep.g.gsea$neg.rank # lfc for the plot colouring
+
+
+# for GSEA
+# score for "reads" is neg.score / pos.score ; can also be log FC
+# score for "RSL" is neg.score / pos.score
+# RRA score used by default for RSL (set in the child document crispr_report_gsea_prep.Rmd)
+
+#score.type="RRA"
+score.type="logFC"
+
+
+if (data.type == "reads"){
+  rep.g.gsea$lfc=rep.g.gsea$neg.lfc # lfc for the plot colouring
+  rep.g.gsea$score.for.gsea=-rep.g.gsea$neg.lfc # default SCORE for the GSEA test
+  #rep.g.gsea$score.for.gsea=rep.g.gsea$rra.score # default SCORE for the GSEA test
+  rep.g.gsea$score.for.gsea=rank(-rep.g.gsea$rra.rank)
+
+
+} else if (data.type == "RSL"){
+    #rep.g.gsea$score.for.gsea=rep.g.gsea$rra.score # default SCORE for the GSEA test
+    rep.g.gsea$score.for.gsea=rank(-rep.g.gsea$rra.rank)
+}
+
+#rep.g.gsea$score.for.gsea=-log10(1e6*rep.g.gsea$rra.score)
+
+```
+
+
+
+<br />
+<br />
+
+###### Gene Ontology
+
+```{r include=FALSE}
+functest="GO" 
+print(paste(selection,functest,sep="."))
+```
+
+```{r, child='crispr_report_gsea_prep.Rmd'}
+```
+
+
+
+<br />
+<br />
+
+###### Reactome
+
+```{r include=FALSE}
+functest="reactome"
+print(paste(selection,functest,sep="."))
+```
+
+```{r, child='crispr_report_gsea_prep.Rmd'}
+```
+
+
+
+<br />
+<br />
+
+
+
+##### Positive Selection {.tabset}
+
+```{r include=FALSE}
+#positive selection
+
+#selection for txt
+selection="positive"
+
+#variables
+rep.g.gsea=rep.g_pos
+rep.g.gsea$rra.score=rep.g.gsea$pos.score # possible score for the GSEA test
+rep.g.gsea$rra.rank=rep.g.gsea$pos.rank # lfc for the plot colouring
+
+if (data.type == "reads"){
+  rep.g.gsea$lfc=rep.g.gsea$pos.lfc # lfc for the plot colouring
+  rep.g.gsea$score.for.gsea=rep.g.gsea$pos.lfc # default SCORE for the GSEA test
+  #rep.g.gsea$score.for.gsea=rep.g.gsea$rra.score # default SCORE for the GSEA test
+  #rep.g.gsea$score.for.gsea=rank(-rep.g.gsea$rra.rank) #THIS works best
+  #rep.g.gsea$score.for.gsea=-log10(1e6*rep.g.gsea$rra.score)
+
+} else if (data.type == "RSL"){
+    #rep.g.gsea$score.for.gsea=rep.g.gsea$rra.score # default SCORE for the GSEA test
+    rep.g.gsea$score.for.gsea=rank(-rep.g.gsea$rra.rank)#THIS works best
+    #rep.g.gsea$score.for.gsea=-log10(1e6*rep.g.gsea$rra.score)
+
+}
+
+#rep.g.gsea$score.for.gsea=-log10(1e6*rep.g.gsea$rra.score)
+
+
+```
+
+
+<br />
+<br />
+
+###### Gene Ontology
+
+```{r include=FALSE}
+functest="GO" 
+print(paste(selection,functest,sep="."))
+
+```
+
+```{r, child='crispr_report_gsea_prep.Rmd'}
+```
+
+
+
+<br />
+<br />
+
+###### Reactome
+
+```{r include=FALSE}
+functest="reactome"
+print(paste(selection,functest,sep="."))
+```
+
+```{r, child='crispr_report_gsea_prep.Rmd'}
+```
+
+<br />
+<br />
+
+
+

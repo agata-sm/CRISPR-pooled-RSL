@@ -1,0 +1,179 @@
+<!-- 
+This is a child document for presentation of GSEA in RRA results (Mageck)
+to be used with crispr_pipeline_report_v0.4.Rmd and crispr_report_rra.Rmd
+ -->
+
+
+
+```{r include=FALSE,cache=FALSE}
+
+library(knitr)
+library(bookdown)
+
+
+knitr::opts_chunk$set(echo = FALSE, 
+                      collapse = TRUE, 
+                      warning = FALSE, 
+                      message = FALSE,
+                      error=TRUE)
+
+source("./crispr_pipeline_report_functions.R")
+
+
+require(org.Hs.eg.db)
+require(org.Mm.eg.db)
+
+require(clusterProfiler)
+require(enrichplot)
+require(DOSE)
+
+```
+
+
+
+
+
+Top categories (gene sets) (by normalised enrichment score NES) enriched in genes under **`r selection` selection** are summarised in Table  \@ref(tab:`r tablabel`).
+
+
+<br />
+<br />
+
+Complete results are saved in file `r fnametab`. For meaning of the fields please refer to 
+[Gene Set Enrichment Analysis section in clusterProfiler manual](https://yulab-smu.top/biomedical-knowledge-mining-book/enrichment-overview.html#gsea-algorithm)
+
+
+
+```{r cache=FALSE}
+tab_n=tab_n+1
+tablabel=paste(tab_n, "Table", sep="")
+
+sel_cat_caption=paste("(A)",gse.res$Description[1],"(B)",gse.res$Description[2],"(C)",gse.res$Description[3],"(D)",gse.res$Description[4],"(E)",gse.res$Description[5],"(F)",gse.res$Description[6],sep=" ")
+
+figurecap.dot=paste("Top enriched terms in comparison ",i,"; genes under ",selection," selection. Sorted by effect size (normalised enrichment score, NES).",sep="")
+figurecap.gseapl=paste("GSEA plots visualise results of gene set enrichment analysis in comparison ",i,"; genes under ",selection," selection. Shown are top 6 categories (by FDR): ",sel_cat_caption,". Rank in ordered data set - reverse RRA " ,selection," rank.",sep="")
+figurecap.heatpl.lfc=paste("Heatmap to display relationships between gene abundance and functional category membership in comparison ",i,"; genes under ",selection," selection.",sep="")
+figurecap.heatpl.rra=paste("Heatmap to display relationships between RRA pathway score and functional category membership in comparison ",i,"; genes under ",selection," selection.",sep="")
+figurecap.tree=paste("Treeplot to visualise hierarchical clustering of enriched categories in comparison ",i,"; genes under ",selection," selection. Number of genes - number of genes in set; Color - FDR.",sep="")
+```
+
+```{r echo=FALSE,cache=FALSE, results='asis'}
+capt=paste("Summary of enriched GO categories in comparison ",i," in genes under ",selection," selection. Shown are top 20 categories (by \"NES\").", sep="")
+test_table(capt, label=tablabel)
+#DT::datatable(gse.summary, rownames = FALSE, options=list(pageLength=n_sigCat) ) %>% formatSignif(columns=c('p.adjust'), digits=3)%>% formatSignif(columns=c('NES'), digits=4)
+DT::datatable(gse.summary, rownames = FALSE ) %>% formatSignif(columns=c('p.adjust'), digits=3)%>% formatSignif(columns=c('NES'), digits=4)
+```
+
+
+
+<br />
+<br />
+
+```{r echo=FALSE,error=TRUE}
+#GSEA plots for more categories (top 20)
+plotdir.i.gsea=file.path(plotdir.i,paste("GSEAplots",functest,selection,sep="."))
+dir.create(plotdir.i.gsea)
+
+if (n_sigCat <20){
+	plots_to_save=n_sigCat
+}else{
+	plots_to_save=20
+}
+
+GSEA_ES_plots(GSEAres=gse.res, dir=plotdir.i.gsea, n_plots=plots_to_save,sel=selection)
+```
+
+
+```{r eval=print_plots, echo=FALSE,error=TRUE}
+gse.res <- pairwise_termsim(gse.res)
+gsea.plot=GSEA_plots(GSEAres=gse.res, lfc_vect=lfc_vect)
+```
+
+
+```{asis, echo=print_plots}
+The summary of top enriched terms is visualised on a dotplot.
+It depicts the enrichment scores (i.e. p values) and gene ratio (the X scale of the dotplot is `GeneRatio: significant genes in set / set size` ) 
+and additionally, size of the gene set as dot size ("Count").
+```
+
+
+
+
+```{r dev='png', echo=FALSE, fig.show='show',fig.width=15, cache=FALSE, fig.cap=figurecap.dot,eval=print_plots}
+gsea.plot[[1]]
+fig_n=fig_n+1
+ggsave(filename=paste("Figure",fig_n,functest,"GSEA.dotplot",i,selection,"pdf",sep="."),path=plotdir.i,device="pdf")
+```
+
+
+<br />
+<br />
+
+```{asis, eval=!is.RSL, echo=print_plots}
+Relationships between gene abundance and functional category membership are visualised as a heatmap.
+```
+
+```{asis, eval=is.RSL, echo=print_plots}
+Relationships between effect size (RRA pathway score) and functional category membership are visualised as a heatmap.
+```
+
+
+```{r eval=print_plots}
+if (data.type == "reads"){
+	figurecap.heatpl=figurecap.heatpl.lfc
+} else if (data.type == "RSL"){
+	figurecap.heatpl=figurecap.heatpl.rra
+}
+```
+
+
+```{r dev='png', fig.show='show',fig.dim=c(15, 5), cache=FALSE, fig.cap=figurecap.heatpl,eval=print_plots}
+gsea.plot[[2]]
+fig_n=fig_n+1
+ggsave(filename=paste("Figure",fig_n,functest,"GSEA.heatplot",i,selection,"pdf",sep="."),path=plotdir.i,device="pdf")
+```
+
+
+
+<br />
+<br />
+
+```{asis, echo=print_treeplot}
+Clustering of top enriched categories is presented on treeplot.
+```
+
+
+```{r dev='png', fig.show='show',fig.dim=c(15, 5), cache=FALSE, fig.cap=figurecap.tree,eval=print_treeplot}
+gsea.plot[[3]]
+fig_n=fig_n+1
+ggsave(filename=paste("Figure",fig_n,functest,"GSEA.treetplot",i,selection,"pdf",sep="."),path=plotdir.i,device="pdf")
+
+```
+
+
+<br />
+<br />
+
+```{asis, echo=print_plots}
+The enrichment plot (the "classic" GSEA plot) shows a green line representing the running ES for a given category 
+as the analysis goes down the ranked list. 
+The value at the peak is the final ES. 
+The middle part shows where the members (GOs) of the dataset appear in the ranked list. 
+Those genes that appear at or before the ES represent the Leading Edge Subset. 
+The lower part shows the value of the ranking metric as it moves down the list of the ranked genes.
+For more in-depth description of this plot please see  [Appendix](#Appendix).
+
+Genes which belong to the leading edge subset for each category are listed in file `r fnametab` in column `core_enrichment`.
+```
+
+
+
+```{r dev='png', fig.show='show',fig.dim=c(15, 5), cache=FALSE, fig.cap=figurecap.gseapl,eval=print_plots}
+gsea.plot[[4]]
+fig_n=fig_n+1
+ggsave(filename=paste("Figure",fig_n,functest,"GSEA.ESplot",i,selection,"pdf",sep="."),path=plotdir.i,device="pdf")
+gsea.plot=NULL
+```
+
+
+
