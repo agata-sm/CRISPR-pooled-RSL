@@ -452,14 +452,16 @@ For more information on the GSEA analysis please refer to [GSEA User Guide](http
 ```{r include=FALSE}
 #cutoffs for categories for plot printing and stat significance
 
-print.plots.CO=3
+print.plots.CO=4
 print.treeplot.CO=5
 gseaPvalCO=0.1
 ```
 
 
 ```{asis, echo=is.RSL}
-***XXXX*** Rank score used for this analysis is -log10(score) from RRA analysis.
+Rank score used for this analysis is log2(median fold change) across four sgRNAs per each gene.
+log2FC is used to test for enrichment amongst genes under positive selection and
+-log2(FC) is used to test for enrichment amongst genes under negative selection.
 ```
 
 ```{asis, echo=!is.RSL}
