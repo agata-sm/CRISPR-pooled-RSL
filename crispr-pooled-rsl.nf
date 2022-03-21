@@ -87,7 +87,7 @@ fastqr1_ch= Channel.fromPath(params.sampleinfo, checkIfExists:true)
 	    .splitCsv(header:true, sep: '\t', strip: true)
 	    .map{ (it.file) }
 	    .collect { "${params.fastqdir}/$it" }
-	    .view()
+	    //.view()
 	    .set { fastqr1_ch }
 
 
@@ -104,7 +104,7 @@ comparisons_ch= Channel.fromPath(params.comparisons, checkIfExists:true)
 
 /////////////////////////////
 // processes
-include { mageck_count_reads; mageck_rra_reads; report_reads; crispr_counter } from './crisprRSL-modules.nf'
+include { mageck_count_reads; mageck_rra_reads; report_reads; crispr_counter; filter_RSL; mageck_rra_RSL; report_RSL } from './crisprRSL-modules.nf'
 
 
 
@@ -118,7 +118,7 @@ include { mageck_count_reads; mageck_rra_reads; report_reads; crispr_counter } f
 	// count reads
 	// mageck_count_reads(fastqr1_ch, smpls_ch)
 
-	// // mageck RRA reads
+	// // mageck contrasts RRA reads
 	// cntReads_ch=mageck_count_reads.out.count_table_reads_mageck_norm_ch
 	// 	cntReads_ch
 	// 		.combine(comparisons_ch)
@@ -143,5 +143,20 @@ workflow {
 
 	// count reads
 	crispr_counter(fastqr1_ch)
+
+	filter_RSL(crispr_counter.out.rsl_countstable_ch)
+
+	// mageck contrasts RSL
+	cntRSL_ch=filter_RSL.out.rsl_countstable_filt_ch
+	 	cntRSL_ch
+	 		.combine(comparisons_ch)
+	 		//.view()
+	 		.set { cntRSL_ch }
+
+	mageck_rra_RSL(cntRSL_ch)
+
+	// //report
+	mageck_res_RSL_gene_ch=mageck_rra_RSL.out.rsl_rra_mageck_ch
+	report_RSL(mageck_res_RSL_gene_ch.collect())
 
 }
