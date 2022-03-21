@@ -22,6 +22,16 @@ These scripts form a workflow for filtering RSL-guide reads which likely are art
 
 ## Installation
 
+To install the pipeline
+
+```
+git clone https://github.com/agata-sm/CRISPR-pooled-RSL.git
+```
+
+To use github from command line you need to setup [Personal Access Token PTA](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token). For the purpose of this task, the token is used in the same way as the password would be.
+
+
+
 
 ### Dependencies
 
@@ -43,6 +53,57 @@ These scripts form a workflow for filtering RSL-guide reads which likely are art
 These dependencies will be included in a singularity container when it's ready.
 
 ## Usage
+
+The pipeline can be run in several ways, depending on resources available.
+
+
+***interactive session on Rackam***
+
+
+We start the interactive session:
+
+```
+interactive -A allocation_ID -t 2:00:00 -p core -n 4
+```
+
+Nextflow can easily be installed as described in [Nextflow documentation](https://www.nextflow.io/docs/latest/getstarted.html). 
+
+
+We load the dependencies as modules:
+
+```
+module load bioinfo-tools
+module load MAGeCK/0.5.9.4
+module load pandoc/2.17.1.1
+module load R_packages/4.1.1
+```
+
+To run the pipeline several configuration and metadata files need to present in the working directory. They are described in detail below, and the examples are given in `config-files`.
+
+To run the pipeline simply type:
+
+```
+nextflow run /path/to/CRISPR-pooled-RSL/crispr-pooled-rsl.nf
+```
+
+Where `/path/to` is the directory where the pipeline is installed.
+
+
+To resume the run (if it was interrupted or you realised some arguments need to be changed):
+
+```
+nextflow run /path/to/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -resume
+```
+
+
+
+***locally on a laptop***
+
+(reads analysis only)
+
+The dependencies need to be installed.
+
+
 
 
 
