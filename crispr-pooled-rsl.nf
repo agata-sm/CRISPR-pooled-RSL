@@ -77,9 +77,6 @@ smpls_ch= Channel.fromPath(params.sampleinfo, checkIfExists:true)
 	    .splitCsv(header:true, sep: '\t', strip: true)
 	    .map{ (it.sample) }
 	    .toList()
-	   	////.collect()
-	   	////.toString().replace(/[/,"").replace(/]/,"").replace(/ /,"")
-	   	////.toString()
 	    .toListString().replace(/[/,"").replace(/]/,"").replace(/ /,"")
 	    //.view()
 	    .set { smpls_ch }
@@ -89,12 +86,8 @@ fastqr1_ch= Channel.fromPath(params.sampleinfo, checkIfExists:true)
 	fastqr1_ch
 	    .splitCsv(header:true, sep: '\t', strip: true)
 	    .map{ (it.file) }
-	    ////.map{ "${params.fastqdir}"{"$it/*"}  }
-
-	    ////.map{ (it.file, it.sample) }
 	    .collect { "${params.fastqdir}/$it" }
-	    ////.toList()
-	    //.view()
+	    .view()
 	    .set { fastqr1_ch }
 
 
@@ -110,8 +103,9 @@ comparisons_ch= Channel.fromPath(params.comparisons, checkIfExists:true)
 
 
 /////////////////////////////
-// chunks
-include { mageck_count_reads; mageck_rra_reads; report_reads } from './crisprRSL-modules.nf'
+// processes
+include { mageck_count_reads; mageck_rra_reads; report_reads; crispr_counter } from './crisprRSL-modules.nf'
+
 
 
 /////////////////////////////
@@ -119,28 +113,35 @@ include { mageck_count_reads; mageck_rra_reads; report_reads } from './crisprRSL
 
 //default reads
 
-workflow {
+//workflow {
 
 	// count reads
-	mageck_count_reads(fastqr1_ch, smpls_ch)
+	// mageck_count_reads(fastqr1_ch, smpls_ch)
 
-	// mageck RRA reads
-	cntReads_ch=mageck_count_reads.out.count_table_reads_mageck_norm_ch
-		cntReads_ch
-			.combine(comparisons_ch)
-			//.view()
-			.set { cntReads_ch }
+	// // mageck RRA reads
+	// cntReads_ch=mageck_count_reads.out.count_table_reads_mageck_norm_ch
+	// 	cntReads_ch
+	// 		.combine(comparisons_ch)
+	// 		//.view()
+	// 		.set { cntReads_ch }
 
-	mageck_rra_reads(cntReads_ch)
+	// mageck_rra_reads(cntReads_ch)
 
-	//report
-	mageck_res_reads_gene_ch=mageck_rra_reads.out.gene_summary_reads_ch
-	report_reads(mageck_res_reads_gene_ch.collect())
+	// //report
+	// mageck_res_reads_gene_ch=mageck_rra_reads.out.gene_summary_reads_ch
+	// report_reads(mageck_res_reads_gene_ch.collect())
 
 
-}
+//}
 
 //alternative RSL
 
+//workflow RSL {
 
 
+workflow {
+
+	// count reads
+	crispr_counter(fastqr1_ch)
+
+}

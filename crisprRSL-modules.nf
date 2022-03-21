@@ -10,6 +10,19 @@ params.readsCntOut="${params.outdir}/${params.readscnt}"
 params.readsrra="reads/rra_mageck"
 params.readsRraOut="${params.outdir}/${params.readsrra}"
 
+params.counterRSL="RSL/Counter"
+params.counterRSLOut="${params.outdir}/${params.counterRSL}"
+
+params.filterRSL="RSL/count_table_filtered"
+params.filterRSLOut="${params.outdir}/${params.filterRSL}"
+
+
+// assets
+params.countertemplate="${projectDir}/assets/template.properties"
+
+
+// scripts
+params.scripts="${projectDir}/bin"
 
 /// modules
 
@@ -25,7 +38,7 @@ process mageck_count_reads {
     path "${params.projname}.count_normalized.txt" , emit: count_table_reads_mageck_norm_ch
     path "${params.projname}.countsummary.txt" 
     path "${params.projname}.log"
-    //path "${params.projname}_countsummary.R"
+    //path "${params.projname}_countsummary.R" // the "." in prefix are subbed with "_" in these files
     //path "${params.projname}_countsummary.Rnw"
     //path "${params.projname}_countsummary.pdf"
 
@@ -59,7 +72,7 @@ process mageck_rra_reads {
     script:
     """
     mkdir $comparisonID
-    mageck test -k $cnttable -c $smplRef -t $smplTreat -n ${comparisonID}/$comparisonID --norm-method none --pdf-report
+    mageck test -k $cnttable -c $smplRef -t $smplTreat -n ${comparisonID}/${comparisonID} --norm-method none --pdf-report
     """
 
 }
@@ -80,12 +93,51 @@ process report_reads {
     #module load pandoc/2.10.1
 
     cp -r ${params.projdir} .
-    mkdir $params.projname/metadata
-    cp ${params.sampleinfo} $params.projname/metadata
-    cp ${params.comparisons} $params.projname/metadata
+    mkdir ${params.projname}/metadata
+    cp ${params.sampleinfo} ${params.projname}/metadata
+    cp ${params.comparisons} ${params.projname}/metadata
     cp -r ${projectDir}/bin/report_template/* .
     Rscript report_launcher.R $params.projname $params.projname reads $params.organism
     """
+
+}
+
+
+process crispr_counter {
+    publishDir params.counterRSLOut, mode:'copy'
+
+    input:
+    path fastqr1_ch
+
+    output:
+    path "${params.projname}.properties"
+    path "${params.projname}.csv", emit: rsl_countstable_ch
+    path "counter.stdout.summary.txt"
+
+    script:
+    """
+    echo "$fastqr1_ch"
+    #mkdir -p ${params.counterRSL}
+    perl ${params.scripts}/makeCounterConfig.pl --template $params.countertemplate --samples $params.sampleinfo --library $params.librarydesignRSL --prefix $params.projname --outdir . --fastqdir $params.fastqdir
+  
+    # Rackham
+    # correct the path
+    #java -Xmx48G -jar /proj/snic2020-16-213/For_NBIS/CrisprCounter.jar ${params.counterRSL}/${$params.projname}.properties &> counter.stdout.txt
+
+    #LOCAL tsts
+    cp /Users/agata.smialowska/NBISproj/5351_CRISPR_pipeline/data/heldin_counter_stdout/counter.stdout.txt .
+    cp ${params.cnttable} .
+
+    perl ${params.scripts}/parseCrisprCounter.pl -i counter.stdout.txt -o counter.stdout.summary.txt
+
+    """
+
+}
+
+process filter_RSL {
+    publishDir params.filterRSLOut, mode:'copy'
+
+
 
 }
 
