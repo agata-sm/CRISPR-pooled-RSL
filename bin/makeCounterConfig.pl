@@ -107,7 +107,7 @@ if ($ARGV[0]eq qw '-h'){
 		}
 
 		elsif($_ =~m /^out =/){
-			print OUTFILE "out = $outfile\n";
+			print OUTFILE "out = $prefix\n";
 		}
 
 		elsif($_ =~m /^fastq =/){
