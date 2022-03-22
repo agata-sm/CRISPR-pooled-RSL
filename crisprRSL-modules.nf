@@ -37,6 +37,8 @@ params.crisprcounterpath="/proj/snic2020-16-213/For_NBIS" // path to executable 
 process mageck_count_reads {
     publishDir params.readsCntOut, mode:'copy'
 
+    label 'mid_mem'
+
     input:
     path fastqr1_ch
     val smpls_ch
@@ -63,6 +65,8 @@ process mageck_count_reads {
 process mageck_rra_reads {
     publishDir params.readsRraOut, mode:'copy'
 
+    label 'mid_mem'
+
     input:
     tuple path(cnttable), val(comparisonID), val(smplRef), val(smplTreat)
 
@@ -87,6 +91,8 @@ process mageck_rra_reads {
 
 process report_reads {
     publishDir params.projdir, mode:'copy'
+
+    label 'mid_mem'
 
     input:
     path('*')
@@ -114,6 +120,8 @@ process report_reads {
 process crispr_counter {
     publishDir params.counterRSLOut, mode:'copy'
 
+    label 'big_mem'
+
     input:
     path fastqr1_ch
 
@@ -130,11 +138,11 @@ process crispr_counter {
     perl ${params.scripts}/makeCounterConfig.pl --template $params.countertemplate --samples $params.sampleinfo --library $params.librarydesignRSL --prefix $params.projname --outdir . --fastqdir $params.fastqdir
   
     # Rackham
-    # java -Xmx48G -jar ${params.crisprcounterpath}/CrisprCounter.jar ${params.counterRSL}/${params.projname}.properties &> counter.stdout.txt
+    java -Xmx48G -jar ${params.crisprcounterpath}/CrisprCounter.jar ${params.counterRSL}/${params.projname}.properties &> counter.stdout.txt
 
     #LOCAL tsts
-    cp /Users/agata.smialowska/NBISproj/5351_CRISPR_pipeline/data/heldin_counter_stdout/counter.stdout.txt .
-    cp ${params.cnttable} .
+    #cp /Users/agata.smialowska/NBISproj/5351_CRISPR_pipeline/data/heldin_counter_stdout/counter.stdout.txt .
+    #cp ${params.cnttable} .
 
     perl ${params.scripts}/parseCrisprCounter.pl -i counter.stdout.txt -o counter.stdout.parsed.txt
 
@@ -144,6 +152,8 @@ process crispr_counter {
 
 process filter_RSL {
     publishDir params.filterRSLOut, mode:'copy'
+
+    label 'mid_mem'
 
     input:
     path rsl_countstable
@@ -167,6 +177,8 @@ process filter_RSL {
 
 process mageck_rra_RSL {
     publishDir params.mageckRSLOut, mode:'copy'
+
+    label 'mid_mem'
 
     input:
     tuple path(cnttable), val(comparisonID), val(smplRef), val(smplTreat)
@@ -194,6 +206,8 @@ process mageck_rra_RSL {
 process report_RSL {
     publishDir params.projdir, mode:'copy'
 
+    label 'mid_mem'
+
     input:
     path('*')
 
@@ -218,6 +232,8 @@ process report_RSL {
 
 process fastqc {
     publishDir params.fastqcOut, mode:'copy'
+
+    label 'small'
 
     input:
     path fastqr1
