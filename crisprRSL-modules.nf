@@ -29,7 +29,7 @@ params.countertemplate="${projectDir}/assets/template.properties"
 
 // scripts
 params.scripts="${projectDir}/bin"
-params.crisprcounterpath="/proj/snic2020-16-213/For_NBIS" // path to executable CrisprCounter.jar
+params.crisprcounterpath="/proj/sllstore2017103/nbis5351/For_NBIS" // path to executable CrisprCounter.jar
 
 
 /// modules
