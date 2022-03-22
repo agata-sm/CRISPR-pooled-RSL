@@ -37,21 +37,10 @@ log.info """\
  """
  .stripIndent()
 
+println ""
 
 /////////////////////////////
 // process metadata files
-
-// get the list of contrasts and samples for mageck
-println "Comparisons"
-comparisonf = file("$params.comparisons")
-comparisonf.withReader {
-    String line
-    while( line = it.readLine() ) {
-        println line
-
-    }
-}
-println ""
 
 // get the files and sample names
 println "Samples"
@@ -64,6 +53,17 @@ filesf.withReader {
     }
 }
 
+
+// get the list of contrasts and samples for mageck
+println "Comparisons"
+comparisonf = file("$params.comparisons")
+comparisonf.withReader {
+    String line
+    while( line = it.readLine() ) {
+        println line
+
+    }
+}
 
 println ""
 println ""
@@ -81,7 +81,7 @@ smpls_ch= Channel.fromPath(params.sampleinfo, checkIfExists:true)
 	    //.view()
 	    .set { smpls_ch }
 
-// fastq file paths channel
+// fastq file paths channel - list of paths
 fastqr1_ch= Channel.fromPath(params.sampleinfo, checkIfExists:true)
 	fastqr1_ch
 	    .splitCsv(header:true, sep: '\t', strip: true)
@@ -89,6 +89,16 @@ fastqr1_ch= Channel.fromPath(params.sampleinfo, checkIfExists:true)
 	    .collect { "${params.fastqdir}/$it" }
 	    //.view()
 	    .set { fastqr1_ch }
+
+
+// fastq file paths channel - paths
+fastqr1_ch2= Channel.fromPath(params.sampleinfo, checkIfExists:true)
+	fastqr1_ch2
+	    .splitCsv(header:true, sep: '\t', strip: true)
+	    .map{ (it.file) }
+	    .map { "${params.fastqdir}/$it" }
+	    //.view()
+	    .set { fastqr1_ch2 }
 
 
 // comparisons
@@ -104,7 +114,7 @@ comparisons_ch= Channel.fromPath(params.comparisons, checkIfExists:true)
 
 /////////////////////////////
 // processes
-include { mageck_count_reads; mageck_rra_reads; report_reads; crispr_counter; filter_RSL; mageck_rra_RSL; report_RSL } from './crisprRSL-modules.nf'
+include { mageck_count_reads; mageck_rra_reads; report_reads; crispr_counter; filter_RSL; mageck_rra_RSL; report_RSL; fastqc } from './crisprRSL-modules.nf'
 
 
 
@@ -113,33 +123,35 @@ include { mageck_count_reads; mageck_rra_reads; report_reads; crispr_counter; fi
 
 //default reads
 
-//workflow {
+workflow {
 
-	// count reads
-	// mageck_count_reads(fastqr1_ch, smpls_ch)
+	//count reads
+	mageck_count_reads(fastqr1_ch, smpls_ch)
 
-	// // mageck contrasts RRA reads
-	// cntReads_ch=mageck_count_reads.out.count_table_reads_mageck_norm_ch
-	// 	cntReads_ch
-	// 		.combine(comparisons_ch)
-	// 		//.view()
-	// 		.set { cntReads_ch }
+	// mageck contrasts RRA reads
+	cntReads_ch=mageck_count_reads.out.count_table_reads_mageck_norm_ch
+		cntReads_ch
+			.combine(comparisons_ch)
+			//.view()
+			.set { cntReads_ch }
 
-	// mageck_rra_reads(cntReads_ch)
+	mageck_rra_reads(cntReads_ch)
 
-	// //report
-	// mageck_res_reads_gene_ch=mageck_rra_reads.out.gene_summary_reads_ch
-	// report_reads(mageck_res_reads_gene_ch.collect())
+	//report
+	mageck_res_reads_gene_ch=mageck_rra_reads.out.gene_summary_reads_ch
+	report_reads(mageck_res_reads_gene_ch.collect())
 
+	//QC
+	fastqc(fastqr1_ch2)
 
-//}
+}
 
 //alternative RSL
 
-//workflow RSL {
+workflow RSL {
 
 
-workflow {
+//workflow {
 
 	// count reads
 	crispr_counter(fastqr1_ch)
@@ -158,5 +170,8 @@ workflow {
 	// //report
 	mageck_res_RSL_gene_ch=mageck_rra_RSL.out.rsl_rra_mageck_ch
 	report_RSL(mageck_res_RSL_gene_ch.collect())
+
+	//QC
+	fastqc(fastqr1_ch2)
 
 }

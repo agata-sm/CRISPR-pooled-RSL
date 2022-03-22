@@ -19,6 +19,10 @@ params.filterRSLOut="${params.outdir}/${params.filterRSL}"
 params.mageckRSL="RSL/rra_mageck"
 params.mageckRSLOut="${params.outdir}/${params.mageckRSL}"
 
+params.fastqc="FastQC"
+params.fastqcOut="${params.outdir}/${params.fastqc}"
+
+
 // assets
 params.countertemplate="${projectDir}/assets/template.properties"
 
@@ -211,6 +215,26 @@ process report_RSL {
     """
 
 }
+
+process fastqc {
+    publishDir params.fastqcOut, mode:'copy'
+
+    input:
+    path fastqr1
+
+    output:
+    path('*')
+
+    script:
+    """
+    #module load FastQC/0.11.9
+    echo "fastqc $fastqr1"
+    head $fastqr1 > "${fastqr1}.fastqc"
+    """
+
+}
+
+
 
 
 
