@@ -229,7 +229,8 @@ process fastqc {
     """
     #module load FastQC/0.11.9
     echo "fastqc $fastqr1"
-    head $fastqr1 > "${fastqr1}.fastqc"
+    #head $fastqr1 > "${fastqr1}.fastqc"
+    fastqc $fastqr1
     """
 
 }
