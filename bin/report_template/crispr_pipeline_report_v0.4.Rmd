@@ -32,40 +32,8 @@ report version v 0.4
 draft of pipeline report
 to be used with pipeline_report.v0.4.R
 
-17i2022
+17i2022 - 22iii2022
 
- -->
-
-<!-- 
-TO DO:
-
-2. save Robjects ???
-
-leftover list:
-
-6. IDR
-
-7. Kendall tau for results of stat analysis - replicate concordance
-
-8. reproducible environment
-
-
-
-*** how many guides have 0 counts *** >> low count?
-
-log2readcounts median normalised
-
-frequency of log2(counts)
-
- -->
-
-<!-- ----------
-
-This includes proposed report text (still work in progress).
-
-*Internal comments are in italics.*
-
-*`Run by` in the header section is the username in the system where the script was run. It is taken from the system environment variable $USER. Date is also taken from the system and formatted.*
  -->
 
 
@@ -159,7 +127,7 @@ We recommend that you back up the results delivered by us.
 
 ### Acknowledgments
 
-If you use results obtained with help of the CRISPR Functional Genomics Facility in a publication, we kindly ask you to  acknowledge and cite us [@crisprRSL].
+If you use results obtained with help of the **CRISPR Functional Genomics Facility** in a publication, we kindly ask you to acknowledge and cite us [@crisprRSL].
 
 <br />
 <br />
@@ -177,7 +145,7 @@ If you use results obtained with help of the CRISPR Functional Genomics Facility
 
 
 ```{asis, echo=is.RSL}
-* Reads were assigend to sgRNAs using `CrisprCounter.jar` [@CrisprCounter].
+* Reads were assigend to sgRNA - RSL combinations using `CrisprCounter.jar` [@CrisprCounter].
 ```
 
 ```{asis, echo=!is.RSL}
@@ -185,16 +153,16 @@ If you use results obtained with help of the CRISPR Functional Genomics Facility
 ```
 
 ```{asis, echo=is.RSL}
-* Input based filtering TODO TODO TODO
+* For analysis of RSL counts, sgRNA - RSL combinations were subject to filtering step based on their detection in input library. The basis of this step is the fact that not all theorethical combinations were present in the input library, thus removal of the combinations not detected or detected less than expected number of times served to remove technical artefacts.
+sgRNA - RSL combinations which were detected in only one of the technical replicates and together less than 4 times in two technical replicates were removed from the data. The remaining detected sgRNA - RSL combinations were summarised per sgRNA.
 ```
-
 
 * Statistical analyses, plotting and report generation were perfomed in `R` [@R-base].
 
 
 * Analysis of screen results was performed uing Robust Rank Aggregation test (rra) from `MAGeCK` [@mageck].
 
-* Functional annotation of ranked gene lists was performed by GSEA Enrichment test [@gsea] implemented in `clusterprofiler` [@clusterprofiler]. The ranking metric used in this analysis is -log10 of positive / negative RRA score. The annotation term databases were **Gene Ontology** [@GO] and **reactome** [@reactome]. Plots visualising the enriched categories were made using `enrichplot` [@enrichplot].
+* Functional annotation of ranked gene lists was performed by GSEA Enrichment test [@gsea] implemented in `clusterprofiler` [@clusterprofiler]. The ranking metric used in this analysis was log2 fold change. The annotation term databases were **Gene Ontology** [@GO] and **reactome** [@reactome]. Plots visualising the enriched categories were made using `enrichplot` [@enrichplot].
 
 * Replicate consistency on the counts level (PCA, Spearman clustering) was assesed on `r if(is.RSL){"RSL"}else{"read"}` counts normalised by the trimmed mean of M-values (TMM) method [@TMM].
 
@@ -429,22 +397,21 @@ pairwise sample correlations. Rank based Spearman correlation coefficients betwe
 
 ```
 
-<!-- 
+
 ### Scatter Plots
+
+<!-- 
+`r if(!is.RSL){"### Scatter Plots"}`
 
  -->
 
-`r if(!is.RSL){"### Scatter Plots"}`
 
-
-
-
-```{asis, echo=!is.RSL}
+```{asis}
 Log2 fold changes for each gene were plotted for each pair of comparisons (interactive plots). The comparisons presented in this section are listed in Table \@ref(tab:contrasts-table).
 ```
 
 
-```{r contrast_scatters, eval=!is.RSL, echo=FALSE, include=FALSE}
+```{r contrast_scatters, echo=FALSE, include=FALSE}
 
 ```
 
@@ -460,7 +427,7 @@ for (i in c(1:contrasts.pairs.number)){
  -->
 
 
-```{r eval=!is.RSL, echo=FALSE, results='asis'}
+```{r echo=FALSE, results='asis'}
 options(knitr.duplicate.label = "allow")
 scatter_plots <- vector(mode = "list", length = n.cont)
 
