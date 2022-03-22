@@ -42,6 +42,7 @@ if ($ARGV[0]eq qw '-h'){
 
 	my $outfile="$outdir\/$prefix\.properties";
 	#print "$outfile\n";
+	my $out_cnttable="$prefix\.csv";
 
 	# information on fastq files, R1
 	my %fastq_files;
@@ -107,7 +108,7 @@ if ($ARGV[0]eq qw '-h'){
 		}
 
 		elsif($_ =~m /^out =/){
-			print OUTFILE "out = $prefix\n";
+			print OUTFILE "out = $out_cnttable\n";
 		}
 
 		elsif($_ =~m /^fastq =/){
