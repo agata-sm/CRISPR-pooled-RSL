@@ -138,7 +138,7 @@ process crispr_counter {
     perl ${params.scripts}/makeCounterConfig.pl --template $params.countertemplate --samples $params.sampleinfo --library $params.librarydesignRSL --prefix $params.projname --outdir . --fastqdir $params.fastqdir
   
     # Rackham
-    java -Xmx48G -jar ${params.crisprcounterpath}/CrisprCounter.jar ${params.counterRSL}/${params.projname}.properties &> counter.stdout.txt
+    java -Xmx48G -jar ${params.crisprcounterpath}/CrisprCounter.jar ${params.projname}.properties &> counter.stdout.txt
 
     #LOCAL tsts
     #cp /Users/agata.smialowska/NBISproj/5351_CRISPR_pipeline/data/heldin_counter_stdout/counter.stdout.txt .
