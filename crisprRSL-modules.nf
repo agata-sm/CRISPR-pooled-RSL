@@ -142,7 +142,7 @@ process crispr_counter {
 
     #LOCAL tsts
     #cp /Users/agata.smialowska/NBISproj/5351_CRISPR_pipeline/data/heldin_counter_stdout/counter.stdout.txt .
-    #cp ${params.cnttable} .
+    #echo "cp params.cnttable ."
 
     perl ${params.scripts}/parseCrisprCounter.pl -i counter.stdout.txt -o counter.stdout.parsed.txt
 
