@@ -29,7 +29,7 @@ samples.file=file.path(proj.dir,"metadata","metadata.txt")
 mageck_datadir=file.path(proj.dir,"results",data.type,"rra_mageck")
 
 if(is.RSL){
-  ctable_datadir=file.path(proj.dir,"results",data.type,"count_table_proc")
+  ctable_datadir=file.path(proj.dir,"results",data.type,"count_table_filtered")
 }else{
   ctable_datadir=file.path(proj.dir,"results",data.type,"count_table_mageck")
 }
@@ -38,7 +38,7 @@ if(is.RSL){
 
 #file seq stats >  chunks only executed for data type RSL
 file.seq.stats="counter.stdout.parsed.txt"
-file.seqstats=file.path(proj.dir,"logs",file.seq.stats)
+file.seqstats=file.path(proj.dir,"results/RSL/Counter",file.seq.stats)
 seqstatsSTAUS=file.exists(file.seqstats)
 
 #file summary stats by mageck > chunks only executed for data type reads
@@ -102,7 +102,6 @@ mycolour = c('ns'="gray80", 'dn'= "#377eb8", 'up'="#e41a1c")
 
 
 source("./crispr_pipeline_report_functions.R")
-#source("/Users/agata.smialowska/NBISproj/5351_CRISPR_pipeline/scripts/pipeline_report/v02/crispr_pipeline_report_functions.R")
 
 
 #######################################################
@@ -422,9 +421,7 @@ cat(unlist(res), sep = '\n')
 ## ---- pca_prep
 
 samples.tab=read.table(samples.file, sep="\t", header=TRUE)
-if(!is.RSL){
-  samples.tab=samples.tab[,-1]
-}
+samples.tab=samples.tab[,-1]
 colnames(samples.tab)[1]="library"
 
 
@@ -581,12 +578,19 @@ for (i in c(1:contrasts.pairs.number)){
 
   res.df=data.frame()
   for (j in c( contr.pair.i[1], contr.pair.i[2])){
-    
-    res.df.i=as.data.frame(cbind(all.res[[j]]$neg.lfc,all.res[[j]]$id ))
-    colnames(res.df.i)=c("lfc","id")
-    res.df.i$comparison=j
-    res.df=rbind(res.df,res.df.i)
-
+ 
+    if(!is.RSL){
+      res.df.i=as.data.frame(cbind(all.res[[j]]$neg.lfc,all.res[[j]]$id ))
+      colnames(res.df.i)=c("lfc","id")
+      res.df.i$comparison=j
+      res.df=rbind(res.df,res.df.i)
+    }
+    if(is.RSL){
+      res.df.i=as.data.frame(cbind(all.res[[j]]$median.logFC,all.res[[j]]$id ))
+      colnames(res.df.i)=c("lfc","id")
+      res.df.i$comparison=j
+      res.df=rbind(res.df,res.df.i)
+    }
   }
 
   res.df$lfc=as.numeric(res.df$lfc)

@@ -30,10 +30,13 @@ indir.i=file.path(mageck_datadir,i)
 
 if (data.type == "RSL"){
 
-  infile.pth.gene.i=file.path(indir.i,paste(i,"gene_rra_summary.txt",sep="."))
+  infile.pth.gene.i=file.path(indir.i,paste(i,proj.name.pref,"gene_rra_summary.txt",sep="."))
+
+  lfc_ranks.i=file.path(indir.i,paste(i,"rank_log2FC.tsv",sep="."))
 
   gdata_i_lfc = ReadRRA(infile.pth.gene.i,score="lfc")
   gdata_i_RRA = ReadRRA(infile.pth.gene.i,score="RRA")
+
 
 }else{
 
@@ -71,7 +74,29 @@ if (data.type == "reads"){
   rep.sg.i=read.table(infile.pth.sgRNA.i, sep="\t", header=TRUE)
 }
 
+#add logFC to RSL
+if (data.type == "RSL"){
+
+  lfc_ranks.tab.i=read.table(lfc_ranks.i, sep="\t", header=TRUE)
+
+  #logFC per gene is median of guide logFC
+  df=lfc_ranks.tab.i[,c(1,2,3)]
+
+  data_logFC_bygene= df %>%
+  group_by(Gene) %>%
+  summarise(across(where(is.numeric), median))
+  colnames(data_logFC_bygene)=c("id","median.logFC")
+
+  rep.g.i=left_join(rep.g.i,data_logFC_bygene,by="id")
+
+
+}
+
+
+
 all.res[[i]]=rep.g.i
+
+
 ```
 
 
@@ -124,8 +149,8 @@ if (organism=="mm"){
 rep.g.i.annot=left_join(rep.g.i,geneannot,by="id")
 
 if (data.type == "RSL"){
-  rep.g_neg=rep.g.i.annot[,c(1,15,2:7,16)]
-  rep.g_pos=rep.g.i.annot[,c(1,15,2,9:13,16)]
+  rep.g_neg=rep.g.i.annot[,c(1,15,2:7,16,17)]
+  rep.g_pos=rep.g.i.annot[,c(1,15,2,9:13,16,17)]
 }else if (data.type == "reads"){
   rep.g_neg=rep.g.i.annot[,c(1,15,2:8,16)]
   rep.g_pos=rep.g.i.annot[,c(1,15,2,9:14,16)]
@@ -171,7 +196,7 @@ Results of robust rank aggregation (RRA) analysis (MAGeCK) to identify **deplete
 ```{r cache=FALSE, results='asis'}
 capt=paste("Summary of gene level analysis of ",i," negative selection (MAGeCK). Shown are top 100 genes (by \"neg.rank\").", sep="")
 test_table(capt, label=tablabel)
-DT::datatable(rep.g_neg[,1:8] %>% filter(neg.rank <=100), rownames = FALSE) %>% formatSignif(columns=c('neg.fdr','neg.score','neg.p.value'), digits=4)
+DT::datatable(rep.g_neg[,1:9] %>% filter(neg.rank <=100), rownames = FALSE) %>% formatSignif(columns=c('neg.fdr','neg.score','neg.p.value'), digits=4)
 ```
 
 
@@ -193,7 +218,7 @@ Results of robust rank aggregation (RRA) analysis (MAGeCK) to identify **enriche
 ```{r cache=FALSE, results='asis'}
 capt=paste("Summary of gene level analysis of ",i," , positive selection (MAGeCK). Shown are top 100 genes (by \"pos.rank\").", sep="")
 test_table(capt, label=tablabel)
-DT::datatable(rep.g_pos[,1:8] %>% filter(pos.rank <=100), rownames = FALSE) %>% formatSignif(columns=c('pos.fdr','pos.score','pos.p.value'), digits=4)
+DT::datatable(rep.g_pos[,1:9] %>% filter(pos.rank <=100), rownames = FALSE) %>% formatSignif(columns=c('pos.fdr','pos.score','pos.p.value'), digits=4)
 ```
 
 <!-- 
@@ -427,14 +452,16 @@ For more information on the GSEA analysis please refer to [GSEA User Guide](http
 ```{r include=FALSE}
 #cutoffs for categories for plot printing and stat significance
 
-print.plots.CO=3
+print.plots.CO=4
 print.treeplot.CO=5
 gseaPvalCO=0.1
 ```
 
 
 ```{asis, echo=is.RSL}
-***XXXX*** Rank score used for this analysis is -log10(score) from RRA analysis.
+Rank score used for this analysis is log2(median fold change) across four sgRNAs per each gene.
+log2FC is used to test for enrichment amongst genes under positive selection and
+-log2(FC) is used to test for enrichment amongst genes under negative selection.
 ```
 
 ```{asis, echo=!is.RSL}
@@ -488,8 +515,9 @@ if (data.type == "reads"){
 
 
 } else if (data.type == "RSL"){
-    #rep.g.gsea$score.for.gsea=rep.g.gsea$rra.score # default SCORE for the GSEA test
-    rep.g.gsea$score.for.gsea=rank(-rep.g.gsea$rra.rank)
+    #rep.g.gsea$score.for.gsea=rep.g.gsea$rra.score # rra score
+    #rep.g.gsea$score.for.gsea=rank(-rep.g.gsea$rra.rank)
+    rep.g.gsea$score.for.gsea=-rep.g.gsea$median.logFC # default SCORE for the GSEA test: median log2FC from 4 guides per gene
 }
 
 #rep.g.gsea$score.for.gsea=-log10(1e6*rep.g.gsea$rra.score)
@@ -555,8 +583,9 @@ if (data.type == "reads"){
 
 } else if (data.type == "RSL"){
     #rep.g.gsea$score.for.gsea=rep.g.gsea$rra.score # default SCORE for the GSEA test
-    rep.g.gsea$score.for.gsea=rank(-rep.g.gsea$rra.rank)#THIS works best
+    #rep.g.gsea$score.for.gsea=rank(-rep.g.gsea$rra.rank)#THIS works best
     #rep.g.gsea$score.for.gsea=-log10(1e6*rep.g.gsea$rra.score)
+    rep.g.gsea$score.for.gsea=rep.g.gsea$median.logFC
 
 }
 
