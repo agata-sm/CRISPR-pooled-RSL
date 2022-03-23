@@ -601,18 +601,18 @@ for (i in c(1:contrasts.pairs.number)){
   #Error in MASS::kde2d(x, y, ...) : 
   #  missing or infinite values in the data are not allowed
   pseudocount=0.01
-  df_scatter[,2]=df_scatter[,2]+pseudocount
-  df_scatter[,3]=df_scatter[,3]+pseudocount
+  df_scatter[,4]=df_scatter[,2]+pseudocount
+  df_scatter[,5]=df_scatter[,3]+pseudocount
 
   df_scatter$density <- get_density(df_scatter[,2], df_scatter[,3], n = 100)
 
-  pl2=ggplot(df_scatter, aes(x=df_scatter[,2],y=df_scatter[,3], text=paste(id,"; lfc replicate1",round(df_scatter[,2],digits=3),"; lfc replicate2",round(df_scatter[,3],digits=3)) ))+
+  pl2=ggplot(df_scatter, aes(x=df_scatter[,4],y=df_scatter[,5], text=paste(id,"; lfc replicate1",round(df_scatter[,2],digits=3),"; lfc replicate2",round(df_scatter[,3],digits=3)) ))+
     geom_point() +
     theme_bw() +
      xlab(paste0("log2 Fold Change in ",colnames(df_scatter)[2])) + ylab(paste0("log2 Fold Change in ",colnames(df_scatter)[3]))
 
 
-  pl2.d=pl2+geom_point(aes(df_scatter[,2], df_scatter[,3], color = density)) + scale_color_viridis()
+  pl2.d=pl2+geom_point(aes(df_scatter[,4], df_scatter[,5], color = density)) + scale_color_viridis()
 
   fig_n=fig_n+1
   ggsave(filename=paste("Figure",fig_n,"log2FCscatterplot",colnames(df_scatter)[2],colnames(df_scatter)[3],"comparison",i,"pdf",sep="."),path=plotdir,device="pdf")
