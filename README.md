@@ -35,11 +35,11 @@ To use github from command line you need to setup [Personal Access Token PTA](ht
 
 ### Dependencies
 
-* Nextflow > 0.20 (tested on version 21.10.6)
+* Nextflow >= 21 (tested on version 21.10.6)
 
 * perl v5.18.4
 
-* perl modules: 
+* perl modules: `Getopt::Long`, `List::Util`, `File::Basename`, `File::Path`, `Sort::Rank`. They are parts of most standard perl distributions (with the exception of `Sort::Rank`, which may need to be installed from CPAN, see [instructions](https://www.uppmax.uu.se/support/faq/software-faq/installing-local-perl-packages/)).
 
 * R >= 4.1.1
 
@@ -57,6 +57,39 @@ These dependencies will be included in a singularity container when it's ready.
 The pipeline can be run in several ways, depending on resources available.
 
 
+***using SLURM queue on Rackham***
+
+This is the preferred way to run the pipeline.
+
+The file `nextflow.config` in *the directory where the pipeline is installed* contains profiles for pipeline execution. This is different than `nextflow.config` in the project directory where the code is run.
+
+To run the pipeline in this mode, each process is submitted as a separate job to SLURM queue. This saves time (tasks are parallelised). The process executing the main pipeline code is run in the login node until the run is completed.
+
+It is more practical to run the pipeline in the background. This protects the run from accidental session interruption - for example when you connect remotely to the server and the session disconnects.
+
+You can use several programs to achieve this, in this example we use [screen](https://linux.die.net/man/1/screen), which is usually already installed in your Linux distribtion.
+
+First, start the program by typing (on login node):
+
+```
+screen 
+```
+
+A new terminal appears. You can start a process in it, disconnect from it, then reconnect at any time.
+
+To start a new screen press `Ctrl-a`, then `c`. To run the pipeline:
+
+```
+nextflow run /proj/sllstore2017103/nbis5351/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -profile cluster
+```
+
+To disconnect (detach): `Ctrl+a` `d` (you can do it when the nextflow command is running)
+
+To reconnect: `screen -r`
+
+To view the progress of the jobs in the queue: `jobinfo -u $USER`
+
+
 ***interactive session on Rackam***
 
 
@@ -72,10 +105,12 @@ Nextflow can easily be installed as described in [Nextflow documentation](https:
 We load the dependencies as modules:
 
 ```
+module load perl/5.18.4
 module load bioinfo-tools
 module load MAGeCK/0.5.9.4
 module load pandoc/2.17.1.1
 module load R_packages/4.1.1
+module load FastQC/0.11.9
 ```
 
 To run the pipeline several configuration and metadata files need to present in the working directory. They are described in detail below, and the examples are given in `config-files`.
@@ -96,15 +131,16 @@ nextflow run /path/to/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -resume
 ```
 
 
-
 ***locally on a laptop***
 
 (reads analysis only)
 
-The dependencies need to be installed.
+Nextflow and the dependencies need to be installed. The procedure is the same as for the interactive session on Rackham.
 
 
-
+```
+nextflow run /path/to/CRISPR-pooled-RSL/crispr-pooled-rsl.nf
+```
 
 
 ## Misc tools
@@ -114,8 +150,6 @@ The dependencies need to be installed.
 ## To do
 
 * singularity container
-
-* fastqc
 
 * contamination detection
 
