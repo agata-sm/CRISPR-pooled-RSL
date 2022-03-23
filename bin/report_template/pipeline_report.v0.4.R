@@ -596,6 +596,14 @@ for (i in c(1:contrasts.pairs.number)){
   res.df$lfc=as.numeric(res.df$lfc)
   df_scatter=spread(res.df,comparison,lfc)
 
+  #add this to avoid error in density distribution
+  #https://stackoverflow.com/questions/53075331/error-using-geom-density-2d-in-r-computation-failed-in-stat-density2d-b
+  #Error in MASS::kde2d(x, y, ...) : 
+  #  missing or infinite values in the data are not allowed
+  pseudocount=0.01
+  df_scatter[,2]=df_scatter[,2]+pseudocount
+  df_scatter[,3]=df_scatter[,3]+pseudocount
+
   df_scatter$density <- get_density(df_scatter[,2], df_scatter[,3], n = 100)
 
   pl2=ggplot(df_scatter, aes(x=df_scatter[,2],y=df_scatter[,3], text=paste(id,"; lfc replicate1",round(df_scatter[,2],digits=3),"; lfc replicate2",round(df_scatter[,3],digits=3)) ))+
