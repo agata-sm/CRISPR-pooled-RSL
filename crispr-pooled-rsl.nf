@@ -24,6 +24,9 @@ params.metadatadir = 'metadata'
 
 params.fastqR1="$params.fastqdir/*R1*fastq.gz"
 
+// if input based filtering is not desired
+params.libraryinputfilt=""
+
 
 log.info """\
  CRISPR - N F   P I P E L I N E
