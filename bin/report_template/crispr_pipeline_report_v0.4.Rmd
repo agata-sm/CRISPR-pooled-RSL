@@ -398,20 +398,23 @@ pairwise sample correlations. Rank based Spearman correlation coefficients betwe
 ```
 
 
-### Scatter Plots
 
 <!-- 
-`r if(!is.RSL){"### Scatter Plots"}`
+### Scatter Plots
 
  -->
 
+`r if(!is.RSL){"### Scatter Plots"}`
 
-```{asis}
+
+
+
+```{asis, echo=!is.RSL}
 Log2 fold changes for each gene were plotted for each pair of comparisons (interactive plots). The comparisons presented in this section are listed in Table \@ref(tab:contrasts-table).
 ```
 
 
-```{r contrast_scatters, echo=FALSE, include=FALSE}
+```{r contrast_scatters, eval=!is.RSL, echo=FALSE, include=FALSE}
 
 ```
 
@@ -427,7 +430,7 @@ for (i in c(1:contrasts.pairs.number)){
  -->
 
 
-```{r echo=FALSE, results='asis'}
+```{r eval=!is.RSL, echo=FALSE, results='asis'}
 options(knitr.duplicate.label = "allow")
 scatter_plots <- vector(mode = "list", length = n.cont)
 
@@ -437,6 +440,8 @@ for (i in c(1:contrasts.pairs.number)){
 
 cat(unlist(scatter_plots), sep = '\n')
 ```
+
+
 
 
 
