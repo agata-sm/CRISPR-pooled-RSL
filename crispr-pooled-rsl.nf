@@ -172,6 +172,6 @@ workflow RSL {
 	report_RSL(mageck_res_RSL_gene_ch.collect())
 
 	//QC
-	fastqc(fastqr1_ch2)
+	//fastqc(fastqr1_ch2)
 
 }
