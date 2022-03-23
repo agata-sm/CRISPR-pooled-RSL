@@ -56,6 +56,11 @@ process mageck_count_reads {
     """
     echo $smpls_ch
 
+    module load bioinfo-tools
+    module load MAGeCK/0.5.9.4
+    module load R_packages/4.1.1
+    module load pandoc/2.17.1.1
+
     mageck count --norm-method total --pdf-report -l $params.librarydesign -n $params.projname --fastq $fastqr1_ch --sample-label $smpls_ch
     """
 
@@ -84,6 +89,11 @@ process mageck_rra_reads {
     script:
     """
     mkdir $comparisonID
+    module load bioinfo-tools
+    module load MAGeCK/0.5.9.4
+    module load R_packages/4.1.1
+    module load pandoc/2.17.1.1
+
     mageck test -k $cnttable -c $smplRef -t $smplTreat -n ${comparisonID}/${comparisonID} --norm-method none --pdf-report
     """
 
@@ -103,8 +113,8 @@ process report_reads {
 
     script:
     """
-    #module load  R_packages/4.1.1
-    #module load pandoc/2.10.1
+    module load  R_packages/4.1.1
+    module load pandoc/2.10.1
 
     cp -r ${params.projdir} .
     mkdir ${params.projname}/metadata
@@ -134,7 +144,9 @@ process crispr_counter {
     script:
     """
     echo "$fastqr1_ch"
-    #mkdir -p ${params.counterRSL}
+
+    module load perl/5.18.4
+
     perl ${params.scripts}/makeCounterConfig.pl --template $params.countertemplate --samples $params.sampleinfo --library $params.librarydesignRSL --prefix $params.projname --outdir . --fastqdir $params.fastqdir
   
     # Rackham
@@ -166,6 +178,8 @@ process filter_RSL {
 
     script:
     """
+    module load perl/5.18.4
+
     perl ${params.scripts}/processUMIcounts.v0.13.pl --filter CO=${params.filtRowSums} --infile $rsl_countstable --input_lib $params.libraryinputfilt --outdir . --input_lib_design $params.librarydesignRSL
 
     """
@@ -192,6 +206,12 @@ process mageck_rra_RSL {
 
     script:
     """
+    module load bioinfo-tools
+    module load MAGeCK/0.5.9.4
+    module load R_packages/4.1.1
+    module load pandoc/2.17.1.1
+    module load perl/5.18.4
+
     mkdir $comparisonID
     perl ${params.scripts}/rank_log2FC.v0.2.pl -i $cnttable -o ${comparisonID}/${comparisonID}.rank_log2FC.tsv -r $smplRef -t $smplTreat
 
@@ -217,8 +237,8 @@ process report_RSL {
 
     script:
     """
-    #module load  R_packages/4.1.1
-    #module load pandoc/2.10.1
+    module load  R_packages/4.1.1
+    module load pandoc/2.10.1
 
     cp -r ${params.projdir} .
     mkdir ${params.projname}/metadata
@@ -243,7 +263,8 @@ process fastqc {
 
     script:
     """
-    #module load FastQC/0.11.9
+    module load FastQC/0.11.9
+    
     echo "fastqc $fastqr1"
     #head $fastqr1 > "${fastqr1}.fastqc"
     fastqc $fastqr1
