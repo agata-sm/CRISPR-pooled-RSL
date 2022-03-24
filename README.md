@@ -150,7 +150,7 @@ There are two configuration files used by the pipeline. While they both are call
 
 * `nextflow.config` in pipeline directory - contains information related to running the pipeline on Rackham, profiles and path to `CrisprCounter.jar`; this file should not be modified;
 
-* `nextflow.config` in project working directory - contains information related to the project: paths to inpt library, input fastq files, metadata and analysis parameters. Please see directory `config-files` for examples and more detailed explanation.
+* `nextflow.config` in project working directory - contains information related to the project: paths to input library, input fastq files, metadata and analysis parameters. Please see directory `config-files` for examples and more detailed explanation.
 
 
 ### Metadata files
