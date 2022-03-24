@@ -145,7 +145,7 @@ process crispr_counter {
     """
     echo "$fastqr1_ch"
 
-    module load perl/5.18.4
+    module load perl_modules/5.18.4
 
     perl ${params.scripts}/makeCounterConfig.pl --template $params.countertemplate --samples $params.sampleinfo --library $params.librarydesignRSL --prefix $params.projname --outdir . --fastqdir $params.fastqdir
   
@@ -178,7 +178,7 @@ process filter_RSL {
 
     script:
     """
-    module load perl/5.18.4
+    module load perl_modules/5.18.4
 
     perl ${params.scripts}/processUMIcounts.v0.13.pl --filter CO=${params.filtRowSums} --infile $rsl_countstable --input_lib $params.libraryinputfilt --outdir . --input_lib_design $params.librarydesignRSL
 
@@ -210,7 +210,7 @@ process mageck_rra_RSL {
     module load MAGeCK/0.5.9.4
     module load R_packages/4.1.1
     module load pandoc/2.17.1.1
-    module load perl/5.18.4
+    module load perl_modules/5.18.4
 
     mkdir $comparisonID
     perl ${params.scripts}/rank_log2FC.v0.2.pl -i $cnttable -o ${comparisonID}/${comparisonID}.rank_log2FC.tsv -r $smplRef -t $smplTreat
