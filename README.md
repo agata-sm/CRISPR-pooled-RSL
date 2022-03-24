@@ -133,17 +133,47 @@ nextflow run /path/to/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -resume
 
 ***locally on a laptop***
 
+*Currently it is not recommended to run the workflow in this manner. To do this, you need to comment out the commands to load modules, as these are going to produce error on a local system*
+
 (reads analysis only)
 
-Nextflow and the dependencies need to be installed. The procedure is the same as for the interactive session on Rackham.
+Nextflow and the dependencies need to be installed. The procedure is the same as for the interactive session on Rackham. 
 
 
 ```
 nextflow run /path/to/CRISPR-pooled-RSL/crispr-pooled-rsl.nf
 ```
 
+### Config files
+
+There are two configuration files used by the pipeline. While they both are called `nextflow.config`, they serve different purposes.
+
+* `nextflow.config` in pipeline directory - contains information related to running the pipeline on Rackham, profiles and path to `CrisprCounter.jar`; this file should not be modified;
+
+* `nextflow.config` in project working directory - contains information related to the project: paths to inpt library, input fastq files, metadata and analysis parameters. Please see directory `config-files` for examples and more detailed explanation.
+
+
+### Metadata files
+
+Two files describing the samples and their relationships are required by the pipeline. They should be named as indicated and follow the tab-delimited format. Column order needs to be preserved.
+
+* `metadata.txt` -  information on file name for each sample and experimental groups (treatments, etc);
+
+* `comparisons.txt` - information on comparisons to be analysed.
+
+Please see directory `config-files` for examples and more detailed explanation.
 
 ## Misc tools
+
+*Still to be added*
+
+The following tools are included in this repository. While not part of the analysis pipeline, they prepare the input libraries for analyses.
+
+* tools to filter input libraries sequenced in technical replicates to detect *bona fide* RSL-sgRNA combinations;
+
+* script to generate `gmt` file from library design file;
+
+* script to process fastq files to remove the set constant part in the middle of the read.
 
 
 

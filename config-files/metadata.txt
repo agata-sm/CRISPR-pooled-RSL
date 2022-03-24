@@ -1,0 +1,5 @@
+file	sample	condition	group
+LowGFP_REP1_R1_001.fastq.gz	LowGFP_REP1	LowGFP	rep1
+LowGFP_REP2_R1_001.fastq.gz	LowGFP_REP2	LowGFP	rep2
+HighGFP_REP1_R1_001.fastq.gz	HighGFP_REP1	HighGFP	rep1
+HighGFP_REP2_R1_001.fastq.gz	HighGFP_REP2	HighGFP	rep2
