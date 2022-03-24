@@ -57,6 +57,18 @@ These dependencies will be included in a singularity container when it's ready.
 The pipeline can be run in several ways, depending on resources available.
 
 
+Tu run the main workflow for analysis based on **reads**
+
+```
+nextflow run /proj/sllstore2017103/nbis5351/CRISPR-pooled-RSL/crispr-pooled-rsl.nf 
+```
+
+To run the alternative workflow for analysis based on **RSL counts**
+
+```
+nextflow run /proj/sllstore2017103/nbis5351/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -entry RSL
+```
+
 ***using SLURM queue on Rackham***
 
 This is the preferred way to run the pipeline.
@@ -79,9 +91,18 @@ A new terminal appears. You can start a process in it, disconnect from it, then 
 
 To start a new screen press `Ctrl-a`, then `c`. To run the pipeline:
 
+reads:
+
 ```
 nextflow run /proj/sllstore2017103/nbis5351/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -profile cluster
 ```
+
+RSL:
+
+```
+nextflow run /proj/sllstore2017103/nbis5351/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -entry RSL -profile cluster
+```
+
 
 To disconnect (detach): `Ctrl+a` `d` (you can do it when the nextflow command is running)
 
