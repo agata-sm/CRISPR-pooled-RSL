@@ -123,7 +123,7 @@ if (organism=="mm"){
   gene_names$id=rownames(gene_names)
   colnames(gene_names)=c("description","id")
 
-  gene_entrez=data.frame(mapIds(org.Hs.eg.db, keys=rep.g.i$id, keytype="SYMBOL", column="ENTREZID", multiVals="first"))
+  gene_entrez=data.frame(mapIds(org.Mm.eg.db, keys=rep.g.i$id, keytype="SYMBOL", column="ENTREZID", multiVals="first"))
   gene_entrez$id=rownames(gene_entrez)
   colnames(gene_entrez)=c("entrezgene_id","id")
 
