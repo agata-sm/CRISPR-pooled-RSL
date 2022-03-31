@@ -104,45 +104,33 @@ all.res[[i]]=rep.g.i
 
 if (organism=="hs"){
 
-  ens_dataset="hsapiens_gene_ensembl"
+  gene_names=data.frame(mapIds(org.Hs.eg.db, keys=rep.g.i$id, keytype="SYMBOL", column="GENENAME", multiVals="first"))
+  gene_names$id=rownames(gene_names)
+  colnames(gene_names)=c("description","id")
 
-  ensembl <- useEnsembl(biomart = "genes")
-  ensembl <- useDataset(dataset=ens_dataset, mart=ensembl)
+  gene_entrez=data.frame(mapIds(org.Hs.eg.db, keys=rep.g.i$id, keytype="SYMBOL", column="ENTREZID", multiVals="first"))
+  gene_entrez$id=rownames(gene_entrez)
+  colnames(gene_entrez)=c("entrezgene_id","id")
 
-  all_ids=rep.g.i$id
-
-  hs=getBM(attributes = c("hgnc_symbol","description","entrezgene_id"),
-        filters = "hgnc_symbol",
-        values = all_ids, 
-        mart = ensembl)
-  colnames(hs)=c("id","description","entrezgene_id")
-  hs$description=sub("\\[.+\\]", "", hs$description, ignore.case = FALSE, perl = TRUE, fixed = FALSE, useBytes = FALSE)
-  #rm duplicated entrezid for each hgnc - these will anyway have the same functional annot
-  hs=hs[!duplicated(hs$id, fromLast = TRUE), ]
-  geneannot=hs
+  geneannot=left_join(gene_names,gene_entrez)
 
 }
+
 
 if (organism=="mm"){
 
-  ens_dataset="mmusculus_gene_ensembl"
+  gene_names=data.frame(mapIds(org.Mm.eg.db, keys=rep.g.i$id, keytype="SYMBOL", column="GENENAME", multiVals="first"))
+  gene_names$id=rownames(gene_names)
+  colnames(gene_names)=c("description","id")
 
-  ensembl <- useEnsembl(biomart = "genes")
-  ensembl <- useDataset(dataset=ens_dataset, mart=ensembl)
+  gene_entrez=data.frame(mapIds(org.Hs.eg.db, keys=rep.g.i$id, keytype="SYMBOL", column="ENTREZID", multiVals="first"))
+  gene_entrez$id=rownames(gene_entrez)
+  colnames(gene_entrez)=c("entrezgene_id","id")
 
-  all_ids=rep.g.i$id
-
-  mm=getBM(attributes = c("mgi_symbol","description","entrezgene_id"),
-        filters = "mgi_symbol",
-        values = all_ids, 
-        mart = ensembl)
-  colnames(mm)=c("id","description","entrezgene_id")
-  mm$description=sub("\\[.+\\]", "", mm$description, ignore.case = FALSE, perl = TRUE, fixed = FALSE, useBytes = FALSE)
-  #rm duplicated entrezid for each hgnc - these will anyway have the same functional annot
-  mm=mm[!duplicated(mm$id, fromLast = TRUE), ]
-  geneannot=mm
+  geneannot=left_join(gene_names,gene_entrez)
 
 }
+
 ```
 
 ```{r include=FALSE, cache=FALSE}
