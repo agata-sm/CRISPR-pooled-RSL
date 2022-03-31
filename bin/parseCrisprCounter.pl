@@ -55,6 +55,9 @@ if ($ARGV[0]eq qw '-h'){
 		my $mapped_line= first {/mapped to guideRNA/} @lines;
 		my $reads_line= first {/reads read in total/} @lines;
 
+		#remove leading path to fastq file
+		$file_fastq =~ s{^.*/}{}; 
+		
 		my @file_stats;
 
 		if($gRNA_line =~m/^(\d+) out of (\d+) guide RNAs observed/){
