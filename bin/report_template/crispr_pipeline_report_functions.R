@@ -58,7 +58,9 @@ GSEA_plots <- function(GSEAres=GSEAres, lfc_vect=lfc_vect){
 	theme(text = element_text(size = 10)) + theme(axis.text.y = element_text(size=10)) +  scale_color_viridis_c(guide=guide_colorbar(reverse=TRUE), name = "FDR")
 
 	heatplot.gsea <- heatplot(GSEAres, foldChange=lfc_vect, showCategory=10) +
-	theme(text = element_text(size = 10)) + theme(axis.text.y = element_text(size=10)) +  scale_fill_viridis_c(guide=guide_colorbar(reverse=TRUE))
+	theme(text = element_text(size = 10)) + theme(axis.text.y = element_text(size=10)) +  theme(axis.text.x=element_blank()) +
+	scale_fill_viridis_c(guide=guide_colorbar(reverse=TRUE))
+
 
 	treeplot.gsea=treeplot(GSEAres) +  scale_color_viridis_c(guide=guide_colorbar(reverse=TRUE), name = "FDR")
 

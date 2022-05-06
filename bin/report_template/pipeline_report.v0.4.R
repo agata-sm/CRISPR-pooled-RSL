@@ -108,6 +108,12 @@ source("./crispr_pipeline_report_functions.R")
 ########## descriptive stats for read summarisation
 
 ## ---- data_countingstats_rsl
+
+samples.tab=read.table(samples.file, sep="\t", header=TRUE)
+samples.tab=samples.tab[,-1]
+colnames(samples.tab)[1]="library"
+
+
 if(is.RSL){
     if(seqstatsSTAUS){
 
@@ -115,7 +121,8 @@ if(is.RSL){
   seqstats=read.delim(file.seqstats, header = TRUE, sep = "\t", quote = "\"", dec = ".", fill = TRUE, row.names=NULL)
   seqstats$missing_sgRNA=seqstats$sgRNA_total-seqstats$sgRNA_file
   seqstats$sample=sub('_S\\d+_R1_001.fastq.gz','', seqstats$file_fastq,perl=TRUE, fixed=FALSE)
-
+  seqstats$sample=factor(seqstats$sample, levels=samples.tab$library)
+  seqstats=seqstats[match(samples.tab$library, seqstats$sample),]
 
 
   seq_plot=ggplot(data=seqstats, aes(x=sample, y=fraction_reads_assigned, fill=sample)) + geom_bar(stat="identity") +
@@ -132,6 +139,10 @@ if(is.RSL){
         axis.text.y = element_text(size=10)) +
       theme(axis.title.x = element_blank()) +
       labs(y="Reads assigned to sgRNA")
+
+  seqstats=seqstats[,c(8,2,7,3,4,5,6)]
+  colnames(seqstats)=c("sample","sgRNA detected","sgRNAs not detected","sgRNA total","reads assigned","reads total","fraction reads assigned")
+
   }
 }
 
@@ -139,10 +150,12 @@ if(is.RSL){
 if(!is.RSL){
   file.summary.stats=file.path(ctable_datadir,paste0(proj.name.pref,".countsummary.txt"))
   summary.stats=read.delim(file.summary.stats, header = TRUE, sep = "\t", quote = "\"", dec = ".", fill = TRUE, row.names=NULL)
+  summary.stats$sample=factor(summary.stats$Label, levels=samples.tab$library)
+  summary.stats$detected=summary.stats$TotalsgRNAs-summary.stats$Zerocounts
+  summary.stats.table=summary.stats[,c(14,15,6,4,3,5,7,8)]
+  summary.stats.table=summary.stats.table[match(samples.tab$library, summary.stats.table$sample),]
 
-  summary.stats.table=summary.stats[,c(2,3,4,5,6,7,8)]
-
-  seq_plot2=ggplot(data=summary.stats.table, aes(x=Label, y=Mapped, fill=Label)) + geom_bar(stat="identity") +
+  seq_plot2=ggplot(data=summary.stats.table, aes(x=sample, y=Mapped, fill=sample)) + geom_bar(stat="identity") +
       scale_fill_viridis(discrete=TRUE, alpha=0.35,option="turbo") +
       theme_bw() +
       geom_text(aes(label=Percentage), vjust=1, hjust=1, angle=90, color="black", size=4) +
@@ -151,6 +164,9 @@ if(!is.RSL){
       theme(axis.title.x = element_blank()) +
       labs(y="Reads assigned to sgRNA")
 
+
+  colnames(summary.stats.table)=c("sample","sgRNA detected","sgRNA total","reads assigned","reads total","fraction reads assigned","sgRNAs not detected","Gini index")
+
 }
 
 ## ---- data-countingstats-table
@@ -158,7 +174,7 @@ if(is.RSL){
 
 if(seqstatsSTAUS){
 
-knitr::kable(seqstats[,c(8,2,3,7,4)], row.names = FALSE, caption = "Summary statistics of sgRNA quantification.")
+knitr::kable(seqstats, row.names = FALSE, caption = "Summary statistics of sgRNA quantification.")
 }
 }
 
@@ -216,52 +232,56 @@ if (data.type == "RSL"){
 reads.pG=read.delim(readsperGuide_cnt.fname, header = TRUE, sep = "\t", quote = "\"",dec = ".", fill = TRUE, row.names=NULL)
 dat_reads_h = gather(reads.pG[,-2], variable, value,-sgRNA)
 
-box_rawreads_perguide=ggplot(dat_reads_h, aes(x=variable, y=value, color=variable))  + geom_boxplot()+
+dat_reads_h_ord=dat_reads_h
+dat_reads_h_ord$variable=factor(dat_reads_h_ord$variable, levels=samples.tab$library[order(samples.tab$library)])
+
+
+box_rawreads_perguide=ggplot(dat_reads_h_ord, aes(x=variable, y=value, color=variable))  + geom_boxplot()+
 	theme_bw()+theme(legend.position="none")+
 	scale_color_viridis(discrete=TRUE, alpha=0.35,option="turbo") +
 	theme(axis.text.x=element_text(angle=90,hjust=1)) +
   	labs(y=paste(ylab.txt,"per guide",sep=" "),x="") +
   	coord_flip()
 
-box_rawreads_perguide2=ggplot(dat_reads_h, aes(x=variable, y=value))  + geom_boxplot()+
-	theme_bw()+ scale_y_sqrt() + 
-	theme(axis.text.x=element_text(angle=90,hjust=1,size = 10), axis.text.y = element_text(size=10)) +
-  	labs(y=paste("Square root of",ylab.txt,"per guide",sep=" "),x="") +
-  	coord_flip()
+# box_rawreads_perguide2=ggplot(dat_reads_h, aes(x=variable, y=value))  + geom_boxplot()+
+# 	theme_bw()+ scale_y_sqrt() + 
+# 	theme(axis.text.x=element_text(angle=90,hjust=1,size = 10), axis.text.y = element_text(size=10)) +
+#   	labs(y=paste("Square root of",ylab.txt,"per guide",sep=" "),x="") +
+#   	coord_flip()
 
 
-box_rawreads_perguide3=ggplot(dat_reads_h, aes(x=variable, y=value))  + geom_boxplot()+
-	theme_bw()+ scale_y_continuous(trans='log2')+ theme(legend.position="none")+
-	theme(axis.text.x=element_text(angle=90,hjust=1,size = 10), axis.text.y = element_text(size=10)) +
-  	labs(y=paste("Log2 of",ylab.txt,"per guide",sep=" "),x="") +
-  	coord_flip()
+# box_rawreads_perguide3=ggplot(dat_reads_h, aes(x=variable, y=value))  + geom_boxplot()+
+# 	theme_bw()+ scale_y_continuous(trans='log2')+ theme(legend.position="none")+
+# 	theme(axis.text.x=element_text(angle=90,hjust=1,size = 10), axis.text.y = element_text(size=10)) +
+#   	labs(y=paste("Log2 of",ylab.txt,"per guide",sep=" "),x="") +
+#   	coord_flip()
 
-#outliers are removed
-box_rawreads_perguide4=ggplot(dat_reads_h, aes(x=variable, y=value))  + geom_boxplot(outlier.shape=NA)+
-	theme_bw()+ theme(legend.position="none")+
-	theme(axis.text.x=element_text(angle=90,hjust=1)) + scale_y_continuous(limits = quantile(dat_reads_h$value, c(0.1, 0.9))) +
-  	labs(y=paste(ylab.txt,"per guide (outliers are removed)",sep=" "),x="") +
-  	coord_flip()
+# #outliers are removed
+# box_rawreads_perguide4=ggplot(dat_reads_h, aes(x=variable, y=value))  + geom_boxplot(outlier.shape=NA)+
+# 	theme_bw()+ theme(legend.position="none")+
+# 	theme(axis.text.x=element_text(angle=90,hjust=1)) + scale_y_continuous(limits = quantile(dat_reads_h$value, c(0.1, 0.9))) +
+#   	labs(y=paste(ylab.txt,"per guide (outliers are removed)",sep=" "),x="") +
+#   	coord_flip()
 
 
-violin_rawreads_perguide=ggplot(dat_reads_h, aes(x=variable, y=value))  + geom_violin()+
-	theme_bw()+ theme(legend.position="none")+
-	theme(axis.text.x=element_text(angle=90,hjust=1)) +
-    labs(y=paste(ylab.txt,"per guide",sep=" "),x="") +
-  	coord_flip()
+# violin_rawreads_perguide=ggplot(dat_reads_h, aes(x=variable, y=value))  + geom_violin()+
+# 	theme_bw()+ theme(legend.position="none")+
+# 	theme(axis.text.x=element_text(angle=90,hjust=1)) +
+#     labs(y=paste(ylab.txt,"per guide",sep=" "),x="") +
+#   	coord_flip()
 
-#with box
-violin_rawreads_perguide2=ggplot(dat_reads_h, aes(x=variable, y=value,color=variable))  +  theme(legend.position="none")+
-	geom_violin(width=0.8)+ geom_boxplot(width=0.1, color="black", alpha=0.2) +
-	theme_bw()+ scale_color_viridis(discrete=TRUE, alpha=0.75,option="turbo") +
-	theme(axis.text.x=element_text(angle=90,hjust=1)) +
-    labs(y=paste(ylab.txt,"per guide",sep=" "),x="") +
-  	coord_flip()
+# #with box
+# violin_rawreads_perguide2=ggplot(dat_reads_h, aes(x=variable, y=value,color=variable))  +  theme(legend.position="none")+
+# 	geom_violin(width=0.8)+ geom_boxplot(width=0.1, color="black", alpha=0.2) +
+# 	theme_bw()+ scale_color_viridis(discrete=TRUE, alpha=0.75,option="turbo") +
+# 	theme(axis.text.x=element_text(angle=90,hjust=1)) +
+#     labs(y=paste(ylab.txt,"per guide",sep=" "),x="") +
+#   	coord_flip()
 
 
 
 #outliers removed
-violin_rawreads_perguide3=ggplot(dat_reads_h, aes(x=variable, y=value,color=variable))  + theme(legend.position="none") +
+violin_rawreads_perguide3=ggplot(dat_reads_h_ord, aes(x=variable, y=value,color=variable))  + theme(legend.position="none") +
 	geom_violin(width=0.8)+ geom_boxplot(width=0.1, color="black", alpha=0.2) +
 	theme_bw()+ scale_color_viridis(discrete=TRUE, alpha=0.75,option="turbo") +
 	scale_y_continuous(limits = quantile(dat_reads_h$value, c(0.1, 0.9))) +
@@ -325,7 +345,7 @@ plot1=ggplot(data=raw_freq_r, aes(x=readcount, y=frequency, colour=sample, fill=
 
 
 x_lim=40
-y_lim=200000
+y_lim=500000
 
 plot2=ggplot(data=raw_freq_r, aes(x=readcount, y=frequency, colour=sample, fill=sample)) + geom_bar(stat="identity") +
   facet_wrap(~sample)+
@@ -359,6 +379,7 @@ detect_guides=colSums(reads.pG.mat != 0)
 detguides_table=as.data.frame(cbind(names(detect_guides),detect_guides))
 detguides_table=rbind(detguides_table, c("total present",total_sgRNA))
 colnames(detguides_table)=c("sample","guides")
+detguides_table=detguides_table[match(samples.tab$library, detguides_table$sample),]
 
 
 ## ---- histogram-rslguide-plot1
@@ -429,19 +450,22 @@ colnames(samples.tab)[1]="library"
 
 ## reads: scaling by mageck
 if(!is.RSL){
+  reads.pG.unscaled=read.delim(readsperGuide_cnt_nonnorm.fname, header = TRUE, sep = "\t", quote = "\"",dec = ".", fill = TRUE, row.names=NULL)
+
   #sgRNA
-  dat_pca=reads.pG
+  dat_pca=reads.pG.unscaled
   rownames(dat_pca)=dat_pca$sgRNA
   dat_pca=dat_pca[,-c(1,2)]
 
 
-  pca.sG=plot_pca(dat_pca=dat_pca, annot=samples.tab)
+  pca.sG=plot_pca_TMM(dat_pca=dat_pca, annot=samples.tab)
 
-
-  dat_pca_lognorm_sgRNA=log2(dat_pca+1)
+  dge = DGEList(counts=dat_pca) # TMM normalisation only
+  dge = calcNormFactors(dge)
+  dat_pca_lognorm_sgRNA <- cpm(dge, normalized.lib.sizes = TRUE,log = TRUE, prior.count = 1)
 
   #genes
-  df=reads.pG
+  df=reads.pG.unscaled
 
   data_umi_bygene= df %>%
   group_by(Gene) %>%
@@ -452,9 +476,12 @@ if(!is.RSL){
   rownames(dat_pca)=dat_pca$Gene
   dat_pca=dat_pca[,-c(1)]
 
-  pca.G=plot_pca(dat_pca=dat_pca, annot=samples.tab)
+  pca.G=plot_pca_TMM(dat_pca=dat_pca, annot=samples.tab)
 
-  dat_pca_lognorm_gene=log2(dat_pca+1)
+  dge = DGEList(counts=dat_pca) # TMM normalisation only
+  dge = calcNormFactors(dge)
+  dat_pca_lognorm_gene <- cpm(dge, normalized.lib.sizes = TRUE,log = TRUE, prior.count = 1)
+
 }
 
 ## RSL: TMM scaling

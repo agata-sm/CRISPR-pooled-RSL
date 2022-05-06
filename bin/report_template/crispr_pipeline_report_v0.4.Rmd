@@ -32,7 +32,7 @@ report version v 0.4
 draft of pipeline report
 to be used with pipeline_report.v0.4.R
 
-17i2022 - 22iii2022
+17i2022 - 22iii2022 - 4v2022
 
  -->
 
@@ -232,7 +232,7 @@ This table is saved as **`r fname`**.
 
 
 `r if(is.RSL){"RSL"}else{"Reads"}`
-per guide diagnostic plot is presented on aFigure \@ref(fig:reads-per-guide-boxplot).
+per guide diagnostic plot is presented on Figure \@ref(fig:reads-per-guide-boxplot).
 
 
 
@@ -304,7 +304,7 @@ MAGeCK is a tool designed to identify positively and negatively selected sgRNAs 
 
 sgRNAs are ranked based on P-values calculated from the negative binomial model, and a modified robust ranking aggregation (α-RRA) algorithm is used to identify positively or negatively selected genes. More specifically, α-RRA assumes that if a gene has no effect on selection, then sgRNAs targeting this gene should be uniformly distributed across the ranked list of all the sgRNAs. α-RRA ranks genes by comparing the skew in rankings to the uniform null model, and prioritizes genes whose sgRNA rankings are consistently higher than expected. α-RRA calculates the statistical significance of the skew by permutation.
 
-The results are the sgRNA summary (`sgrna_summary.txt`) and gene summary files (`gene_summary.txt`) for each of the comparisons. These files contain the summaries of the the statistical significance of positive selections and negative selections at sgRNA level and gene level. The file formats are described in more detail in section [Deliverables](#Deliverables). 
+The results are the sgRNA summary (`sgrna_summary.txt`) and gene summary files (`gene_summary.txt`) for each of the comparisons. These files contain the summaries of the the statistical significance of positive selections and negative selections at sgRNA level and gene level. The file formats are described in more detail in section [Deliverables](#deliv). 
 
 
 
@@ -461,7 +461,7 @@ Custom text which helps to interpret the screen results.
 <br />
 
 
-# Deliverables <a name="Deliverablesn"></a>
+# Deliverables <a name="Deliverables"></a> {#deliv}
 
 
 ## Tables
@@ -470,6 +470,68 @@ All tables included in this report are saved in files indicated throughout the t
 
 All tables are tab-delimited and can be open in a spreadsheet application (Excel, LibreOffice, Numbers). Please make sure to set the decimal to `.` when importing the tables to avoid content changes.
 
+<br />
+Two more complex file formats are described in detail below.
+
+<br />
+**Results of robust rank aggregation (RRA) analysis (MAGeCK) to identify enriched and depleted genes** in files `Table.N.RRA_mageck.reads.COMPARISON.tsv`. 
+Each row corresponds to a targeted gene, all genes are shown.
+
+Fields in the table:
+
+* `id` gene id
+
+* `description` of gene product
+
+* `num` number of sgRNA guides targeting the gene
+
+* `score` RRA score by MAGeCK
+
+* `p value` uncorrected p value from the RRA test
+
+* `FDR` false discovery rate, i.e. p value adjusted for multiple comparisons
+
+* `rank` position on a gene list ranked by the RRA score
+
+* `goodsgRNA` number of sgRNAs whose ranking is below the alpha cutoff (0 in this case)
+
+* `lfc` gene log2(fold change)
+
+
+Fields specific to **positive** selection are prefixed with `pos`.
+
+Fields specific to **negative** selection are prefixed with `neg`.
+
+
+<br />
+**Results of GSEA** in files `Table.N.GSEA.GO.COMPARISON.SELECTION.tsv` and `Table.N.GSEA.reactome.COMPARISON.SELECTION.tsv`. This is a table with GSEA results. Each row corresponds to a tested pathway, only pathways enriched above the significance threshold are shown.
+
+
+* `ONTOLOGY` not available for reactome analysis
+
+* `ID` of category (internal to database)
+
+* `Description` of category gene set
+
+* `setSize`  size of the gene set after removing genes not present in the data
+
+* `enrichmentScore` GSEA enrichment score, same as in Broad GSEA implementation
+
+* `NES` enrichment score normalized to mean enrichment of random samples of the same size
+
+* `pvalue`  p value from the GSEA test, as implemented in R package `fgsea`
+
+* `p.adjust` p value adjusted for multiple comparisons (FDR)
+
+* `qvalues` the proportion of false positives incurred 
+
+* `leading_edge` leading-edge subset in a gene set are those genes that appear in the ranked list at or before the point at which the running sum reaches its maximum deviation from zero; the leading-edge subset can be interpreted as the core that accounts for the gene set’s enrichment signal
+
+* `core_enrichment` genes that contribute to the leading-edge subset within the gene set; this is the subset of genes that contributes most to the enrichment result for given pathway
+
+
+
+<br />
 
 ## Plots
 
