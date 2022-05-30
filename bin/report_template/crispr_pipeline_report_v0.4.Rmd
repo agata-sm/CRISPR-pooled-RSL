@@ -1,5 +1,5 @@
 ---
-title: CRISPR screen report for project `r proj.name.pref`
+title: CRISPR screen report <br> Project `r proj.name.pref`
 author: CRISPR Functional Genomics
 output:
   bookdown::html_document2:
