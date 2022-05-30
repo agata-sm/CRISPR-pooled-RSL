@@ -110,20 +110,18 @@ source("./crispr_pipeline_report_functions.R")
 ## ---- data_countingstats_rsl
 
 samples.tab=read.table(samples.file, sep="\t", header=TRUE)
-samples.tab=samples.tab[,-1]
-colnames(samples.tab)[1]="library"
+samples.tab$library=samples.tab$sample
 
 
 if(is.RSL){
     if(seqstatsSTAUS){
 
-
   seqstats=read.delim(file.seqstats, header = TRUE, sep = "\t", quote = "\"", dec = ".", fill = TRUE, row.names=NULL)
   seqstats$missing_sgRNA=seqstats$sgRNA_total-seqstats$sgRNA_file
-  seqstats$sample=sub('_S\\d+_R1_001.fastq.gz','', seqstats$file_fastq,perl=TRUE, fixed=FALSE)
-  seqstats$sample=factor(seqstats$sample, levels=samples.tab$library)
-  seqstats=seqstats[match(samples.tab$library, seqstats$sample),]
 
+  seqstats$file_fastq=factor(seqstats$file_fastq, levels=samples.tab$file)
+  seqstats=seqstats[match(samples.tab$file, seqstats$file_fastq),]
+  seqstats$sample=samples.tab$sample
 
   seq_plot=ggplot(data=seqstats, aes(x=sample, y=fraction_reads_assigned, fill=sample)) + geom_bar(stat="identity") +
       scale_fill_viridis(discrete=TRUE, alpha=0.35,option="turbo") +
@@ -140,8 +138,10 @@ if(is.RSL){
       theme(axis.title.x = element_blank()) +
       labs(y="Reads assigned to sgRNA")
 
-  seqstats=seqstats[,c(8,2,7,3,4,5,6)]
-  colnames(seqstats)=c("sample","sgRNA detected","sgRNAs not detected","sgRNA total","reads assigned","reads total","fraction reads assigned")
+##change
+seqstats=seqstats[,c(8,2,7,3,4,5,6)]
+colnames(seqstats)=c("sample","sgRNA detected","sgRNAs not detected","sgRNA total","reads assigned","reads total","fraction reads assigned")
+
 
   }
 }
@@ -152,7 +152,7 @@ if(!is.RSL){
   summary.stats=read.delim(file.summary.stats, header = TRUE, sep = "\t", quote = "\"", dec = ".", fill = TRUE, row.names=NULL)
   summary.stats$sample=factor(summary.stats$Label, levels=samples.tab$library)
   summary.stats$detected=summary.stats$TotalsgRNAs-summary.stats$Zerocounts
-  summary.stats.table=summary.stats[,c(14,15,6,4,3,5,7,8)]
+  summary.stats.table=summary.stats[,c(14,15,8,6,4,3,5,7)]
   summary.stats.table=summary.stats.table[match(samples.tab$library, summary.stats.table$sample),]
 
   seq_plot2=ggplot(data=summary.stats.table, aes(x=sample, y=Mapped, fill=sample)) + geom_bar(stat="identity") +
@@ -165,7 +165,7 @@ if(!is.RSL){
       labs(y="Reads assigned to sgRNA")
 
 
-  colnames(summary.stats.table)=c("sample","sgRNA detected","sgRNA total","reads assigned","reads total","fraction reads assigned","sgRNAs not detected","Gini index")
+  colnames(summary.stats.table)=c("sample","sgRNA detected","sgRNAs not detected","sgRNA total","reads assigned","reads total","fraction reads assigned","Gini index")
 
 }
 
