@@ -21,7 +21,7 @@ if ($ARGV[0]eq qw '-h'){
 	print "--template: /path/to/template.properties\n";
 	print "--fastqdir: /path/to/dir/files_R1.fastq.gz\n";
 	print "--samples: /path/to/samples.txt\n";
-	print "--library: /path/to/library.tsv e.g. UMICount_Brunello_Library_USE_THIS_ONLY.tsv\n";
+	print "--library: /path/to/library.csv e.g. Brunello_Library_USE_THIS_ONLY.csv\n";
 	print "--prefix: PREF for file names\n";
 	print "--outdir: /path/to/outdir where PREF.properties will be saved\n";
 
