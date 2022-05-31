@@ -22,6 +22,8 @@ params.mageckRSLOut="${params.outdir}/${params.mageckRSL}"
 params.fastqc="FastQC"
 params.fastqcOut="${params.outdir}/${params.fastqc}"
 
+params.libdir="library"
+params.libdirOut="${params.outdir}/${params.libdir}"
 
 // assets
 params.countertemplate="${projectDir}/assets/template.properties"
@@ -33,6 +35,30 @@ params.crisprcounterpath="/proj/sllstore2017103/nbis5351/For_NBIS" // path to ex
 
 
 /// modules
+
+process prep_library_files {
+    publishDir params.libdirOut, mode:'copy'
+
+    label 'small'
+
+    input:
+    path lib_ch
+
+    output:
+    path "library.gmt", emit: lib_gmt_ch
+    path "library.ctrl_sgRNAs.txt", emit: lib_ctrls_ch
+
+
+    script:
+    """
+    module load perl_modules/5.18.4
+
+    perl ${params.scripts}/getLibraryGmt.pl --filter CO=${params.filtRowSums} --infile $lib_ch --outfile library.gmt --outfile_con library.ctrl_sgRNAs.txt
+
+    """
+
+}
+
 
 process mageck_count_reads {
     publishDir params.readsCntOut, mode:'copy'
