@@ -223,7 +223,7 @@ process mageck_rra_RSL {
 
     input:
     tuple path(cnttable), val(comparisonID), val(smplRef), val(smplTreat)
-    lib_gmt
+    path lib_gmt
 
     output:
     path "${comparisonID}/${comparisonID}.rank_log2FC.tsv"
