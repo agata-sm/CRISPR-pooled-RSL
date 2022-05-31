@@ -47,14 +47,15 @@ process prep_library_files {
 
     output:
     path "library.gmt", emit: lib_gmt_ch
-    path "library.ctrl_sgRNAs.txt", emit: lib_ctrls_ch
+    path "library.ctrl_sgRNAs.txt", emit: lib_ctrls_sgRNA_ch
+    path "library.ctrl_genes.txt", emit: lib_ctrls_gene_ch
 
 
     script:
     """
     module load perl_modules/5.18.4
 
-    perl ${params.scripts}/getLibraryGmt.pl --infile $lib_ch --outfile library.gmt --outfile_con library.ctrl_sgRNAs.txt
+    perl ${params.scripts}/getLibraryGmt.pl --infile $lib_ch --outfile library.gmt --outfile_con library.ctrl_sgRNAs.txt --outfile_gcon library.ctrl_genes.txt
 
     """
 

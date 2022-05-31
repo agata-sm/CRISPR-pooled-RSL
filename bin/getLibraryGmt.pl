@@ -34,7 +34,8 @@ if ($ARGV[0]eq qw '-h'){
 	print "arguments:\n";
 	print "--infile: /path/to/LibraryDefinition.csv in format sgRNA,sequence,gene\n";
 	print "--outfile: /path/to/outfile.gmt\n";
-	print "--outfile_con: /path/to/outfile.controls.txt\n";	
+	print "--outfile_con: /path/to/outfile.sgRNAcontrols.txt\n";	
+	print "--outfile_gcon: /path/to/outfile.genecontrols.txt\n";	
 	print "-h prints this message\n";
 }
 
@@ -46,11 +47,13 @@ else{
 	GetOptions(
 		'infile=s'		=>	\(my $input_lib_design),
 		'outfile=s'		=>	\(my $outfile),
-		'outfile_con=s'		=>	\(my $outfile_ctrl)
+		'outfile_con=s'		=>	\(my $outfile_ctrl),
+		'outfile_gcon=s'		=>	\(my $outfile_gctrl)
 	) or die "Error in command line arguments";
 
 
 	open (OUTFILE_CTRL, ">", $outfile_ctrl) or die "Cannot open outfile $outfile_ctrl: $!";
+	open (OUTFILE_GCTRL, ">", $outfile_gctrl) or die "Cannot open outfile $outfile_gctrl: $!";
 
 
 	my %gene_guide;
@@ -81,11 +84,18 @@ else{
 
 	foreach my $gene (sort keys %gene_guide) {
 		my @guides=@{ $gene_guide{$gene} };
-		my $guides=join ",",@guides;
-        print OUTFILE "$gene\t$guides\n";
+		my $guides=join "\t",@guides;
+        print OUTFILE "$gene\tna\t$guides\n";
+
+        if($gene =~m/CON\d+/){
+			print OUTFILE_GCTRL "$gene\n";
+        }
+
     }
 
 	close(OUTFILE);
+	close(OUTFILE_GCTRL);
+
 }
 
 exit;
