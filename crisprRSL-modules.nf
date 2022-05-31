@@ -223,8 +223,7 @@ process mageck_rra_RSL {
     label 'mid_mem'
 
     input:
-    tuple path(cnttable), val(comparisonID), val(smplRef), val(smplTreat)
-    path lib_gmt
+    tuple path(cnttable), path(lib_gmt), val(comparisonID), val(smplRef), val(smplTreat)
 
     output:
     path "${comparisonID}/${comparisonID}.rank_log2FC.tsv"

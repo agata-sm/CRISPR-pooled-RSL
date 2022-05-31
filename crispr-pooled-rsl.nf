@@ -176,11 +176,12 @@ workflow RSL {
 	// mageck contrasts RSL
 	cntRSL_ch=filter_RSL.out.rsl_countstable_filt_ch
 	 	cntRSL_ch
+	 		.combine(prep_library_files.out.lib_gmt_ch)
 	 		.combine(comparisons_ch)
-	 		//.view()
+	 		.view()
 	 		.set { cntRSL_ch }
 
-	mageck_rra_RSL(cntRSL_ch, prep_library_files.out.lib_gmt_ch)
+	mageck_rra_RSL(cntRSL_ch)
 
 	// //report
 	mageck_res_RSL_gene_ch=mageck_rra_RSL.out.rsl_rra_mageck_ch
