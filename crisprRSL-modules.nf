@@ -76,7 +76,7 @@ process mageck_count_reads {
     path "${params.projname}.log"
     //path "${params.projname}_countsummary.R" // the "." in prefix are subbed with "_" in these files
     //path "${params.projname}_countsummary.Rnw"
-    //path "${params.projname}_countsummary.pdf"
+    path "${params.projname}*.pdf"
 
     script:
     """
@@ -222,6 +222,7 @@ process mageck_rra_RSL {
 
     input:
     tuple path(cnttable), val(comparisonID), val(smplRef), val(smplTreat)
+    lib_gmt
 
     output:
     path "${comparisonID}/${comparisonID}.rank_log2FC.tsv"
@@ -241,7 +242,7 @@ process mageck_rra_RSL {
     mkdir $comparisonID
     perl ${params.scripts}/rank_log2FC.v0.2.pl -i $cnttable -o ${comparisonID}/${comparisonID}.rank_log2FC.tsv -r $smplRef -t $smplTreat
 
-    mageck pathway --gmt-file $params.libraryGMT --method rra --ranking-column 3 --ranking-column-2 2 --gene-ranking ${comparisonID}/${comparisonID}.rank_log2FC.tsv -n ${comparisonID}/${comparisonID}.${params.projname}
+    mageck pathway --gmt-file $lib_gmt --method rra --ranking-column 3 --ranking-column-2 2 --gene-ranking ${comparisonID}/${comparisonID}.rank_log2FC.tsv -n ${comparisonID}/${comparisonID}.${params.projname}
 
     cp "${comparisonID}/${comparisonID}.${params.projname}.pathway_summary.txt" "${comparisonID}/${comparisonID}.${params.projname}.gene_rra_summary.txt"
     """

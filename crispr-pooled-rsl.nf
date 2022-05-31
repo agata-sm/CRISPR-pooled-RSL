@@ -178,7 +178,7 @@ workflow RSL {
 	 		//.view()
 	 		.set { cntRSL_ch }
 
-	mageck_rra_RSL(cntRSL_ch)
+	mageck_rra_RSL(cntRSL_ch, prep_library_files.out.lib_gmt_ch)
 
 	// //report
 	mageck_res_RSL_gene_ch=mageck_rra_RSL.out.rsl_rra_mageck_ch
