@@ -116,7 +116,7 @@ comparisons_ch= Channel.fromPath(params.comparisons, checkIfExists:true)
 // library definition
 lib_ch= Channel.fromPath(params.librarydesign, checkIfExists:true)
 	lib_ch
-		.view()
+		//.view()
 		.set { lib_ch }
 
 
@@ -176,7 +176,7 @@ workflow RSL {
 	// mageck contrasts RSL
 	cntRSL_ch=filter_RSL.out.rsl_countstable_filt_ch
 	 	cntRSL_ch
-	 		//.combine(prep_library_files.out.lib_gmt_ch)
+	 		.combine(prep_library_files.out.lib_gmt_ch)
 	 		.combine(comparisons_ch)
 	 		.view()
 	 		.set { cntRSL_ch }
