@@ -43,7 +43,7 @@ process prep_library_files {
 
     input:
     //path ${params.librarydesign}
-    lib_ch
+    path lib_ch
 
     output:
     path "library.gmt", emit: lib_gmt_ch
