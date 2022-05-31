@@ -236,9 +236,9 @@ else{
 	open (INFILE_INPUT_LIBDES, "<", $input_lib_design) or die "Cannot open file with processed input library $input_lib_design: $!";
 	while (<INFILE_INPUT_LIBDES>){
 		chomp $_;
-		my @line=split /,/;	
 
 		unless ($_ =~m/Guide/){ #this file is header-less but just in case
+			my @line=split /,/;	
 
 			my $guide=shift @line;
 			my $sgRNAseq=shift @line;
