@@ -207,7 +207,7 @@ process filter_RSL {
     """
     module load perl_modules/5.18.4
 
-    perl ${params.scripts}/processUMIcounts.v0.13.pl --filter CO=${params.filtRowSums} --infile $rsl_countstable --input_lib $params.libraryinputfilt --outdir . --input_lib_design $params.librarydesignRSL
+    perl ${params.scripts}/processUMIcounts.v0.14.pl --filter CO=${params.filtRowSums} --infile $rsl_countstable --input_lib $params.libraryinputfilt --outdir . --input_lib_design $params.librarydesign
 
     """
 
