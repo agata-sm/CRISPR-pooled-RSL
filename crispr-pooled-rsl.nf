@@ -115,7 +115,9 @@ comparisons_ch= Channel.fromPath(params.comparisons, checkIfExists:true)
 
 // library definition
 lib_ch= Channel.fromPath(params.librarydesign, checkIfExists:true)
-	.set { lib_ch }
+	lib_ch
+		.view()
+		.set { lib_ch }
 
 
 

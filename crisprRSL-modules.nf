@@ -42,7 +42,8 @@ process prep_library_files {
     label 'small'
 
     input:
-    path lib_ch
+    //path ${params.librarydesign}
+    lib_ch
 
     output:
     path "library.gmt", emit: lib_gmt_ch
