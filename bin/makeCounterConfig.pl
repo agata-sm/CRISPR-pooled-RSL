@@ -56,22 +56,19 @@ if ($ARGV[0]eq qw '-h'){
 		my @line=split /\t/;
 
 		unless ($line[0] eq qw /file/){
+			unless ($line[0] =~m/^\s*$/){
+				if ($line[0]=~m/(\S+)_R1_001.fastq.gz/){
+					my $fastqpref=$1;
+					my $R1_read="$fastqdir\/$line[0]";
+					my $R2_read="$fastqdir\/$fastqpref\_R2_001.fastq.gz";
+					my $sample=$line[1];
 
-			if ($line[0]=~m/(\S+)_R1_001.fastq.gz/){
-				my $fastqpref=$1;
-				my $R1_read="$fastqdir\/$line[0]";
-				my $R2_read="$fastqdir\/$fastqpref\_R2_001.fastq.gz";
-				my $sample=$line[1];
+					push @samples_and_files, [$sample,$R1_read,$R2_read];
 
-				push @samples_and_files, [$sample,$R1_read,$R2_read];
+				}else{print "entry $line[0] listed in $samples is not the expected format\n";}
 
-			}else{print "file $line[0] listed in $samples is not the expected format\n";}
-
-
+			}
 		}
-
-
-
 	}
 	close(INFILE);
 
