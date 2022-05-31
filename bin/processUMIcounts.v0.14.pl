@@ -240,9 +240,8 @@ else{
 		unless ($_ =~m/Guide/){ #this file is header-less but just in case
 			my @line=split /,/;	
 
-			my $guide=shift @line;
-			my $sgRNAseq=shift @line;
-			my $gene=shift @line;
+			my $guide=$line[0];
+			my $gene=$line[2];
 
 			$gene_guide{$guide}=$gene;
 
