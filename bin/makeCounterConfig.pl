@@ -52,11 +52,12 @@ if ($ARGV[0]eq qw '-h'){
 
 	while(<INFILE>){
 		
-		chomp $_;
-		my @line=split /\t/;
+		unless ($_ =~m/^\s*$/){
 
-		unless ($line[0] eq qw /file/){
-			unless ($line[0] =~m/^\s*$/){
+			chomp $_;
+			my @line=split /\t/;
+
+			unless ($line[0] eq qw /file/){
 				if ($line[0]=~m/(\S+)_R1_001.fastq.gz/){
 					my $fastqpref=$1;
 					my $R1_read="$fastqdir\/$line[0]";
