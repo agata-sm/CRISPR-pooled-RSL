@@ -243,7 +243,7 @@ process mageck_rra_RSL {
     mkdir $comparisonID
     perl ${params.scripts}/rank_log2FC.v0.2.pl -i $cnttable -o ${comparisonID}/${comparisonID}.rank_log2FC.tsv -r $smplRef -t $smplTreat
 
-    mageck pathway --gmt-file $lib_gmt --method rra --ranking-column 3 --ranking-column-2 2 --gene-ranking ${comparisonID}/${comparisonID}.rank_log2FC.tsv -n ${comparisonID}/${comparisonID}.${params.projname}
+    mageck pathway --gmt-file $lib_gmt --method rra --ranking-column 4 --ranking-column-2 3 --gene-ranking ${comparisonID}/${comparisonID}.rank_log2FC.tsv -n ${comparisonID}/${comparisonID}.${params.projname}
 
     cp "${comparisonID}/${comparisonID}.${params.projname}.pathway_summary.txt" "${comparisonID}/${comparisonID}.${params.projname}.gene_rra_summary.txt"
     """
