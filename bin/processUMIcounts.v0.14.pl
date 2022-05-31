@@ -151,11 +151,11 @@ else{
 
 	my $timenow=localtime();
 	open (LOG, ">", $log) or die "Cannot open logfile file $log: $!"; 
-	print LOG "This is log file for analyis using $script_name on $timenow\n";
+	print LOG "This is log file for analysis using $script_name on $timenow\n";
 
 	open (STDOUT, "| tee $log") or die "Teeing off: $!\n";
 
-	print "This is log file for analyis using $script_name on $timenow\n";
+	print "This is log file for analysis using $script_name on $timenow\n";
 
 
 	print "Project name is $basename\n\n";
