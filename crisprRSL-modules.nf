@@ -147,7 +147,7 @@ process crispr_counter {
 
     module load perl_modules/5.18.4
 
-    perl ${params.scripts}/makeCounterConfig.pl --template $params.countertemplate --samples $params.sampleinfo --library $params.librarydesignRSL --prefix $params.projname --outdir . --fastqdir $params.fastqdir
+    perl ${params.scripts}/makeCounterConfig.pl --template $params.countertemplate --samples $params.sampleinfo --library $params.librarydesign --prefix $params.projname --outdir . --fastqdir $params.fastqdir
   
     # Rackham
     java -Xmx48G -jar ${params.crisprcounterpath}/CrisprCounter.jar ${params.projname}.properties &> counter.stdout.txt

@@ -179,6 +179,30 @@ tablabel=paste(tab_n, "Table", sep="")
 Results of robust rank aggregation (RRA) analysis (MAGeCK) to identify **depleted genes** are presented in Table \@ref(tab:`r tablabel`). Top 100 rows (by `neg.rank`) are included. 
 
 
+Fields in the table:
+
+* `id` gene id
+
+* `description` of gene product
+
+* `num` number of sgRNA guides targeting the gene
+
+* `score` RRA score by MAGeCK
+
+* `p value` uncorrected p value from the RRA test
+
+* `FDR` false discovery rate, i.e. p value adjusted for multiple comparisons
+
+* `rank` position on a gene list ranked by the RRA score
+
+* `goodsgRNA` number of sgRNAs whose ranking is below the alpha cutoff (0 in this case)
+
+* `lfc` gene log2(fold change)
+
+
+Fields specific to **negative** selection are prefixed with `neg`.
+
+
 <br />
 
 ```{r cache=FALSE, results='asis'}
@@ -200,6 +224,30 @@ tablabel=paste(tab_n, "Table", sep="")
 
 Results of robust rank aggregation (RRA) analysis (MAGeCK) to identify **enriched genes** are presented in Table \@ref(tab:`r tablabel`). Top 100 rows (by `pos.rank`) are included. 
 
+Fields in the table:
+
+* `id` gene id
+
+* `description` of gene product
+
+* `num` number of sgRNA guides targeting the gene
+
+* `score` RRA score by MAGeCK
+
+* `p value` uncorrected p value from the RRA test
+
+* `FDR` false discovery rate, i.e. p value adjusted for multiple comparisons
+
+* `rank` position on a gene list ranked by the RRA score
+
+* `goodsgRNA` number of sgRNAs whose ranking is below the alpha cutoff (0 in this case)
+
+* `lfc` gene log2(fold change)
+
+
+Fields specific to **positive** selection are prefixed with `pos`.
+
+
 
 <br />
 
@@ -209,19 +257,21 @@ test_table(capt, label=tablabel)
 DT::datatable(rep.g_pos[,1:9] %>% filter(pos.rank <=100), rownames = FALSE) %>% formatSignif(columns=c('pos.fdr','pos.score','pos.p.value'), digits=4)
 ```
 
-<!-- 
+
 
 #### Interactive Volcano Plot
 
- -->
-
-`r if(!is.RSL){"#### Interactive Volcano Plot"}`
 
 
+```{r include=FALSE, warning=FALSE}
 
-```{r eval=!is.RSL, include=FALSE, warning=FALSE}
-
-dat=gdata_i_lfc
+if(is.RSL){
+  dat=gdata_i_RRA
+  xaxis="RRA Score"
+}else{
+  dat=gdata_i_lfc
+  xaxis="Effect size (log2-fold change)"
+}
 
 dat$group="ns"
 dat$group[dat$FDR<=FDR.CO] <-"sig"
@@ -230,16 +280,18 @@ dat$logFDR=-(log10(dat$FDR))
 dat$group[dat$group=="sig" & dat$Score>0] <-"up"
 dat$group[dat$group=="sig" & dat$Score<0] <-"dn"
 
+dat_plot=dat[dat$FDR<=0.8,]
 
-p_v1=ggplot(dat, aes(x=Score, y=logFDR, color=group, text=paste(id,"; Score",round(Score, digits=3),"; FDR",round(FDR, digits=4)))) + 
-	geom_point(alpha=0.5) + scale_color_manual(values=mycolour) +
-	theme_bw() + theme(legend.position = "none")+
-	ylab("-log10(FDR)")
+p_v1=ggplot(dat_plot, aes(x=Score, y=logFDR, color=group, text=paste(id,"; Score",round(Score, digits=3),"; FDR",round(FDR, digits=4)))) + 
+  geom_point(alpha=0.5) + scale_color_manual(values=mycolour) +
+  theme_bw() + theme(legend.position = "none")+
+  ylab("-log10(FDR)") + xlab(xaxis)
+
 
 # geom_vline(xintercept=1.5, linetype="dashed", color = "grey50") + geom_vline(xintercept=-1.5, linetype="dashed", color = "grey50") +  
 # geom_hline(yintercept=-log10(0.05), linetype="dashed", color = "grey50")
 
-figurecap=paste("Volcano plot for comparison ",i,". Genes with changes at FDR below the significance cutoff FDR=",FDR.CO, " are coloured.", sep="")
+figurecap=paste("Volcano plot for comparison ",i,". Genes with changes at FDR below the significance cutoff FDR=",FDR.CO, " are coloured. Only genes with FDR<=0.8 are shown.", sep="")
 
 
 fig_n=fig_n+1
@@ -255,22 +307,24 @@ p_v1=ggplotly(p_v1, tooltip=c("text"))
 
 ```
 
-```{asis, echo=!is.RSL}
 
-Volcano plot shows statistical significance as False Discovery Rate, FDR (here shown as -log10(FDR)) versus magnitude of change (log2(fold change)). 
+
+Volcano plot shows statistical significance as False Discovery Rate, FDR (here shown as -log10(FDR)) versus magnitude of change 
+`r if(!is.RSL){"(log2(fold change))"}` `r if(is.RSL){"RRA score"}`. 
 It enables quick visual identification of genes with large fold changes that are also statistically significant.
 
 The results of abundance analysis at the gene level are visualised on the interactive volcano plot where the statistically significant genes
-(FDR<=0.05) are coloured.
+(FDR<=0.05) are coloured. 
+Please note only genes with FDR<=0.8 are plotted (n=`r nrow(dat_plot)`).
 
 
 This plot is saved as a static plot in file
-```
- `r if(!is.RSL){paste0(fname, " .")}`
+
+ `r paste0(fname, " .")`
 
 
 
-```{r eval=!is.RSL, dev='png', fig.show='show',fig.dim=c(6, 6), cache=FALSE, fig.cap=figurecap}
+```{r dev='png', fig.show='show',fig.dim=c(6, 6), cache=FALSE, fig.cap=figurecap}
 p_v1
 ```
 
@@ -300,13 +354,16 @@ dat$group[dat$group=="sig" & dat$Score<0] <-"dn"
 
 
 dat$Rank = rank(dat$Score)
-p4_v1=ggplot(dat, aes(x=Score, y=Rank, color=group, text=paste(id,"; Score",round(Score, digits=3),"; Rank",Rank))) +  geom_point(alpha=0.5) + scale_color_manual(values=mycolour) +
+
+dat_plot=dat[dat$FDR<=0.8,]
+
+p4_v1=ggplot(dat_plot, aes(x=Score, y=Rank, color=group, text=paste(id,"; Score",round(Score, digits=3),"; Rank",Rank))) +  geom_point(alpha=0.5) + scale_color_manual(values=mycolour) +
 theme_bw() + theme(legend.position = "none")# +
 # geom_vline(xintercept=1.5, linetype="dashed", color = "grey50") + geom_vline(xintercept=-1.5, linetype="dashed", color = "grey50") +  
 # geom_hline(yintercept=-log10(0.05), linetype="dashed", color = "grey50")
 
 
-figurecap=paste("Gene rank plot for comparison ",i,". Genes with changes at FDR below the significance cutoff FDR=",FDR.CO, " are coloured.", sep="")
+figurecap=paste("Gene rank plot for comparison ",i,". Genes with changes at FDR below the significance cutoff FDR=",FDR.CO, " are coloured. Only genes with FDR<=0.8 are shown.", sep="")
 
 
 fig_n=fig_n+1
@@ -323,6 +380,8 @@ p4_v1=ggplotly(p4_v1, tooltip=c("text"))
 
 Gene rank plot depicts the relationship of gene rank and its 
 `r if(is.RSL){"min (positive, negative score) from the pathway RRA test as implemented by MAGeCK"}else{"fold change in treatment vs control (presented as log2(fold change), log2FC)"}`.
+Please note only genes with FDR<=0.8 are plotted (n=`r nrow(dat_plot)`).
+
 
 This plot is interactive. Its static version is saved in file `r fname`.
 
@@ -499,7 +558,7 @@ if (data.type == "reads"){
   rep.g.gsea$lfc=rep.g.gsea$neg.lfc # lfc for the plot colouring
   rep.g.gsea$score.for.gsea=-rep.g.gsea$neg.lfc # default SCORE for the GSEA test
   #rep.g.gsea$score.for.gsea=rep.g.gsea$rra.score # default SCORE for the GSEA test
-  rep.g.gsea$score.for.gsea=rank(-rep.g.gsea$rra.rank)
+  #rep.g.gsea$score.for.gsea=rank(-rep.g.gsea$rra.rank)
 
 
 } else if (data.type == "RSL"){
