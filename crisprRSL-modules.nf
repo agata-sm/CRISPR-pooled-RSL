@@ -54,7 +54,7 @@ process prep_library_files {
     """
     module load perl_modules/5.18.4
 
-    perl ${params.scripts}/getLibraryGmt.pl --filter CO=${params.filtRowSums} --infile $lib_ch --outfile library.gmt --outfile_con library.ctrl_sgRNAs.txt
+    perl ${params.scripts}/getLibraryGmt.pl --infile $lib_ch --outfile library.gmt --outfile_con library.ctrl_sgRNAs.txt
 
     """
 
