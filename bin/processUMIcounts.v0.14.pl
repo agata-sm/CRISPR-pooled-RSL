@@ -286,7 +286,6 @@ else{
 
 			$number_of_samples=scalar(@line);
 
-
 			# col sums calculation AFTER filtering for presence in input, if defined
 			if (length $input_lib){
 				if ( exists($input_RSL_guide{$RSL_guide}) ){
@@ -576,6 +575,7 @@ sub count_UMIs{
 		my $tot_counts_for_file=join "\t",@total_counts_per_guide;
 		print OUTFILE_GUIDE "$guide_set\t$gene\t$tot_counts_for_file\n";
 
+
 	}
 
 	close(OUTFILE_GUIDE);
@@ -598,8 +598,6 @@ sub count_UMIs{
 	for my $sample_id ( sort {$a <=> $b} keys %freq_raw_reads ){
 		foreach my $reads_number (sort {$a <=> $b} keys %{$freq_raw_reads{$sample_id}}) {
 
-    		#print "$sample_id - $reads_number = ", $freq_raw_reads{$sample_id}{$reads_number}, "\n";
-
     		${$proc_freq_raw_reads{$reads_number}}[$sample_id]=$freq_raw_reads{$sample_id}{$reads_number};
 
     	}
@@ -613,8 +611,6 @@ sub count_UMIs{
 
 	for my $readcount (sort {$a <=> $b} keys %proc_freq_raw_reads){
 		
-		#print "ref({ $freq_raw_reads{$readcount} }) \n";
-
 		my @frequencies_in_libraries=@{ $proc_freq_raw_reads{$readcount} };
 
 		my $frequencies_to_print=join "\t",@frequencies_in_libraries;
