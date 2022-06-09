@@ -1,0 +1,16 @@
+params {
+	// counts table with input sequenced in tech replicates, as output by CrisprCounter.jar
+	inputcnttable = "/path/to/Input_Brunello_unfiltered.csv"
+
+	// path to count table with evaluation data set
+	refdatacnttable = "/path/to/PROJ.UMIcounts.csv"
+
+	librarydesign = "/path/to/Brunello_Library_USE_THIS_ONLY.csv"
+
+	projname = "Brunello_v2022"
+
+	refdatapref = "PROJ"
+
+	// additional filtering by RowSums to remove low abundance RSL-sgRNA combinations
+	filtRowSums = 1
+}

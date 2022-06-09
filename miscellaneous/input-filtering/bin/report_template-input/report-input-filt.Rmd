@@ -1,0 +1,422 @@
+---
+title: Comparison of Filtering Cut-Offs
+author: CRISPR Functional Genomics
+output:
+  bookdown::html_document2:
+    theme: journal
+    highlight: kate
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      collapsed: no
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+
+
+Run by: `r Sys.getenv("USER")` 
+
+
+ The rationale and process:
+
+* Not all theoretical combinations of sgRNA - RSL barcodes are present in the input library; Our goal is to detect the combinations which are artefacts arisen due to sequencing errors; These artefacts, which typically are present in only one technical replicate and / or are detected by very small number read count give rise to the zero inflated signal in downstreal RSL analysis;
+
+* Input library has been sequenced in two technical replicates to allow for detection of these artefactual reads;
+
+* sgRNA - RSL combinations are retained if they are present in **both replicates** and have a **read count >= cutoff** in both replicates individually;
+
+* Filtering cutoffs in the range of 0 (no filtering) to 10 (excessive filtering) are compared with respect to the following metrics:
+
+  * number of retained sgRNA - RSL combinations in the filtered input library;
+
+  * library sizes of the input library technical replicates after the filtering;
+
+
+* Finally, each of the input libraries filtered using different cutoffs is used for processing a reference data set and the following metrics are evaluated:
+
+  * number of detected sgRNA - RSL combinations in the reference data set after filtering;
+
+  * number of detected sgRNAs in the reference data set after filtering;;
+
+  * library sizes of the reference data set samples after filtering;
+
+  * distribution of read counts per sgRNA - RSL combination (histogram plots);
+
+  * distribution of RSL counts per sgRNA (histogram and box plots);
+
+  * comparison of RSL counts per sgRNA between different strategies (scatter plots);
+
+
+
+----------------
+
+```{r, echo=FALSE}
+```
+
+
+```{r local-tsts, include=FALSE,cache=FALSE}
+#path to count table for reference data
+#refdata.path="/Users/agata.smialowska/NBISproj/5351_CRISPR_pipeline/data/ctables/Calle_Heldin.UMIcounts.csv"
+
+#root dir for filtered input libraries
+#inputdata.path="/Users/agata.smialowska/NBISproj/5351_CRISPR_pipeline/gh/rackham_tsts/input/Brunello_v2022/results/input_filtered"
+
+#inputlib.name="Brunello_v2022"
+
+#refdata.pref="Calle_Heldin.UMIcounts"
+
+
+```
+
+
+```{r include=FALSE,cache=FALSE}
+library(knitr)
+library(bookdown)
+
+
+knitr::opts_chunk$set(echo = FALSE, 
+                      collapse = TRUE, 
+                      warning = FALSE, 
+                      message = FALSE)
+
+```
+
+
+
+
+```{r dirs, include=FALSE,cache=FALSE}
+
+
+```
+
+
+```{r prep_environment, include=FALSE,cache=FALSE}
+library(ggplot2)
+library(tibble)
+library(tidyr)
+library(dplyr)
+library(reshape2)
+library(viridis)
+library(parallel)
+#library(cowplot)
+library(gridExtra)
+
+library(kableExtra)
+```
+
+# Analysis of Input Library `r inputlib.name`
+
+
+```{r input-stats, include=FALSE,cache=FALSE}
+fname_log=paste0(inputlib.name,".report.log")
+
+resdirs=dir(inputdata.path)
+
+#exclude dirs with refdata.pref
+resdirs=resdirs[!grepl(refdata.pref, resdirs)]
+
+#input.stats <- vector(mode = "list", length = length(resdirs))
+
+input.stats <- vector(mode = "list")
+
+
+for (i in resdirs){
+  input.stats.i=file.path(inputdata.path,i,fname_log)
+  print("Processing")
+  print(input.stats.i)
+
+  input.metrics.i=read.table(input.stats.i, sep="\t", header=FALSE, blank.lines.skip=TRUE)
+
+  input.stats[[i]]=input.metrics.i
+
+}
+
+
+input.stats.df <- data.frame(matrix(unlist(input.stats), nrow=length(input.stats), byrow=TRUE))
+colnames(input.stats.df)=c("CO","sgRNA-RSL","ColSums")
+input.stats.df$CO=as.numeric(as.character(input.stats.df$CO))
+input.stats.df=input.stats.df[order(input.stats.df$CO,decreasing=FALSE),]
+
+```
+
+```{r input-stats-table, include=TRUE,cache=FALSE, results='asis'}
+
+title.1="Number of detected sgRNA-RSL combination under different filtering cut-off settings."
+
+footnote.1="Number of sgRNA-RSL combinations and library sizes are calculated after the filtering of the input library using the indicated cutoff."
+
+kable(input.stats.df, align = c("l", "c", "c"), booktabs = TRUE, row.names = FALSE, caption = title.1, 
+  col.names=c("Cut Off","Number of sgRNA-RSL Combinations","Library Sizes (in technical replicates)") )%>%
+    footnote(
+      general = footnote.1,
+      general_title = "Note.",
+      footnote_as_chunk = TRUE
+      )%>%
+  kable_minimal(full_width = TRUE)
+
+```
+
+# Effect of Filtering on Reference Data `r refdata.pref`
+
+## Read and RSL counts
+
+Reads per RSL-sgRNA histograms
+
+
+```{r include=TRUE,cache=FALSE}
+
+#my.cutoffs=c(1,2,3,4,5,7,10)
+
+my.cutoffs=c(0,1,2,3,4,5,7,10)
+
+
+hist.reads_per_RSLsgRNA <- list()
+hist.reads_per_RSLsgRNA2 <- list()
+
+hist.RSL_per_sgRNA <- list()
+
+box.RSL_per_sgRNA <- list()
+
+detected_sgRNAs <- list()
+
+RSL_data.list <- list()
+
+
+
+for (i in my.cutoffs){
+  filt.reflib.path=file.path(inputdata.path,paste(inputlib.name,i,refdata.pref,sep="."))
+
+  #print(filt.reflib.path)
+
+  filt_txt=paste("input cutoff",i, sep=" ")
+
+
+  #histograms
+  #Reads per RSL-guide
+  title_plot1=paste("Filtering: ",filt_txt,sep=(" "))
+
+  freq_data=read.delim(file.path(filt.reflib.path,paste(refdata.pref,i,"frequencies.filt_reads.tsv",sep=("."))), header = TRUE, sep = "\t", quote = "\"", fill = TRUE, row.names=NULL)
+  raw_freq_r = gather(freq_data, variable, value,-readcount)
+  colnames(raw_freq_r)=c("readcount","sample","frequency")
+
+
+  plot1=ggplot(data=raw_freq_r, aes(x=readcount, y=frequency, colour=sample, fill=sample)) + geom_bar(stat="identity") +
+  facet_wrap(~sample)+
+    scale_fill_viridis(discrete=TRUE,option="turbo")+
+    scale_colour_viridis(discrete=TRUE,option="turbo")+
+    theme_bw() + theme(plot.margin = unit(c(0.5, -0.5, 0, -0.5), "cm"))+ 
+    labs(title=title_plot1, y="count",x="reads per RSL-guide")+
+    theme(aspect.ratio = 2/(1+sqrt(5)) ) + theme(legend.position="none",legend.margin=unit(c(0, -0.5, 0, -0.5), "cm"))
+
+
+  x_lim=40 
+  y_lim=200000
+
+  plot2=ggplot(data=raw_freq_r, aes(x=readcount, y=frequency, colour=sample, fill=sample)) + geom_bar(stat="identity") +
+  facet_wrap(~sample)+
+    scale_fill_viridis(discrete=TRUE,option="turbo")+
+    scale_colour_viridis(discrete=TRUE,option="turbo")+
+    theme_bw() + theme(plot.margin = unit(c(0.5, -0.5, 0, -0.5), "cm"))+ 
+    coord_cartesian(xlim=c(0,x_lim),ylim=c(0,y_lim) )+
+    labs(title=title_plot1, y="count",x="reads per RSL-guide")+
+    theme(aspect.ratio = 2/(1+sqrt(5)) ) + theme(legend.position="none",legend.margin=unit(c(0, -0.5, 0, -0.5), "cm"))
+
+
+  hist.reads_per_RSLsgRNA[[paste0("CO.",i)]] = plot1
+  hist.reads_per_RSLsgRNA2[[paste0("CO.",i)]] = plot2
+
+
+  #RSLs per guide
+  UMI_perguide_data=read.delim(file.path(filt.reflib.path,paste(refdata.pref,i,"RSL.perguide.tsv",sep=("."))), header = TRUE, sep = "\t", quote = "\"", fill = TRUE, row.names=NULL)
+  UMI_perguide_dat = gather(UMI_perguide_data[,-2], variable, value,-sgRNA)
+  colnames(UMI_perguide_dat)=c("guide","sample","count")
+
+  title_hist=paste("Filtering: ",filt_txt,sep=(" "))
+
+
+  hist_unlim=ggplot(UMI_perguide_dat, aes(x=count, fill=sample)) +
+    geom_histogram(binwidth=1, position = 'identity') +
+    scale_fill_viridis(discrete=TRUE,option="turbo")+
+    labs(title="",x="RSL per guide",y="count") + theme_bw() +
+    facet_wrap(~sample) + theme(aspect.ratio = 2/(1+sqrt(5)) )+
+    labs(title=title_hist, y="count",x="UMIs per guide") +
+    theme(legend.position="none") + theme(plot.margin = unit(c(0.5, 0, 0, 0), "cm"))
+
+    hist.RSL_per_sgRNA[[paste0("CO.",i)]]=hist_unlim
+
+
+  #boxplots
+  title_box=paste("Filtering: ",filt_txt,sep=(" "))
+
+  box_UMI_perguide=ggplot(UMI_perguide_dat, aes(x=sample, y=count))  + geom_boxplot()+
+    theme_bw()+ theme(plot.margin = unit(c(0.5, 0, 0, 0), "cm"))+ 
+    theme(axis.text.x=element_text(angle=90,hjust=1,size = 10), axis.text.y = element_text(size=10)) +
+      labs(title=title_box, y="RSL per guide",x="") +
+      coord_flip()
+
+
+  box_UMI_perguide_log=ggplot(UMI_perguide_dat, aes(x=sample, y=count))  + geom_boxplot()+
+    theme_bw()+ scale_y_log10()+ theme(plot.margin = unit(c(0, 0, 0, 0), "cm")) +
+    theme(axis.text.x=element_text(angle=90,hjust=1,size = 20), axis.text.y = element_text(size=20)) +
+      labs(title=title_box, y="Log10 of RSL per guide",x="") +
+      coord_flip()
+
+    box.RSL_per_sgRNA[[paste0("CO.",i)]]=box_UMI_perguide
+
+
+  # RSL data
+  RSL_data=read.delim(file.path(filt.reflib.path,paste(refdata.pref,i,"RSL.perguide.tsv",sep=("."))), header = TRUE, sep = "\t", quote = "\"", fill = TRUE, row.names=NULL)
+
+  detected_sgRNAs[[paste0("CO.",i)]]=nrow(RSL_data)
+
+
+
+  dat=RSL_data[,-2]
+  rownames(dat)=dat$sgRNA
+  dat=dat[,-1]
+  dat=as.data.frame(t(dat))
+  dat$sample=rownames(dat)
+  df_to_plot=melt(dat,id.vars="sample")
+  colnames(df_to_plot)=c("sample","guide","RSLcount")
+  df_to_plot$filtering=paste0("CO.",i)
+
+  RSL_data.list[[paste0("CO.",i)]]=df_to_plot
+
+}
+
+
+```
+
+
+
+```{r fig.align="center", fig.width=8,fig.height=16, echo = FALSE}
+
+plotheights=rep(8,ceiling(length(my.cutoffs)/2))
+
+grid.arrange(grobs = hist.reads_per_RSLsgRNA, ncol=2, top = "Reads per RSL-sgRNA combination. Complete axes range.", heights=unit(plotheights,"cm"))
+
+#grid.arrange(grobs = hist.reads_per_RSLsgRNA, ncol=2, top = "Reads per RSL-sgRNA combination. Complete axes range.",
+#  set_panel_size( width = unit(7, "cm")))
+
+```
+<br>
+
+
+
+
+Reads per RSL-guide plotted with the reduced range on the X and Y axes displaying the most interesting region of the plot.
+
+
+```{r fig.align="center", fig.width=8,fig.height=16, echo = FALSE}
+
+plotheights=rep(8,ceiling(length(my.cutoffs)/2))
+
+grid.arrange(grobs = hist.reads_per_RSLsgRNA2, ncol=2, top = "Reads per RSL-sgRNA combination. Reduced axes range.", heights=unit(plotheights,"cm"))
+
+
+```
+
+<br>
+<br>
+
+
+Number of RSL per guide
+
+
+```{r fig.align="center", fig.width=8,fig.height=16, echo = FALSE}
+plotheights=rep(8,ceiling(length(my.cutoffs)/2))
+
+grid.arrange(grobs = hist.RSL_per_sgRNA, ncol=2, top = "Number of distinct RSL per guide.", heights=unit(plotheights,"cm"))
+
+
+```
+
+<br>
+
+```{r ig.align="center", fig.width=8,fig.height=10, echo = FALSE}
+grid.arrange(grobs = box.RSL_per_sgRNA, ncol=2, top = "Number of distinct RSL per guide.")
+
+
+```
+
+
+## Number of detected guides in reference dataset `r refdata.pref`
+
+
+
+```{r refdata-stats-table, include=TRUE,cache=FALSE, results='asis'}
+
+refdata.sgRNA.df <- data.frame(matrix(unlist(detected_sgRNAs), nrow=length(detected_sgRNAs), byrow=TRUE))
+refdata.sgRNA.df$CO=my.cutoffs
+refdata.sgRNA.df$CO=as.numeric(as.character(refdata.sgRNA.df$CO))
+refdata.sgRNA.df=refdata.sgRNA.df[order(refdata.sgRNA.df$CO,decreasing=FALSE),]
+refdata.sgRNA.df=refdata.sgRNA.df[,c(2,1)]
+
+
+title.2=paste0("Number of detected sgRNA guides under different filtering cut-off settings in reference dataset ",refdata.pref,".")
+footnote.2="Number of sgRNA detected in all samples of the reference dataset after the filtering of the input library using the indicated cutoff."
+
+kable(refdata.sgRNA.df, align = c("l", "c", "c"), booktabs = TRUE, row.names = FALSE, caption = title.2, 
+  col.names=c("Input filtering Cut-Off","Number of detected sgRNAs") )%>%
+    footnote(
+      general = footnote.2,
+      general_title = "Note.",
+      footnote_as_chunk = TRUE
+      )%>%
+  kable_minimal(full_width = TRUE)
+
+```
+
+
+## Relationships between data from different filtering strategies
+
+Scatterplots are used to visualise RSL counts for corresponding guides under different filtering strategies.
+
+Each point corresponds to one sgRNA. RSL counts under different cutoffs are compared to each other.
+
+Data from sample `r colnames(RSL_data)[3]`
+
+
+```{r include=TRUE,cache=FALSE,results='asis'}
+
+
+
+
+df_to_plot_all=bind_rows(RSL_data.list)
+df_to_plot_all_smpl=df_to_plot_all[df_to_plot_all$sample==colnames(RSL_data)[3],]
+df_scatter=spread(df_to_plot_all_smpl,filtering,RSLcount)
+
+
+my.cutoffs2=paste0("CO.",my.cutoffs)
+
+cutoff.pairs.mtx=combn(my.cutoffs2,2)
+cutoff.pairs.number=ncol(cutoff.pairs.mtx)
+
+
+scatters=list()
+
+for (i in c(1:cutoff.pairs.number)){
+
+ cutoff.pair.i=cutoff.pairs.mtx[,i]
+
+
+  scatter.i=ggplot(df_scatter, aes_string(x=cutoff.pair.i[1],y=cutoff.pair.i[2]))+ geom_point() + geom_abline() +geom_jitter(width = 0.1, height = 0.1) + theme_bw()
+
+  scatters[[paste0("plot.",i)]] = scatter.i
+
+}
+
+
+```
+
+
+<br>
+
+```{r ig.align="center", fig.width=8, fig.height=32, echo = FALSE}
+grid.arrange(grobs = scatters, ncol=2, top = "Scatter plots RSL counts per sgRNA under different filtering cut offs.")
+
+
+```
+
+I to juz wszystko drogie dzieci. Teraz pocalujcie misia w dupe.
+
