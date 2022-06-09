@@ -36,7 +36,7 @@ process filter_input {
 
     script:
     """
-    #module load perl_modules/5.26.2
+    module load perl_modules/5.26.2
 
     perl ${params.scripts}/filter_RSL_input.v0.11.pl --infile $cntable --pref ${params.projname} --outdir ${params.projname}.${cutoff} --CO $cutoff
 
@@ -60,6 +60,11 @@ process report {
    
     script:
     """
+    module load bioinfo-tools
+    module load MAGeCK/0.5.9.4
+    module load R_packages/4.1.1
+    module load pandoc/2.17.1.1
+
     cp -r ${params.projdir} .
     cp -r ${projectDir}/bin/report_template-input/* .
     Rscript input_report_launcher.R ${params.inputcnttable} ${params.filtOut} ${params.projname} ${params.refdatapref}
