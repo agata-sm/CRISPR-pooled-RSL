@@ -36,7 +36,7 @@ process filter_input {
 
     script:
     """
-    module load perl_modules/5.26.2
+    module load perl_modules/5.18.4
 
     perl ${params.scripts}/filter_RSL_input.v0.11.pl --infile $cntable --pref ${params.projname} --outdir ${params.projname}.${cutoff} --CO $cutoff
 
