@@ -113,11 +113,17 @@ comparisons_ch= Channel.fromPath(params.comparisons, checkIfExists:true)
 		    .set { comparisons_ch }
 
 
+// library definition
+lib_ch= Channel.fromPath(params.librarydesign, checkIfExists:true)
+	lib_ch
+		//.view()
+		.set { lib_ch }
+
 
 
 /////////////////////////////
 // processes
-include { mageck_count_reads; mageck_rra_reads; report_reads; crispr_counter; filter_RSL; mageck_rra_RSL; report_RSL; fastqc } from './crisprRSL-modules.nf'
+include { prep_library_files; mageck_count_reads; mageck_rra_reads; report_reads; crispr_counter; filter_RSL; mageck_rra_RSL; report_RSL; fastqc } from './crisprRSL-modules.nf'
 
 
 
@@ -127,6 +133,9 @@ include { mageck_count_reads; mageck_rra_reads; report_reads; crispr_counter; fi
 //default reads
 
 workflow {
+
+	//prep library files
+	prep_library_files(lib_ch)
 
 	//count reads
 	mageck_count_reads(fastqr1_ch, smpls_ch)
@@ -156,6 +165,9 @@ workflow RSL {
 
 //workflow {
 
+	//prep library files
+	prep_library_files(lib_ch)
+
 	// count reads
 	crispr_counter(fastqr1_ch)
 
@@ -164,8 +176,9 @@ workflow RSL {
 	// mageck contrasts RSL
 	cntRSL_ch=filter_RSL.out.rsl_countstable_filt_ch
 	 	cntRSL_ch
+	 		.combine(prep_library_files.out.lib_gmt_ch)
 	 		.combine(comparisons_ch)
-	 		//.view()
+	 		.view()
 	 		.set { cntRSL_ch }
 
 	mageck_rra_RSL(cntRSL_ch)

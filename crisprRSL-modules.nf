@@ -22,6 +22,8 @@ params.mageckRSLOut="${params.outdir}/${params.mageckRSL}"
 params.fastqc="FastQC"
 params.fastqcOut="${params.outdir}/${params.fastqc}"
 
+params.libdir="library"
+params.libdirOut="${params.outdir}/${params.libdir}"
 
 // assets
 params.countertemplate="${projectDir}/assets/template.properties"
@@ -33,6 +35,32 @@ params.crisprcounterpath="/proj/sllstore2017103/nbis5351/For_NBIS" // path to ex
 
 
 /// modules
+
+process prep_library_files {
+    publishDir params.libdirOut, mode:'copy'
+
+    label 'small'
+
+    input:
+    //path ${params.librarydesign}
+    path lib_ch
+
+    output:
+    path "library.gmt", emit: lib_gmt_ch
+    path "library.ctrl_sgRNAs.txt", emit: lib_ctrls_sgRNA_ch
+    path "library.ctrl_genes.txt", emit: lib_ctrls_gene_ch
+
+
+    script:
+    """
+    module load perl_modules/5.18.4
+
+    perl ${params.scripts}/getLibraryGmt.pl --infile $lib_ch --outfile library.gmt --outfile_con library.ctrl_sgRNAs.txt --outfile_gcon library.ctrl_genes.txt
+
+    """
+
+}
+
 
 process mageck_count_reads {
     publishDir params.readsCntOut, mode:'copy'
@@ -50,7 +78,7 @@ process mageck_count_reads {
     path "${params.projname}.log"
     //path "${params.projname}_countsummary.R" // the "." in prefix are subbed with "_" in these files
     //path "${params.projname}_countsummary.Rnw"
-    //path "${params.projname}_countsummary.pdf"
+    path "${params.projname}*.pdf"
 
     script:
     """
@@ -178,9 +206,9 @@ process filter_RSL {
 
     script:
     """
-    module load perl_modules/5.18.4
+    module load perl_modules/5.26.2
 
-    perl ${params.scripts}/processUMIcounts.v0.13.pl --filter CO=${params.filtRowSums} --infile $rsl_countstable --input_lib $params.libraryinputfilt --outdir . --input_lib_design $params.librarydesignRSL
+    perl ${params.scripts}/processUMIcounts.v0.14.pl --filter CO=${params.filtRowSums} --infile $rsl_countstable --input_lib $params.libraryinputfilt --outdir . --input_lib_design $params.librarydesign
 
     """
 
@@ -195,7 +223,7 @@ process mageck_rra_RSL {
     label 'mid_mem'
 
     input:
-    tuple path(cnttable), val(comparisonID), val(smplRef), val(smplTreat)
+    tuple path(cnttable), path(lib_gmt), val(comparisonID), val(smplRef), val(smplTreat)
 
     output:
     path "${comparisonID}/${comparisonID}.rank_log2FC.tsv"
@@ -215,7 +243,7 @@ process mageck_rra_RSL {
     mkdir $comparisonID
     perl ${params.scripts}/rank_log2FC.v0.2.pl -i $cnttable -o ${comparisonID}/${comparisonID}.rank_log2FC.tsv -r $smplRef -t $smplTreat
 
-    mageck pathway --gmt-file $params.libraryGMT --method rra --ranking-column 3 --ranking-column-2 2 --gene-ranking ${comparisonID}/${comparisonID}.rank_log2FC.tsv -n ${comparisonID}/${comparisonID}.${params.projname}
+    mageck pathway --gmt-file $lib_gmt --method rra --ranking-column 4 --ranking-column-2 3 --gene-ranking ${comparisonID}/${comparisonID}.rank_log2FC.tsv -n ${comparisonID}/${comparisonID}.${params.projname}
 
     cp "${comparisonID}/${comparisonID}.${params.projname}.pathway_summary.txt" "${comparisonID}/${comparisonID}.${params.projname}.gene_rra_summary.txt"
     """

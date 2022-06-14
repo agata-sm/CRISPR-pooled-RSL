@@ -109,7 +109,7 @@ source("./crispr_pipeline_report_functions.R")
 
 ## ---- data_countingstats_rsl
 
-samples.tab=read.table(samples.file, sep="\t", header=TRUE)
+samples.tab=read.table(samples.file, sep="\t", header=TRUE, blank.lines.skip=TRUE)
 samples.tab$library=samples.tab$sample
 
 
@@ -411,7 +411,7 @@ knitr::kable(detguides_table, row.names = FALSE, caption = "Number of detected g
 
 
 ## ---- read-contrasts
-contrasts.tab=read.table(comparisons.file, sep="\t", header=TRUE)
+contrasts.tab=read.table(comparisons.file, sep="\t", header=TRUE, blank.lines.skip=TRUE)
 my.contrasts=contrasts.tab$name
 n.cont=nrow(contrasts.tab)
 
@@ -441,7 +441,7 @@ cat(unlist(res), sep = '\n')
 
 ## ---- pca_prep
 
-samples.tab=read.table(samples.file, sep="\t", header=TRUE)
+samples.tab=read.table(samples.file, sep="\t", header=TRUE, blank.lines.skip=TRUE)
 samples.tab=samples.tab[,-1]
 colnames(samples.tab)[1]="library"
 
