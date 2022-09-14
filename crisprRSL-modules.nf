@@ -291,8 +291,8 @@ process fastqc {
 
     script:
     """
-    module load bioinfo-tools
-    module load FastQC/0.11.9
+    #module load bioinfo-tools
+    #module load FastQC/0.11.9
     
     echo "fastqc $fastqr1"
     #head $fastqr1 > "${fastqr1}.fastqc"
