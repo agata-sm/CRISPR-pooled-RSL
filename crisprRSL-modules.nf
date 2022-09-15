@@ -141,8 +141,8 @@ process report_reads {
 
     script:
     """
-    module load  R_packages/4.1.1
-    module load pandoc/2.10.1
+    #module load  R_packages/4.1.1
+    #module load pandoc/2.10.1
 
     cp -r ${params.projdir} .
     mkdir ${params.projname}/metadata
