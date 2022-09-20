@@ -53,7 +53,7 @@ process prep_library_files {
 
     script:
     """
-    module load perl_modules/5.18.4
+    #module load perl_modules/5.18.4
 
     perl ${params.scripts}/getLibraryGmt.pl --infile $lib_ch --outfile library.gmt --outfile_con library.ctrl_sgRNAs.txt --outfile_gcon library.ctrl_genes.txt
 
@@ -84,10 +84,10 @@ process mageck_count_reads {
     """
     echo $smpls_ch
 
-    module load bioinfo-tools
-    module load MAGeCK/0.5.9.4
-    module load R_packages/4.1.1
-    module load pandoc/2.17.1.1
+    #module load bioinfo-tools
+    #module load MAGeCK/0.5.9.4
+    #module load R_packages/4.1.1
+    #module load pandoc/2.17.1.1
 
     mageck count --norm-method total --pdf-report -l $params.librarydesign -n $params.projname --fastq $fastqr1_ch --sample-label $smpls_ch
     """
@@ -117,10 +117,10 @@ process mageck_rra_reads {
     script:
     """
     mkdir $comparisonID
-    module load bioinfo-tools
-    module load MAGeCK/0.5.9.4
-    module load R_packages/4.1.1
-    module load pandoc/2.17.1.1
+    #module load bioinfo-tools
+    #module load MAGeCK/0.5.9.4
+    #module load R_packages/4.1.1
+    #module load pandoc/2.17.1.1
 
     mageck test -k $cnttable -c $smplRef -t $smplTreat -n ${comparisonID}/${comparisonID} --norm-method none --pdf-report
     """
@@ -173,16 +173,11 @@ process crispr_counter {
     """
     echo "$fastqr1_ch"
 
-    module load perl_modules/5.18.4
+    #module load perl_modules/5.18.4
 
     perl ${params.scripts}/makeCounterConfig.pl --template $params.countertemplate --samples $params.sampleinfo --library $params.librarydesign --prefix $params.projname --outdir . --fastqdir $params.fastqdir
   
-    # Rackham
     java -Xmx${task.memory.giga}g -jar ${params.crisprcounterpath}/CrisprCounter.jar ${params.projname}.properties &> counter.stdout.txt
-
-    #LOCAL tsts
-    #cp /Users/agata.smialowska/NBISproj/5351_CRISPR_pipeline/data/heldin_counter_stdout/counter.stdout.txt .
-    #echo "cp params.cnttable ."
 
     perl ${params.scripts}/parseCrisprCounter.pl -i counter.stdout.txt -o counter.stdout.parsed.txt
 
@@ -206,7 +201,7 @@ process filter_RSL {
 
     script:
     """
-    module load perl_modules/5.26.2
+    #module load perl_modules/5.26.2
 
     perl ${params.scripts}/processUMIcounts.v0.14.pl --filter CO=${params.filtRowSums} --infile $rsl_countstable --input_lib $params.libraryinputfilt --outdir . --input_lib_design $params.librarydesign
 
@@ -234,11 +229,11 @@ process mageck_rra_RSL {
 
     script:
     """
-    module load bioinfo-tools
-    module load MAGeCK/0.5.9.4
-    module load R_packages/4.1.1
-    module load pandoc/2.17.1.1
-    module load perl_modules/5.18.4
+    #module load bioinfo-tools
+    #module load MAGeCK/0.5.9.4
+    #module load R_packages/4.1.1
+    #module load pandoc/2.17.1.1
+    #module load perl_modules/5.18.4
 
     mkdir $comparisonID
     perl ${params.scripts}/rank_log2FC.v0.2.pl -i $cnttable -o ${comparisonID}/${comparisonID}.rank_log2FC.tsv -r $smplRef -t $smplTreat
@@ -295,7 +290,6 @@ process fastqc {
     #module load FastQC/0.11.9
     
     echo "fastqc $fastqr1"
-    #head $fastqr1 > "${fastqr1}.fastqc"
     fastqc $fastqr1
     """
 
