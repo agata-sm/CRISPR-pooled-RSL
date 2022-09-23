@@ -124,7 +124,7 @@ lib_ch= Channel.fromPath(params.librarydesign, checkIfExists:true)
 
 /////////////////////////////
 // processes
-include { versions; prep_library_files; mageck_count_reads; mageck_rra_reads; report_reads; crispr_counter; filter_RSL; mageck_rra_RSL; report_RSL; fastqc } from './crisprRSL-modules.nf'
+include { prep_library_files; mageck_count_reads; mageck_rra_reads; report_reads; crispr_counter; filter_RSL; mageck_rra_RSL; report_RSL; fastqc } from './crisprRSL-modules.nf'
 
 
 
