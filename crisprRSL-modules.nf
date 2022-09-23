@@ -300,7 +300,7 @@ process mageck_rra_RSL {
     mageck -v >>${params.verfile}
     perl -v >>${params.verfile}
     echo "perl module 'Sort::Rank'"
-    perl -MSort::Rank -e 'print '\$Sort::Rank::VERSION' ."\n";'>>${params.verfile}
+    #perl -MSort::Rank -e 'print '\$Sort::Rank::VERSION' ."\n";'>>${params.verfile}
     echo "rank_log2FC.v0.3.pl" >>${params.verfile}
     """
 }
