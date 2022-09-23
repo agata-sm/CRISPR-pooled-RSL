@@ -34,7 +34,7 @@ params.scripts="${projectDir}/bin"
 params.crisprcounterpath="/proj/sllstore2017103/nbis5351/For_NBIS" // path to executable CrisprCounter.jar
 
 // versions
-params.verfile="${params.outdir}/software-versions.txt"
+$params.verfile="software.versions"
 
 /// modules
 
@@ -53,22 +53,19 @@ process prep_library_files {
     path "library.gmt", emit: lib_gmt_ch
     path "library.ctrl_sgRNAs.txt", emit: lib_ctrls_sgRNA_ch
     path "library.ctrl_genes.txt", emit: lib_ctrls_gene_ch
-    path "${params.outdir}/software-versions.txt"
+    path "${params.verfile}"
 
     script:
     """
     #module load perl_modules/5.18.4
 
-    touch software-versions.txt
-    echo "Software versions for crispr-pooled-rsl.nf" >software-versions.txt
-    date >>software-versions.txt
-
-
     perl ${params.scripts}/getLibraryGmt.pl --infile $lib_ch --outfile library.gmt --outfile_con library.ctrl_sgRNAs.txt --outfile_gcon library.ctrl_genes.txt
 
-    echo "process ** prep_library_files **" >>software-versions.txt
-    perl -v >>software-versions.txt
-    echo "getLibraryGmt.pl" >>software-versions.txt
+    echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
+    date >>${params.verfile}
+    echo "process ** $process **" >>${params.verfile}
+    perl -v >>${params.verfile}
+    echo "getLibraryGmt.pl" >>${params.verfile}
     """
 
 }
@@ -91,6 +88,8 @@ process mageck_count_reads {
     //path "${params.projname}_countsummary.R" // the "." in prefix are subbed with "_" in these files
     //path "${params.projname}_countsummary.Rnw"
     path "${params.projname}*.pdf"
+    path "${params.verfile}"
+
 
     script:
     """
@@ -103,7 +102,9 @@ process mageck_count_reads {
 
     mageck count --norm-method total --pdf-report -l $params.librarydesign -n $params.projname --fastq $fastqr1_ch --sample-label $smpls_ch
     
-    echo "process ** mageck_count_reads **" >>${params.verfile}
+    echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
+    date >>${params.verfile}
+    echo "process ** $process **" >>${params.verfile}
     echo "mageck" >>${params.verfile}
     mageck -v >>${params.verfile}
     """
@@ -128,6 +129,7 @@ process mageck_rra_reads {
     path "${comparisonID}/${comparisonID}_summary.log"
     path "${comparisonID}/${comparisonID}_summary.Rnw"
     path "${comparisonID}/${comparisonID}_summary.pdf"
+    path "${params.verfile}"
 
 
     script:
@@ -140,7 +142,9 @@ process mageck_rra_reads {
 
     mageck test -k $cnttable -c $smplRef -t $smplTreat -n ${comparisonID}/${comparisonID} --norm-method none --pdf-report
     
-    echo "process ** mageck_rra_reads **" >>${params.verfile}
+    echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
+    date >>${params.verfile}
+    echo "process ** $process **" >>${params.verfile}
     echo "mageck" >>${params.verfile}
     mageck -v >>${params.verfile}
     """
@@ -158,6 +162,7 @@ process report_reads {
     output:
     path "report.reads"
     path "results/reads/rra_annotation"
+    path "${params.verfile}"
 
     script:
     """
@@ -171,7 +176,9 @@ process report_reads {
     cp -r ${projectDir}/bin/report_template/* .
     Rscript report_launcher.R $params.projname $params.projname reads $params.organism
 
-    echo "process ** report_reads **" >>${params.verfile}
+    echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
+    date >>${params.verfile}
+    echo "process ** $process **" >>${params.verfile}
     R --version >>${params.verfile}
     echo "please check Session Info in the report for package versions"
     """
@@ -192,6 +199,7 @@ process crispr_counter {
     path "${params.projname}.csv", emit: rsl_countstable_ch
     path "counter.stdout.txt"
     path "counter.stdout.parsed.txt"
+    path "${params.verfile}"
 
     script:
     """
@@ -205,7 +213,9 @@ process crispr_counter {
 
     perl ${params.scripts}/parseCrisprCounter.pl -i counter.stdout.txt -o counter.stdout.parsed.txt
 
-    echo "process ** crispr_counter **" >>${params.verfile}
+    echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
+    date >>${params.verfile}
+    echo "process ** $process **" >>${params.verfile}
     perl -v >>${params.verfile}
     echo "makeCounterConfig.pl" >>${params.verfile}
     echo "parseCrisprCounter.pl" >>${params.verfile}
@@ -228,6 +238,7 @@ process filter_RSL {
     path "${params.projname}.frequencies.filt_reads.tsv"
     path "${params.projname}.nonfilt_reads.perguide.tsv"
     path "${params.projname}.readme.log"
+    path "${params.verfile}"
 
     script:
     """
@@ -235,7 +246,9 @@ process filter_RSL {
 
     perl ${params.scripts}/processUMIcounts.v0.14.pl --filter CO=${params.filtRowSums} --infile $rsl_countstable --input_lib $params.libraryinputfilt --outdir . --input_lib_design $params.librarydesign
 
-    echo "process ** filter_RSL **" >>${params.verfile}
+    echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
+    date >>${params.verfile}
+    echo "process ** $process **" >>${params.verfile}
     perl -v >>${params.verfile}
     echo "processUMIcounts.v0.14.pl" >>${params.verfile}
     """
@@ -260,6 +273,7 @@ process mageck_rra_RSL {
     path "${comparisonID}/${params.projname}.RSL.perguide.log"
     path "${comparisonID}/${comparisonID}.${params.projname}.gene_rra_summary.txt", emit: rsl_rra_mageck_ch
     path "${comparisonID}/${comparisonID}.${params.projname}.readme"
+    path "${params.verfile}"
 
     script:
     """
@@ -279,7 +293,9 @@ process mageck_rra_RSL {
     echo "file ${comparisonID}.${params.projname}.pathway_summary.txt is the original file output by mageck" >${comparisonID}/${comparisonID}.${params.projname}.readme
     echo "file ${comparisonID}.${params.projname}.gene_rra_summary.txt is identical to ${comparisonID}.${params.projname}.pathway_summary.txt and its name more precisely reflects its contents and provenance" >>${comparisonID}/${comparisonID}.${params.projname}.readme
    
-    echo "process ** mageck_rra_RSL **" >>${params.verfile}
+    echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
+    date >>${params.verfile}
+    echo "process ** $process **" >>${params.verfile}
     echo "mageck" >>${params.verfile}
     mageck -v >>${params.verfile}
     perl -v >>${params.verfile}
@@ -302,6 +318,7 @@ process report_RSL {
     output:
     path "report.RSL"
     path "results/RSL/rra_annotation"
+    path "${params.verfile}"
 
     script:
     """
@@ -315,7 +332,9 @@ process report_RSL {
     cp -r ${projectDir}/bin/report_template/* .
     Rscript report_launcher.R $params.projname $params.projname RSL $params.organism
 
-    echo "process ** report_RSL **" >>${params.verfile}
+    echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
+    date >>${params.verfile}
+    echo "process ** $process **" >>${params.verfile}
     R --version >>${params.verfile}
     echo "please check Session Info in the report for package versions"
     """
@@ -332,6 +351,7 @@ process fastqc {
 
     output:
     path('*')
+    path "${params.verfile}"
 
     script:
     """
@@ -341,7 +361,9 @@ process fastqc {
     echo "fastqc $fastqr1"
     fastqc $fastqr1
 
-    echo "process ** fastqc **" >>${params.verfile}
+    echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
+    date >>${params.verfile}
+    echo "process ** $process **" >>${params.verfile}
     fastqc -v >>${params.verfile}
     """
 
