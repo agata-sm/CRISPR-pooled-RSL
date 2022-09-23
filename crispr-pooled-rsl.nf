@@ -28,6 +28,7 @@ params.fastqR1="$params.fastqdir/*R1*fastq.gz"
 params.libraryinputfilt=""
 
 
+
 log.info """\
  CRISPR - N F   P I P E L I N E
  ===================================
@@ -123,7 +124,7 @@ lib_ch= Channel.fromPath(params.librarydesign, checkIfExists:true)
 
 /////////////////////////////
 // processes
-include { prep_library_files; mageck_count_reads; mageck_rra_reads; report_reads; crispr_counter; filter_RSL; mageck_rra_RSL; report_RSL; fastqc } from './crisprRSL-modules.nf'
+include { versions; prep_library_files; mageck_count_reads; mageck_rra_reads; report_reads; crispr_counter; filter_RSL; mageck_rra_RSL; report_RSL; fastqc } from './crisprRSL-modules.nf'
 
 
 
@@ -134,6 +135,9 @@ include { prep_library_files; mageck_count_reads; mageck_rra_reads; report_reads
 
 workflow {
 
+	//versions
+	versions
+	
 	//prep library files
 	prep_library_files(lib_ch)
 
@@ -165,6 +169,9 @@ workflow RSL {
 
 //workflow {
 
+	//versions
+	versions
+	
 	//prep library files
 	prep_library_files(lib_ch)
 

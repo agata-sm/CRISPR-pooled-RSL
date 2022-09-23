@@ -38,6 +38,29 @@ params.verfile="${params.outdir}/software-versions.txt"
 
 /// modules
 
+process versions {
+    publishDir params.libdirOut, mode:'copy'
+
+    label 'small'
+
+    input:
+    //path ${params.librarydesign}
+    path lib_ch
+
+    output:
+    path "${params.outdir}/software-versions.txt"
+
+    script:
+    """
+    touch software-versions.txt
+
+    echo "Software versions for crispr-pooled-rsl.nf" >software-versions.txt
+    date >>software-versions.txt
+    """
+
+}
+
+
 process prep_library_files {
     publishDir params.libdirOut, mode:'copy'
 
