@@ -33,6 +33,8 @@ params.countertemplate="${projectDir}/assets/template.properties"
 params.scripts="${projectDir}/bin"
 params.crisprcounterpath="/proj/sllstore2017103/nbis5351/For_NBIS" // path to executable CrisprCounter.jar
 
+// versions
+params.verfile="${params.outdir}/software-versions.txt"
 
 /// modules
 
@@ -57,6 +59,9 @@ process prep_library_files {
 
     perl ${params.scripts}/getLibraryGmt.pl --infile $lib_ch --outfile library.gmt --outfile_con library.ctrl_sgRNAs.txt --outfile_gcon library.ctrl_genes.txt
 
+    echo "process ** prep_library_files **" >>${params.verfile}
+    perl -v >>${params.verfile}
+    echo "getLibraryGmt.pl" >>${params.verfile}
     """
 
 }
@@ -90,6 +95,10 @@ process mageck_count_reads {
     #module load pandoc/2.17.1.1
 
     mageck count --norm-method total --pdf-report -l $params.librarydesign -n $params.projname --fastq $fastqr1_ch --sample-label $smpls_ch
+    
+    echo "process ** mageck_count_reads **" >>${params.verfile}
+    echo "mageck" >>${params.verfile}
+    mageck -v >>${params.verfile}
     """
 
 }
@@ -123,6 +132,10 @@ process mageck_rra_reads {
     #module load pandoc/2.17.1.1
 
     mageck test -k $cnttable -c $smplRef -t $smplTreat -n ${comparisonID}/${comparisonID} --norm-method none --pdf-report
+    
+    echo "process ** mageck_rra_reads **" >>${params.verfile}
+    echo "mageck" >>${params.verfile}
+    mageck -v >>${params.verfile}
     """
 
 }
@@ -150,6 +163,10 @@ process report_reads {
     cp ${params.comparisons} ${params.projname}/metadata
     cp -r ${projectDir}/bin/report_template/* .
     Rscript report_launcher.R $params.projname $params.projname reads $params.organism
+
+    echo "process ** report_reads **" >>${params.verfile}
+    R --version >>${params.verfile}
+    echo "please check Session Info in the report for package versions"
     """
 
 }
@@ -181,6 +198,12 @@ process crispr_counter {
 
     perl ${params.scripts}/parseCrisprCounter.pl -i counter.stdout.txt -o counter.stdout.parsed.txt
 
+    echo "process ** crispr_counter **" >>${params.verfile}
+    perl -v >>${params.verfile}
+    echo "makeCounterConfig.pl" >>${params.verfile}
+    echo "parseCrisprCounter.pl" >>${params.verfile}
+    echo "CrisprCounter.jar, no version specified for standard output" >>${params.verfile}
+    java -jar /opt/myjar/CrisprCounter.jar >>${params.verfile}
     """
 
 }
@@ -205,6 +228,9 @@ process filter_RSL {
 
     perl ${params.scripts}/processUMIcounts.v0.14.pl --filter CO=${params.filtRowSums} --infile $rsl_countstable --input_lib $params.libraryinputfilt --outdir . --input_lib_design $params.librarydesign
 
+    echo "process ** filter_RSL **" >>${params.verfile}
+    perl -v >>${params.verfile}
+    echo "processUMIcounts.v0.14.pl" >>${params.verfile}
     """
 
 
@@ -245,6 +271,14 @@ process mageck_rra_RSL {
     
     echo "file ${comparisonID}.${params.projname}.pathway_summary.txt is the original file output by mageck" >${comparisonID}/${comparisonID}.${params.projname}.readme
     echo "file ${comparisonID}.${params.projname}.gene_rra_summary.txt is identical to ${comparisonID}.${params.projname}.pathway_summary.txt and its name more precisely reflects its contents and provenance" >>${comparisonID}/${comparisonID}.${params.projname}.readme
+   
+    echo "process ** mageck_rra_RSL **" >>${params.verfile}
+    echo "mageck" >>${params.verfile}
+    mageck -v >>${params.verfile}
+    perl -v >>${params.verfile}
+    echo "Sort::Rank"
+    perl -MSort::Rank -e 'print $Sort::Rank::VERSION ."\n";'>>${params.verfile}
+    echo "rank_log2FC.v0.3.pl" >>${params.verfile}
     """
 }
 
@@ -273,6 +307,10 @@ process report_RSL {
     cp ${params.comparisons} ${params.projname}/metadata
     cp -r ${projectDir}/bin/report_template/* .
     Rscript report_launcher.R $params.projname $params.projname RSL $params.organism
+
+    echo "process ** report_RSL **" >>${params.verfile}
+    R --version >>${params.verfile}
+    echo "please check Session Info in the report for package versions"
     """
 
 }
@@ -295,6 +333,9 @@ process fastqc {
     
     echo "fastqc $fastqr1"
     fastqc $fastqr1
+
+    echo "process ** fastqc **" >>${params.verfile}
+    fastqc -v >>${params.verfile}
     """
 
 }
