@@ -63,7 +63,7 @@ process prep_library_files {
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
-    echo "process ** $process **" >>${params.verfile}
+    echo "process ** prep_library_files **" >>${params.verfile}
     perl -v >>${params.verfile}
     echo "getLibraryGmt.pl" >>${params.verfile}
     """
@@ -104,7 +104,7 @@ process mageck_count_reads {
     
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
-    echo "process ** $process **" >>${params.verfile}
+    echo "process **  mageck_count_reads **" >>${params.verfile}
     echo "mageck" >>${params.verfile}
     mageck -v >>${params.verfile}
     """
@@ -144,7 +144,7 @@ process mageck_rra_reads {
     
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
-    echo "process ** $process **" >>${params.verfile}
+    echo "process ** mageck_rra_reads **" >>${params.verfile}
     echo "mageck" >>${params.verfile}
     mageck -v >>${params.verfile}
     """
@@ -178,7 +178,7 @@ process report_reads {
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
-    echo "process ** $process **" >>${params.verfile}
+    echo "process ** report_reads **" >>${params.verfile}
     R --version >>${params.verfile}
     echo "please check Session Info in the report for package versions"
     """
@@ -215,7 +215,7 @@ process crispr_counter {
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
-    echo "process ** $process **" >>${params.verfile}
+    echo "process ** crispr_counter **" >>${params.verfile}
     perl -v >>${params.verfile}
     echo "makeCounterConfig.pl" >>${params.verfile}
     echo "parseCrisprCounter.pl" >>${params.verfile}
@@ -248,7 +248,7 @@ process filter_RSL {
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
-    echo "process ** $process **" >>${params.verfile}
+    echo "process **  filter_RSL **" >>${params.verfile}
     perl -v >>${params.verfile}
     echo "processUMIcounts.v0.14.pl" >>${params.verfile}
     """
@@ -295,7 +295,7 @@ process mageck_rra_RSL {
    
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
-    echo "process ** $process **" >>${params.verfile}
+    echo "process ** mageck_rra_RSL **" >>${params.verfile}
     echo "mageck" >>${params.verfile}
     mageck -v >>${params.verfile}
     perl -v >>${params.verfile}
@@ -334,7 +334,7 @@ process report_RSL {
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
-    echo "process ** $process **" >>${params.verfile}
+    echo "process ** report_RSL **" >>${params.verfile}
     R --version >>${params.verfile}
     echo "please check Session Info in the report for package versions"
     """
@@ -363,7 +363,7 @@ process fastqc {
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
-    echo "process ** $process **" >>${params.verfile}
+    echo "process ** fastqc **" >>${params.verfile}
     fastqc -v >>${params.verfile}
     """
 
