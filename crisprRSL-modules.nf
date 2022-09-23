@@ -226,6 +226,7 @@ process mageck_rra_RSL {
     path "${comparisonID}/${comparisonID}.${params.projname}.pathway_summary.txt"
     path "${comparisonID}/${params.projname}.RSL.perguide.log"
     path "${comparisonID}/${comparisonID}.${params.projname}.gene_rra_summary.txt", emit: rsl_rra_mageck_ch
+    path "${comparisonID}/${comparisonID}.${params.projname}.readme"
 
     script:
     """
@@ -241,6 +242,9 @@ process mageck_rra_RSL {
     mageck pathway --gmt-file $lib_gmt --method rra --ranking-column 4 --ranking-column-2 3 --gene-ranking ${comparisonID}/${comparisonID}.rank_log2FC.tsv -n ${comparisonID}/${comparisonID}.${params.projname}
 
     cp "${comparisonID}/${comparisonID}.${params.projname}.pathway_summary.txt" "${comparisonID}/${comparisonID}.${params.projname}.gene_rra_summary.txt"
+    
+    echo "file ${comparisonID}.${params.projname}.pathway_summary.txt is the original file output by mageck" >${comparisonID}/${comparisonID}.${params.projname}.readme
+    echo "file ${comparisonID}.${params.projname}.gene_rra_summary.txt is identical to ${comparisonID}.${params.projname}.pathway_summary.txt and its name more precisely reflects its contents and provenance" >>${comparisonID}/${comparisonID}.${params.projname}.readme
     """
 }
 
