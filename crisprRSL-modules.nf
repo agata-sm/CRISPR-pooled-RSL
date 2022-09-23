@@ -38,27 +38,6 @@ params.verfile="${params.outdir}/software-versions.txt"
 
 /// modules
 
-process versions {
-    publishDir params.libdirOut, mode:'copy'
-
-    label 'small'
-
-    input:
-    //path ${params.librarydesign}
-    path lib_ch
-
-    output:
-    path "${params.outdir}/software-versions.txt"
-
-    script:
-    """
-    touch software-versions.txt
-
-    echo "Software versions for crispr-pooled-rsl.nf" >software-versions.txt
-    date >>software-versions.txt
-    """
-
-}
 
 
 process prep_library_files {
@@ -74,17 +53,22 @@ process prep_library_files {
     path "library.gmt", emit: lib_gmt_ch
     path "library.ctrl_sgRNAs.txt", emit: lib_ctrls_sgRNA_ch
     path "library.ctrl_genes.txt", emit: lib_ctrls_gene_ch
-
+    path "${params.outdir}/software-versions.txt"
 
     script:
     """
     #module load perl_modules/5.18.4
 
+    touch software-versions.txt
+    echo "Software versions for crispr-pooled-rsl.nf" >software-versions.txt
+    date >>software-versions.txt
+
+
     perl ${params.scripts}/getLibraryGmt.pl --infile $lib_ch --outfile library.gmt --outfile_con library.ctrl_sgRNAs.txt --outfile_gcon library.ctrl_genes.txt
 
-    echo "process ** prep_library_files **" >>${params.verfile}
-    perl -v >>${params.verfile}
-    echo "getLibraryGmt.pl" >>${params.verfile}
+    echo "process ** prep_library_files **" >>software-versions.txt
+    perl -v >>software-versions.txt
+    echo "getLibraryGmt.pl" >>software-versions.txt
     """
 
 }

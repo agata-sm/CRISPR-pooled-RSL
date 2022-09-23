@@ -135,9 +135,6 @@ include { versions; prep_library_files; mageck_count_reads; mageck_rra_reads; re
 
 workflow {
 
-	//versions
-	versions
-	
 	//prep library files
 	prep_library_files(lib_ch)
 
@@ -168,9 +165,6 @@ workflow RSL {
 
 
 //workflow {
-
-	//versions
-	versions
 	
 	//prep library files
 	prep_library_files(lib_ch)
