@@ -34,7 +34,7 @@ params.scripts="${projectDir}/bin"
 params.crisprcounterpath="/proj/sllstore2017103/nbis5351/For_NBIS" // path to executable CrisprCounter.jar
 
 // versions
-$params.verfile="software.versions"
+params.verfile="software.versions"
 
 /// modules
 
