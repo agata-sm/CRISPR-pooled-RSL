@@ -28,6 +28,7 @@ params.fastqR1="$params.fastqdir/*R1*fastq.gz"
 params.libraryinputfilt=""
 
 
+
 log.info """\
  CRISPR - N F   P I P E L I N E
  ===================================
@@ -164,7 +165,7 @@ workflow RSL {
 
 
 //workflow {
-
+	
 	//prep library files
 	prep_library_files(lib_ch)
 
