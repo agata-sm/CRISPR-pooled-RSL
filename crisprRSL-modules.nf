@@ -100,7 +100,7 @@ process mageck_count_reads {
     #module load R_packages/4.1.1
     #module load pandoc/2.17.1.1
 
-    mageck count --norm-method total --pdf-report -l $params.librarydesign -n $params.projname --fastq $fastqr1_ch --sample-label $smpls_ch
+    mageck count --norm-method $params.mageckCountNorm --pdf-report -l $params.librarydesign -n $params.projname --fastq $fastqr1_ch --sample-label $smpls_ch
     
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
@@ -299,8 +299,6 @@ process mageck_rra_RSL {
     echo "mageck" >>${params.verfile}
     mageck -v >>${params.verfile}
     perl -v >>${params.verfile}
-    echo "perl module 'Sort::Rank'"
-    #perl -MSort::Rank -e 'print '\$Sort::Rank::VERSION' ."\n";'>>${params.verfile}
     echo "rank_log2FC.v0.3.pl" >>${params.verfile}
     """
 }
