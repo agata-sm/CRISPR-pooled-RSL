@@ -61,7 +61,7 @@ This image can be used to spin a container working in the local system. To move 
 docker images
 ```
 
-the output (the actual tag will be different):
+the output (the actual IMAGE ID will be different):
 
 ```
 REPOSITORY           TAG       IMAGE ID       CREATED         SIZE
@@ -87,4 +87,4 @@ cd /crex/proj/MYPROJ/library/containers
 singularity build crisprcounter-perl.sif docker-archive://crisprcounter-perl.tar
 ```
 
-**For building `crisprcounter-perl` image `CrisprCounter.jar` needs to be copied to the directory with the Dockerfile.
+**For building `crisprcounter-perl` image `CrisprCounter.jar` needs to be copied to the directory with the Dockerfile.**
