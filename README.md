@@ -35,6 +35,8 @@ To use github from command line you need to setup [Personal Access Token PTA](ht
 
 ### Dependencies
 
+* java (tested on OracleJDK_11.0.9)
+
 * Nextflow >= 21 (tested on version 21.10.6)
 
 * perl v5.18.4
@@ -50,7 +52,7 @@ To use github from command line you need to setup [Personal Access Token PTA](ht
 * MAGeCK
 
 
-These dependencies will be included in a singularity container when it's ready.
+These dependencies are included in a singularity containers, please see section *Containers*
 
 ## Usage
 
@@ -94,13 +96,15 @@ To start a new screen press `Ctrl-a`, then `c`. To run the pipeline:
 reads:
 
 ```
-nextflow run /proj/sllstore2017103/nbis5351/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -profile cluster
+module load java/OracleJDK_11.0.9
+nextflow run /proj/sllstore2017103/nbis5351/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -profile cluster,singularity
 ```
 
 RSL:
 
 ```
-nextflow run /proj/sllstore2017103/nbis5351/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -entry RSL -profile cluster
+module load java/OracleJDK_11.0.9
+nextflow run /proj/sllstore2017103/nbis5351/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -entry RSL -profile cluster,singularity
 ```
 
 
@@ -126,6 +130,7 @@ Nextflow can easily be installed as described in [Nextflow documentation](https:
 We load the dependencies as modules:
 
 ```
+module load java/OracleJDK_11.0.9
 module load perl/5.18.4
 module load bioinfo-tools
 module load MAGeCK/0.5.9.4
@@ -158,18 +163,18 @@ nextflow run /path/to/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -resume
 
 (reads analysis only)
 
-Nextflow and the dependencies need to be installed. The procedure is the same as for the interactive session on Rackham. 
-
+Nextflow and the dependencies need to be installed. The procedure is the same as for the interactive session on Rackham (all dependencies need to be installed).
 
 ```
 nextflow run /path/to/CRISPR-pooled-RSL/crispr-pooled-rsl.nf
 ```
 
+
 ### Config files
 
 There are two configuration files used by the pipeline. While they both are called `nextflow.config`, they serve different purposes.
 
-* `nextflow.config` in pipeline directory - contains information related to running the pipeline on Rackham, profiles and path to `CrisprCounter.jar`; this file should not be modified;
+* `nextflow.config` in pipeline directory - contains information related to running the pipeline on Rackham, profiles and paths to container library and to `CrisprCounter.jar`; this file should not be modified;
 
 * `nextflow.config` in project working directory - contains information related to the project: paths to input library, input fastq files, metadata and analysis parameters. Please see directory `config-files` for examples and more detailed explanation.
 
@@ -190,18 +195,37 @@ Please see directory `config-files` for examples and more detailed explanation.
 
 The following tools are included in this repository. While not part of the analysis pipeline, they prepare the input libraries for analyses.
 
-* tools to filter input libraries sequenced in technical replicates to detect *bona fide* RSL-sgRNA combinations;
+* tools to filter input libraries sequenced in technical replicates to detect *bona fide* RSL-sgRNA combinations under miscellaneous/input-filtering;
 
 * script to generate `gmt` file from library design file;
 
 * script to process fastq files to remove the set constant part in the middle of the read.
 
 
+## Containers
 
+Four containers are used by the pipeline:
+
+* `staphb/fastqc` obtained from Dockerhub;
+
+* `mageck-perl` created for this pipeline; obtained from Dockerhub or built locally;
+
+* `rpckg-crispr-rep` created for this pipeline; obtained from Dockerhub or built locally;
+
+* `crisprcounter-perl` created for this pipeline; can only be built locally;
+
+Custom containers `mageck-perl`  and `rpckg-crispr-rep` can be obtained from Dockerhub or built locally using Docker and transferred to Rackham. `crisprcounter-perl` can only be built locally and transferred to Rackham, as it contains `CrisprCounter.jar` which cannot be distributed with this pipeline. 
+
+These images (with the exception of `crisprcounter-perl`) can be fetched from their remote repositories when the pipeline is executed for the first time. However, the process of image building may take some time, and in case of `rpckg-crispr-rep` also resources, it is recommended to fetch them before running the pipeline and save them in a "container library" - a directory accessible to each pipeline run. The default configuration is that the pipeline searches for container images in the "container library".
+
+Dockerfiles and other necessary files for custom containers are included in subdirectories under *containers*.
+Instructions on how to build the images are in the readme file under *containers*.
+
+
+<!-- 
 ## To do
-
-* singularity container
 
 * contamination detection
 
 
+ -->
