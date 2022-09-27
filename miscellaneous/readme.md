@@ -31,5 +31,5 @@ Usage:
 perl fastq_trim_mid_v2.pl --infile in.fastq --pos 24 --len 20
 ```
 
-
+OBS! This script was tested on perl 5.26.x. It may not work on perl 5.30.x and above.
 
