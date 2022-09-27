@@ -52,12 +52,14 @@ To use github from command line you need to setup [Personal Access Token PTA](ht
 * MAGeCK
 
 
-These dependencies are included in a singularity containers, please see section *Containers*
+These dependencies are included in singularity containers, please see section *Containers*
 
 ## Usage
 
 The pipeline can be run in several ways, depending on resources available.
 
+
+Two main pipeline modes are analysis based on reads (default) or analysis based on RSL tags specified by `-entry RSL`.
 
 Tu run the main workflow for analysis based on **reads**
 
@@ -71,9 +73,12 @@ To run the alternative workflow for analysis based on **RSL counts**
 nextflow run /proj/sllstore2017103/nbis5351/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -entry RSL
 ```
 
-***using SLURM queue on Rackham***
+The pipeline can be run on Rackham (recommended) or locally.
 
-This is the preferred way to run the pipeline.
+
+### using SLURM queue on Rackham
+
+**This is the preferred way to run the pipeline.**
 
 The file `nextflow.config` in *the directory where the pipeline is installed* contains profiles for pipeline execution. This is different than `nextflow.config` in the project directory where the code is run.
 
@@ -115,7 +120,7 @@ To reconnect: `screen -r`
 To view the progress of the jobs in the queue: `jobinfo -u $USER`
 
 
-***interactive session on Rackam***
+### interactive session on Rackam
 
 
 We start the interactive session:
@@ -157,9 +162,9 @@ nextflow run /path/to/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -resume
 ```
 
 
-***locally on a laptop***
+### locally 
 
-*Currently it is not recommended to run the workflow in this manner. To do this, you need to comment out the commands to load modules, as these are going to produce error on a local system*
+*Currently it is not recommended to run the workflow in this manner. To do this, you need to make sure all depemdencies are installed and use the default profile or have singularity installed and use profile singularity; you may need to edit nextflow.config to do this.*
 
 (reads analysis only)
 
