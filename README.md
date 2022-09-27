@@ -191,13 +191,9 @@ Please see directory `config-files` for examples and more detailed explanation.
 
 ## Misc tools
 
-*Still to be added*
-
 The following tools are included in this repository. While not part of the analysis pipeline, they prepare the input libraries for analyses.
 
 * tools to filter input libraries sequenced in technical replicates to detect *bona fide* RSL-sgRNA combinations under miscellaneous/input-filtering;
-
-* script to generate `gmt` file from library design file;
 
 * script to process fastq files to remove the set constant part in the middle of the read.
 
