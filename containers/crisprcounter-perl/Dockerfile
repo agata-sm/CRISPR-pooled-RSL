@@ -1,4 +1,4 @@
-FROM ubuntu:5.26.2
+FROM perl:5.26.2
 
 LABEL crisprcounter-perl based on perl:5.26.2
 LABEL use for running CrisprCounter.jar as part of the CRISPR-pooled-RSL pipeline

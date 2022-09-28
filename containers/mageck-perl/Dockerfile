@@ -5,12 +5,8 @@ LABEL use for running mageck 0.5.9.4 as part of the CRISPR-pooled-RSL pipeline
 ENV SHELL=bash
 ENV DEBIAN_FRONTEND noninteractive
 
-WORKDIR .
-
-RUN apt-get update && apt-get install perlbrew --no-install-recommends -y
-RUN mkdir -p root/perl5/perlbrew/dists
-RUN perlbrew install-patchperl
-RUN perlbrew --force install perl-5.18.4
+RUN mkdir ../opt/lib
+WORKDIR ../opt/lib
 
 RUN wget -O - http://cpanmin.us | perl - --self-upgrade
 RUN cpanm install Getopt::Long
@@ -32,3 +28,5 @@ RUN pip3 install numpy && pip3 install scipy
 RUN wget http://downloads.sourceforge.net/project/mageck/0.5/mageck-0.5.9.4.tar.gz && tar xvzf mageck-0.5.9.4.tar.gz && cd mageck-0.5.9.4 && python3 setup.py install 
 
 RUN apt-get autoclean -y && apt-get autoremove  -y &&  apt-get clean -y
+
+WORKDIR ../opt
