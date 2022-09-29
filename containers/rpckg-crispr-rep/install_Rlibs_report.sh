@@ -32,8 +32,8 @@ install2.r --error --skipinstalled -n "$NCPUS" \
     magrittr \
     MASS \
     cowplot \
-    bookdown
-
+    bookdown \
+    ggnewscale
 
 # Clean up
 #rm -rf /var/lib/apt/lists/*

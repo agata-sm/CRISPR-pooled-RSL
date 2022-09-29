@@ -34,4 +34,6 @@ RUN Rscript -e 'install.packages(c("mvtnorm", "matrixcalc", "igraph", "gplots", 
 COPY install_Bioconductorlibs_report.R ../opt/lib
 RUN Rscript ../opt/lib/install_Bioconductorlibs_report.R
 
-WORKDIR ../opt/
+ENV SHELL=bash
+
+WORKDIR /usr/src/report
