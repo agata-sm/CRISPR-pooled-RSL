@@ -19,7 +19,7 @@ Run by: `r Sys.getenv("USER")`
 
  The rationale and process:
 
-* Not all theoretical combinations of sgRNA - RSL barcodes are present in the input library; Our goal is to detect the combinations which are artefacts arisen due to sequencing errors; These artefacts, which typically are present in only one technical replicate and / or are detected by very small number read count give rise to the zero inflated signal in downstreal RSL analysis;
+* Not all theoretical combinations of sgRNA - RSL barcodes are present in the input library; Our goal is to detect the combinations which are artefacts arisen due to sequencing errors; These artefacts, which typically are present in only one technical replicate and / or are detected by very small number of read counts give rise to the zero inflated signal in downstream RSL analysis;
 
 * Input library has been sequenced in two technical replicates to allow for detection of these artefactual reads;
 
@@ -239,7 +239,7 @@ for (i in my.cutoffs){
     scale_fill_viridis(discrete=TRUE,option="turbo")+
     labs(title="",x="RSL per guide",y="count") + theme_bw() +
     facet_wrap(~sample) + theme(aspect.ratio = 2/(1+sqrt(5)) )+
-    labs(title=title_hist, y="count",x="UMIs per guide") +
+    labs(title=title_hist, y="count",x="RSL per guide") +
     theme(legend.position="none") + theme(plot.margin = unit(c(0.5, 0, 0, 0), "cm"))
 
     hist.RSL_per_sgRNA[[paste0("CO.",i)]]=hist_unlim
@@ -304,7 +304,7 @@ grid.arrange(grobs = hist.reads_per_RSLsgRNA, ncol=2, top = "Reads per RSL-sgRNA
 
 
 
-Reads per RSL-guide plotted with the reduced range on the X and Y axes displaying the most interesting region of the plot.
+Reads per RSL-guide plotted with the reduced range on the X and Y axes displaying the lower-left quandrant of the plot (i.e. region where most of the signal can be observed, as most RSL-sgRNA combinations do not tend to gather high numbers of reads).
 
 
 ```{r fig.align="center", fig.width=8,fig.height=16, echo = FALSE}
@@ -320,7 +320,7 @@ grid.arrange(grobs = hist.reads_per_RSLsgRNA2, ncol=2, top = "Reads per RSL-sgRN
 <br>
 
 
-Number of RSL per guide
+Number of RSL per guide is presented on the following plots. Too high filtering cutoff results in more sgRNAs with low RSL count, which is manifested by signal flattening in the higher ranges of RSL per sgRNA (X axis).
 
 
 ```{r fig.align="center", fig.width=8,fig.height=16, echo = FALSE}
@@ -415,8 +415,5 @@ for (i in c(1:cutoff.pairs.number)){
 ```{r ig.align="center", fig.width=8, fig.height=32, echo = FALSE}
 grid.arrange(grobs = scatters, ncol=2, top = "Scatter plots RSL counts per sgRNA under different filtering cut offs.")
 
-
 ```
-
-I to juz wszystko drogie dzieci. Teraz pocalujcie misia w dupe.
 
