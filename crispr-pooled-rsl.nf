@@ -164,16 +164,11 @@ workflow {
 
 	//prep library files
 	prep_library_files(lib_ch)
-
 	ctrls_sgRNA_ch=prep_library_files.out.lib_ctrls_sgRNA_ch
-		ctrls_sgRNA_ch
-			.view()
-			.set{ ctrls_sgRNA_ch }
-
 	ctrls_gene_ch=prep_library_files.out.lib_ctrls_gene_ch
 
 	//count reads
-	mageck_count_reads(fastqr1_ch, smpls_ch, ctrls_sgRNA_ch)
+	mageck_count_reads(fastqr1_ch, smpls_ch, ctrls_sgRNA_ch, ctrls_gene_ch)
 
 	// mageck contrasts RRA reads
 	cntReads_ch=mageck_count_reads.out.count_table_reads_mageck_norm_ch

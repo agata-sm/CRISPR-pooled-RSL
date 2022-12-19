@@ -80,7 +80,7 @@ process mageck_count_reads {
     path fastqr1_ch
     val smpls_ch
     path ctrls_sgRNA_ch
-    //path ctrls_gene_ch
+    path ctrls_gene_ch
 
     output:
     path "${params.projname}.count.txt" , emit: count_table_reads_mageck_raw_ch
@@ -94,10 +94,30 @@ process mageck_count_reads {
 
 
     script:
+
+    if ( "${params.mageckCountNorm}"== "control" ){
+
         """
         echo $smpls_ch
         echo $ctrls_sgRNA_ch
-        #echo $ctrls_gene_ch
+        echo $ctrls_gene_ch
+
+        mageck count --norm-method $params.mageckCountNorm ${params.ctrl_type} ${params.control_file} --pdf-report -l $params.librarydesign -n $params.projname --fastq $fastqr1_ch --sample-label $smpls_ch
+
+        echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
+        date >>${params.verfile}
+        echo "process **  mageck_count_reads **" >>${params.verfile}
+        echo "mageck" >>${params.verfile}
+        mageck -v >>${params.verfile}
+
+        """
+
+    }else{
+
+        """
+        echo $smpls_ch
+        echo $ctrls_sgRNA_ch
+        echo $ctrls_gene_ch
 
 
         #module load bioinfo-tools
@@ -113,9 +133,9 @@ process mageck_count_reads {
         echo "mageck" >>${params.verfile}
         mageck -v >>${params.verfile}
         """
+    }
 
 }
-
 
 process mageck_rra_reads {
     publishDir params.readsRraOut, mode:'copy'
