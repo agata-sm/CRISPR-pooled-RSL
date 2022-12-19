@@ -32,26 +32,31 @@ if( "${params.mageckCountNorm}" == "control" ){
 	
 	if( "${params.mageckCountCtrl}" == "sgRNA"){
 		params.ctrl_type="--control-sgrna"
-		params.ctrl_file="library.ctrl_sgRNAs.txt"
-
+		
 		if( "${params.control_file}" ){
 			params.ctrl_file="${params.control_file}"
+		}else{
+			params.ctrl_file="library.ctrl_sgRNAs.txt"
 		}
 	}
 	else if( "${params.mageckCountCtrl}" == "gene"){
 		params.ctrl_type="--control-gene"
-		params.ctrl_file="library.ctrl_genes.txt"
-
+		
 		if( "${params.control_file}" ){
 			params.ctrl_file="${params.control_file}"
+		}else{
+			params.ctrl_file="library.ctrl_genes.txt"
 		}
 
 	}
 
-	params.libctrl_string="${params.ctrl_file} containing features CON* from ${params.librarydesign}"
+
 	if( "${params.control_file}" ){
 		params.libctrl_string="${params.ctrl_file}"
+	}else{
+		params.libctrl_string="${params.ctrl_file} containing features CON* from ${params.librarydesign}"
 	}
+
 
 }else{
 	params.libctrl_string="n.a."
