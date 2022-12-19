@@ -79,8 +79,8 @@ process mageck_count_reads {
     input:
     path fastqr1_ch
     val smpls_ch
-    //path lib_ctrls_sgRNA_ch
-    //path lib_ctrls_gene_ch
+    path lib_ctrls_sgRNA_ch
+    path lib_ctrls_gene_ch
 
     output:
     path "${params.projname}.count.txt" , emit: count_table_reads_mageck_raw_ch
@@ -99,6 +99,8 @@ process mageck_count_reads {
 
         """
         echo $smpls_ch
+        echo $lib_ctrls_sgRNA_ch
+        echo $lib_ctrls_gene_ch
 
         mageck count --norm-method $params.mageckCountNorm ${params.ctrl_type} ${params.control_file} --pdf-report -l $params.librarydesign -n $params.projname --fastq $fastqr1_ch --sample-label $smpls_ch
 
