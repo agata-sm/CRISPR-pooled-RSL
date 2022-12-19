@@ -28,8 +28,10 @@ params.fastqR1 = "$params.fastqdir/*R1*fastq.gz"
 params.libraryinputfilt=""
 
 // library control files
-if( ${params.libctrl} == "control" ){
-	if( ${params.control.sgRNA} ){
+def normlisation = ${params.mageckCountNorm}
+
+if( normlisation == "control" ){
+	if( ${params.control_sgRNA} ){
 		params.libctrl_string="CON* from ${params.librarydesign}"
 	}else{
 		params.libctrl_string=${params.control_sgRNA}
