@@ -172,7 +172,7 @@ workflow {
 	cntReads_ch=mageck_count_reads.out.count_table_reads_mageck_norm_ch
 		cntReads_ch
 			.combine(comparisons_ch)
-			.view()
+			//.view()
 			.set { cntReads_ch }
 
 	mageck_rra_reads(cntReads_ch)
