@@ -2,11 +2,11 @@
 
 
 /* 
- * 2nd take on crispr pipeline
- * Using Nextflow DSL2
+ * Pipeline for processing and reporting results of barcoded pooled CRISPR screens
+ * Written for CRISPR Genomics Facility, SciLifeLab, Stockholm, Sweden
  * 
  * Author: Agata Smialowska
- * March 2022
+ * March - December 2022
  */ 
 
 nextflow.enable.dsl=2
@@ -28,13 +28,13 @@ params.fastqR1 = "$params.fastqdir/*R1*fastq.gz"
 params.libraryinputfilt=""
 
 // library control files
-def normlisation = ${params.mageckCountNorm}
+//def normalisation = "${params.mageckCountNorm}"
 
-if( normlisation == "control" ){
-	if( ${params.control_sgRNA} ){
+if( "${params.mageckCountNorm}" == "control" ){
+	if( "${params.control_sgRNA}" ){
 		params.libctrl_string="CON* from ${params.librarydesign}"
 	}else{
-		params.libctrl_string=${params.control_sgRNA}
+		params.libctrl_string="${params.control_sgRNA}"
 	}
 }else{
 	params.libctrl_string="n.a."
