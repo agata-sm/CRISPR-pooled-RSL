@@ -35,7 +35,7 @@ if( "${params.mageckCountNorm}" == "control" ){
 		
 		
 		//if (typeof "${params.control_file}" !== 'undefined') {
-		if( "${params.control_file}" in window){
+		if( "${params.control_file}" != null){
 			params.ctrl_file="${params.control_file}"
 		}else{
 			params.ctrl_file="library.ctrl_sgRNAs.txt"
@@ -45,7 +45,7 @@ if( "${params.mageckCountNorm}" == "control" ){
 		params.ctrl_type="--control-gene"
 
 		//if (typeof "${params.control_file}" !== 'undefined') {
-		if( "${params.control_file}" in window){
+		if( "${params.control_file}" != null){
 			params.ctrl_file="${params.control_file}"
 		}else{
 			params.ctrl_file="library.ctrl_genes.txt"
@@ -54,7 +54,7 @@ if( "${params.mageckCountNorm}" == "control" ){
 	}
 
 	//if (typeof "${params.control_file}" !== 'undefined') {
-	if( "${params.control_file}" in window){
+	if( "${params.control_file}" != null){
 		params.libctrl_string="${params.ctrl_file}"
 	}else{
 		params.libctrl_string="${params.ctrl_file} containing features CON* from ${params.librarydesign}"
