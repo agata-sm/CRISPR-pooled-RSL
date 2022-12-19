@@ -165,8 +165,8 @@ workflow {
 	//prep library files
 	prep_library_files(lib_ch)
 
-	lib_ctrls_sgRNA_ch=prep_library_files.out.lib_ctrls_sgRNA_ch
-	lib_ctrls_gene_ch=prep_library_files.out.lib_ctrls_gene_ch
+	ctrls_sgRNA_ch=prep_library_files.out.lib_ctrls_sgRNA_ch
+	ctrls_gene_ch=prep_library_files.out.lib_ctrls_gene_ch
 
 	//count reads
 	mageck_count_reads(fastqr1_ch, smpls_ch)
@@ -209,7 +209,7 @@ workflow RSL {
 	 	cntRSL_ch
 	 		.combine(prep_library_files.out.lib_gmt_ch)
 	 		.combine(comparisons_ch)
-	 		.view()
+	 		//.view()
 	 		.set { cntRSL_ch }
 
 	mageck_rra_RSL(cntRSL_ch)
