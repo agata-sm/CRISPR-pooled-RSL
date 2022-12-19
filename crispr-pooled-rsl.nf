@@ -28,18 +28,26 @@ params.fastqR1 = "$params.fastqdir/*R1*fastq.gz"
 params.libraryinputfilt=""
 
 // library control files
-//def normalisation = "${params.mageckCountNorm}"
-
 if( "${params.mageckCountNorm}" == "control" ){
-	if( "${params.control_sgRNA}" ){
+	if( "${params.mageckCountCtrl}" == "sgRNA"){
+		params.ctrl_type="sgRNA"
+	}
+	else if( "${params.mageckCountCtrl}" == "gene"){
+		params.ctrl_type="gene"
+
+	}
+
+
+	if( "${params.control_file}" ){
 		params.libctrl_string="CON* from ${params.librarydesign}"
 	}else{
-		params.libctrl_string="${params.control_sgRNA}"
+		params.libctrl_string="${params.control_file}"
 	}
 }else{
 	params.libctrl_string="n.a."
-}
+	params.ctrl_type="n.a."
 
+}
 
 
 log.info """\
@@ -51,6 +59,7 @@ log.info """\
  input library filtered : ${params.libraryinputfilt}
 
  read normalisation: ${params.mageckCountNorm}
+ control features type: ${params.ctrl_type}
  control file: ${params.libctrl_string}
 
  outdir       : ${params.outdir}
