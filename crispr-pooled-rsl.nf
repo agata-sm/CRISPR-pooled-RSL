@@ -165,6 +165,9 @@ workflow {
 	//prep library files
 	prep_library_files(lib_ch)
 
+	lib_ctrls_sgRNA_ch=prep_library_files.out.lib_ctrls_sgRNA_ch
+	lib_ctrls_gene_ch=prep_library_files.out.lib_ctrls_gene_ch
+
 	//count reads
 	mageck_count_reads(fastqr1_ch, smpls_ch)
 

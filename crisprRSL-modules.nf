@@ -116,6 +116,9 @@ process mageck_count_reads {
 
         """
         echo $smpls_ch
+        echo $lib_ctrls_sgRNA_ch
+        echo $lib_ctrls_gene_ch
+
 
         #module load bioinfo-tools
         #module load MAGeCK/0.5.9.4
