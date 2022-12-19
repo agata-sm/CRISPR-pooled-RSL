@@ -168,7 +168,8 @@ workflow {
 	ctrls_sgRNA_ch=prep_library_files.out.lib_ctrls_sgRNA_ch
 		ctrls_sgRNA_ch
 			.view()
-			
+			.set{ ctrls_sgRNA_ch }
+
 	ctrls_gene_ch=prep_library_files.out.lib_ctrls_gene_ch
 
 	//count reads
