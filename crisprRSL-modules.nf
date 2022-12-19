@@ -94,26 +94,6 @@ process mageck_count_reads {
 
 
     script:
-
-    if ( "${params.mageckCountNorm}"== "control" ){
-
-        """
-        echo $smpls_ch
-        echo $ctrls_sgRNA_ch
-        echo $ctrls_gene_ch
-
-        mageck count --norm-method $params.mageckCountNorm ${params.ctrl_type} ${params.control_file} --pdf-report -l $params.librarydesign -n $params.projname --fastq $fastqr1_ch --sample-label $smpls_ch
-
-        echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
-        date >>${params.verfile}
-        echo "process **  mageck_count_reads **" >>${params.verfile}
-        echo "mageck" >>${params.verfile}
-        mageck -v >>${params.verfile}
-
-        """
-
-    }else{
-
         """
         echo $smpls_ch
         echo $ctrls_sgRNA_ch
@@ -133,7 +113,6 @@ process mageck_count_reads {
         echo "mageck" >>${params.verfile}
         mageck -v >>${params.verfile}
         """
-    }
 
 }
 
