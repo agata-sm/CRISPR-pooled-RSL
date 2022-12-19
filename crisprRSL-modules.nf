@@ -50,9 +50,9 @@ process prep_library_files {
     path lib_ch
 
     output:
-    path "library.gmt", emit: lib_gmt_ch
-    path "library.ctrl_sgRNAs.txt", emit: lib_ctrls_sgRNA_ch
-    path "library.ctrl_genes.txt", emit: lib_ctrls_gene_ch
+    path "library.gmt" , emit: lib_gmt_ch
+    path "library.ctrl_sgRNAs.txt" , emit: lib_ctrls_sgRNA_ch
+    path "library.ctrl_genes.txt" , emit: lib_ctrls_gene_ch
     path "${params.verfile}"
 
     script:
@@ -79,7 +79,7 @@ process mageck_count_reads {
     input:
     path fastqr1_ch
     val smpls_ch
-    //path ctrls_sgRNA_ch
+    path ctrls_sgRNA_ch
     //path ctrls_gene_ch
 
     output:
@@ -97,7 +97,7 @@ process mageck_count_reads {
         """
         echo $smpls_ch
         echo $ctrls_sgRNA_ch
-        echo $ctrls_gene_ch
+        #echo $ctrls_gene_ch
 
 
         #module load bioinfo-tools
