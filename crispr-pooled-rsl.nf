@@ -22,10 +22,21 @@ params.outdir = "${params.projdir}/${params.resdir}"
 params.logdir = 'logs'
 params.metadatadir = 'metadata'
 
-params.fastqR1="$params.fastqdir/*R1*fastq.gz"
+params.fastqR1 = "$params.fastqdir/*R1*fastq.gz"
 
 // if input based filtering is not desired
 params.libraryinputfilt=""
+
+// library control files
+if( ${params.libctrl} == "control" ){
+	if( ${params.control.sgRNA} ){
+		params.libctrl_string="CON* from ${params.librarydesign}"
+	}else{
+		params.libctrl_string=${params.control_sgRNA}
+	}
+}else{
+	params.libctrl_string="n.a."
+}
 
 
 
@@ -36,6 +47,9 @@ log.info """\
  fastq files directory: ${params.fastqdir}
  input library design : ${params.librarydesign}
  input library filtered : ${params.libraryinputfilt}
+
+ read normalisation: ${params.mageckCountNorm}
+ control file: ${params.libctrl_string}
 
  outdir       : ${params.outdir}
  """
