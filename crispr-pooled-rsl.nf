@@ -52,9 +52,9 @@ if( "${params.mageckCountNorm}" == "control" ){
 
 
 	if( "${params.control_file}" ){
-		params.libctrl_string="${params.ctrl_file} containing features CON* from ${params.librarydesign}"
-	}else{
 		params.libctrl_string="${params.ctrl_file}"
+	}else{
+		params.libctrl_string="${params.ctrl_file} containing features CON* from ${params.librarydesign}"
 	}
 
 
