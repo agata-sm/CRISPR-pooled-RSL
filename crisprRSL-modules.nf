@@ -102,7 +102,7 @@ process mageck_count_reads {
         echo $ctrls_sgRNA_ch
         echo $ctrls_gene_ch
 
-        mageck count --norm-method $params.mageckCountNorm ${params.ctrl_type} ${params.control_file} --pdf-report -l $params.librarydesign -n $params.projname --fastq $fastqr1_ch --sample-label $smpls_ch
+        mageck count --norm-method $params.mageckCountNorm ${params.ctrl_type} ${params.ctrl_file} --pdf-report -l $params.librarydesign -n $params.projname --fastq $fastqr1_ch --sample-label $smpls_ch
 
         echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
         date >>${params.verfile}

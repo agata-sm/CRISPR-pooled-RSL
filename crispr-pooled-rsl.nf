@@ -29,22 +29,35 @@ params.libraryinputfilt=""
 
 // library control files
 if( "${params.mageckCountNorm}" == "control" ){
+	
 	if( "${params.mageckCountCtrl}" == "sgRNA"){
 		params.ctrl_type="--control-sgrna"
-		params.control_file="library.ctrl_sgRNAs.txt"
-
+		
+		if( "${params.control_file}" ){
+			params.ctrl_file="${params.control_file}"
+		}else{
+			params.ctrl_file="library.ctrl_sgRNAs.txt"
+		}
 	}
 	else if( "${params.mageckCountCtrl}" == "gene"){
 		params.ctrl_type="--control-gene"
-		params.control_file="library.ctrl_genes.txt"
+		
+		if( "${params.control_file}" ){
+			params.ctrl_file="${params.control_file}"
+		}else{
+			params.ctrl_file="library.ctrl_genes.txt"
+		}
 
 	}
+
 
 	if( "${params.control_file}" ){
-		params.libctrl_string="${params.control_file} containing CON* from ${params.librarydesign}"
+		params.libctrl_string="${params.ctrl_file} containing features CON* from ${params.librarydesign}"
 	}else{
-		params.libctrl_string="${params.control_file}"
+		params.libctrl_string="${params.ctrl_file}"
 	}
+
+
 }else{
 	params.libctrl_string="n.a."
 	params.ctrl_type="n.a."
