@@ -27,7 +27,9 @@ Analysis parameters that can be modified are:
 
 * cutoff for RowSums when filtering off RSL-sgRNA artefacts `filtRowSums` when performing signal filtration based on input library sequencing; this is applied after the input-based sequencing and is designed to remove RSL-sgRNA combinations present at very low abundance throughout the experiment;
 
-* normalisation used by `MAGeCK` when read counting; one of `total`, `median`;
+* normalisation used by `MAGeCK` when read counting; one of `total`, `median`, `control`;
+
+Normalisation method `control` requires a file with control sgRNAs or genes. This file is generated from the library definition file `librarydesign` and contains features labeled as `CON*`; alternatively a custom file with feature list (one per line) can be provided. Please note that if no custom control file is used, it's entry should be nonetheless populated with `control_file = ""`, such as in  the example below.
 
 ```
 params {
@@ -51,9 +53,16 @@ params {
         /////////////////////////////
         // names of the paramteres and available values are in commented headers
 
-        //mageck count params
-        // norm-method (total, median)
-        mageckCountNorm = "total"
+         //mageck count params
+        // norm-method (total, median, control)
+        mageckCountNorm = "control"
+        // type of control list (sgRNA, gene)
+        mageckCountCtrl = "gene"
+        // file with control genes; if path not given (see below), features marked CON* in librarydesign file will be used
+        //control_file = "/proj/software/tests/crispr-screen-test/gprc_ctrl.txt"
+        // no custom file, use CON* features from file librarydesign
+        control_file = ""
+
 }
 
 ```

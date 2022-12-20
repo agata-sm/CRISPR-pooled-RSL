@@ -1,7 +1,15 @@
-// second try of a nextflow workflow for the crispr pipeline
+/* 
+ * Pipeline for processing and reporting results of barcoded pooled CRISPR screens
+ * Written for CRISPR Genomics Facility, SciLifeLab, Stockholm, Sweden
+ * 
+ * Author: Agata Smialowska
+ * March - December 2022
+ */ 
+
+
 // modules for crispr-pooled-rsl.nf
 
-// 17iii2022
+// 17iii2022 - 19xii2022
 
 // outdirs
 params.readscnt="reads/count_table_mageck"
