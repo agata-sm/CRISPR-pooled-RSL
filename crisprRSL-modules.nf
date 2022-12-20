@@ -1,7 +1,15 @@
-// second try of a nextflow workflow for the crispr pipeline
+/* 
+ * Pipeline for processing and reporting results of barcoded pooled CRISPR screens
+ * Written for CRISPR Genomics Facility, SciLifeLab, Stockholm, Sweden
+ * 
+ * Author: Agata Smialowska
+ * March - December 2022
+ */ 
+
+
 // modules for crispr-pooled-rsl.nf
 
-// 17iii2022
+// 17iii2022 - 19xii2022
 
 // outdirs
 params.readscnt="reads/count_table_mageck"
@@ -50,9 +58,9 @@ process prep_library_files {
     path lib_ch
 
     output:
-    path "library.gmt", emit: lib_gmt_ch
-    path "library.ctrl_sgRNAs.txt", emit: lib_ctrls_sgRNA_ch
-    path "library.ctrl_genes.txt", emit: lib_ctrls_gene_ch
+    path "library.gmt" , emit: lib_gmt_ch
+    path "library.ctrl_sgRNAs.txt" , emit: lib_ctrls_sgRNA_ch
+    path "library.ctrl_genes.txt" , emit: lib_ctrls_gene_ch
     path "${params.verfile}"
 
     script:
@@ -79,38 +87,63 @@ process mageck_count_reads {
     input:
     path fastqr1_ch
     val smpls_ch
+    path ctrls_sgRNA_ch
+    path ctrls_gene_ch
 
     output:
     path "${params.projname}.count.txt" , emit: count_table_reads_mageck_raw_ch
     path "${params.projname}.count_normalized.txt" , emit: count_table_reads_mageck_norm_ch
     path "${params.projname}.countsummary.txt" 
     path "${params.projname}.log"
-    //path "${params.projname}_countsummary.R" // the "." in prefix are subbed with "_" in these files
-    //path "${params.projname}_countsummary.Rnw"
+    //path "${params.projname}*.R" // the "." in prefix are subbed with "_" in these files
+    //path "${params.projname}*.Rnw"
     path "${params.projname}*.pdf"
     path "${params.verfile}"
 
 
     script:
-    """
-    echo $smpls_ch
 
-    #module load bioinfo-tools
-    #module load MAGeCK/0.5.9.4
-    #module load R_packages/4.1.1
-    #module load pandoc/2.17.1.1
+    if ( "${params.mageckCountNorm}"== "control" ){
 
-    mageck count --norm-method $params.mageckCountNorm --pdf-report -l $params.librarydesign -n $params.projname --fastq $fastqr1_ch --sample-label $smpls_ch
-    
-    echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
-    date >>${params.verfile}
-    echo "process **  mageck_count_reads **" >>${params.verfile}
-    echo "mageck" >>${params.verfile}
-    mageck -v >>${params.verfile}
-    """
+        """
+        echo $smpls_ch
+        echo $ctrls_sgRNA_ch
+        echo $ctrls_gene_ch
+
+        mageck count --norm-method $params.mageckCountNorm ${params.ctrl_type} ${params.ctrl_file} --pdf-report -l $params.librarydesign -n $params.projname --fastq $fastqr1_ch --sample-label $smpls_ch
+
+        echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
+        date >>${params.verfile}
+        echo "process **  mageck_count_reads **" >>${params.verfile}
+        echo "mageck" >>${params.verfile}
+        mageck -v >>${params.verfile}
+
+        """
+
+    }else{
+
+        """
+        echo $smpls_ch
+        echo $ctrls_sgRNA_ch
+        echo $ctrls_gene_ch
+
+
+        #module load bioinfo-tools
+        #module load MAGeCK/0.5.9.4
+        #module load R_packages/4.1.1
+        #module load pandoc/2.17.1.1
+
+        mageck count --norm-method $params.mageckCountNorm --pdf-report -l $params.librarydesign -n $params.projname --fastq $fastqr1_ch --sample-label $smpls_ch
+        
+        echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
+        date >>${params.verfile}
+        echo "process **  mageck_count_reads **" >>${params.verfile}
+        echo "mageck" >>${params.verfile}
+        mageck -v >>${params.verfile}
+        """
+    }
 
 }
-
 
 process mageck_rra_reads {
     publishDir params.readsRraOut, mode:'copy'

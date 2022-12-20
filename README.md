@@ -144,6 +144,12 @@ module load R_packages/4.1.1
 module load FastQC/0.11.9
 ```
 
+If using profile ``singularity``, which runs processes in containers, the dependency required to run the pipeline is:
+
+```
+module load java/OracleJDK_11.0.9
+```
+
 To run the pipeline several configuration and metadata files need to present in the working directory. They are described in detail below, and the examples are given in `config-files`.
 
 To run the pipeline simply type:

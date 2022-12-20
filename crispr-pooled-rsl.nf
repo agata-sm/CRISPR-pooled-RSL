@@ -2,11 +2,11 @@
 
 
 /* 
- * 2nd take on crispr pipeline
- * Using Nextflow DSL2
+ * Pipeline for processing and reporting results of barcoded pooled CRISPR screens
+ * Written for CRISPR Genomics Facility, SciLifeLab, Stockholm, Sweden
  * 
  * Author: Agata Smialowska
- * March 2022
+ * March - December 2022
  */ 
 
 nextflow.enable.dsl=2
@@ -22,11 +22,52 @@ params.outdir = "${params.projdir}/${params.resdir}"
 params.logdir = 'logs'
 params.metadatadir = 'metadata'
 
-params.fastqR1="$params.fastqdir/*R1*fastq.gz"
+params.fastqR1 = "$params.fastqdir/*R1*fastq.gz"
 
 // if input based filtering is not desired
 params.libraryinputfilt=""
 
+// library control files
+if( "${params.mageckCountNorm}" == "control" ){
+	
+	if( "${params.mageckCountCtrl}" == "sgRNA"){
+		params.ctrl_type="--control-sgrna"
+		
+		
+		//if (typeof "${params.control_file}" !== 'undefined') {
+		//if( "${params.control_file}" != null){
+		if( "${params.control_file}" ){
+
+			params.ctrl_file="${params.control_file}"
+		}else{
+			params.ctrl_file="library.ctrl_sgRNAs.txt"
+		}
+	}
+	else if( "${params.mageckCountCtrl}" == "gene"){
+		params.ctrl_type="--control-gene"
+
+		//if (typeof "${params.control_file}" !== 'undefined') {
+		if( "${params.control_file}" ){
+			params.ctrl_file="${params.control_file}"
+		}else{
+			params.ctrl_file="library.ctrl_genes.txt"
+		}
+
+	}
+
+	//if (typeof "${params.control_file}" !== 'undefined') {
+	if( "${params.control_file}" ){
+		params.libctrl_string="${params.ctrl_file}"
+	}else{
+		params.libctrl_string="${params.ctrl_file} containing features CON* from ${params.librarydesign}"
+	}
+
+
+}else{
+	params.libctrl_string="n.a."
+	params.ctrl_type="n.a."
+
+}
 
 
 log.info """\
@@ -36,6 +77,10 @@ log.info """\
  fastq files directory: ${params.fastqdir}
  input library design : ${params.librarydesign}
  input library filtered : ${params.libraryinputfilt}
+
+ read normalisation: ${params.mageckCountNorm}
+ control features type: ${params.ctrl_type}
+ control file: ${params.libctrl_string}
 
  outdir       : ${params.outdir}
  """
@@ -137,9 +182,11 @@ workflow {
 
 	//prep library files
 	prep_library_files(lib_ch)
+	ctrls_sgRNA_ch=prep_library_files.out.lib_ctrls_sgRNA_ch
+	ctrls_gene_ch=prep_library_files.out.lib_ctrls_gene_ch
 
 	//count reads
-	mageck_count_reads(fastqr1_ch, smpls_ch)
+	mageck_count_reads(fastqr1_ch, smpls_ch, ctrls_sgRNA_ch, ctrls_gene_ch)
 
 	// mageck contrasts RRA reads
 	cntReads_ch=mageck_count_reads.out.count_table_reads_mageck_norm_ch
@@ -179,7 +226,7 @@ workflow RSL {
 	 	cntRSL_ch
 	 		.combine(prep_library_files.out.lib_gmt_ch)
 	 		.combine(comparisons_ch)
-	 		.view()
+	 		//.view()
 	 		.set { cntRSL_ch }
 
 	mageck_rra_RSL(cntRSL_ch)
