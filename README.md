@@ -124,6 +124,8 @@ module load bioinfo-tools
 #module load Nextflow/latest
 module load Nextflow/22.10.1
 
+export NXF_HOME=/proj/sllstore2017103/software/nextflow_tmp
+
 nextflow run /proj/sllstore2017103/software/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -entry RSL -profile cluster,singularity
 ```
 
