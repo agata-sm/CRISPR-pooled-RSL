@@ -110,7 +110,8 @@ reads:
 ```
 module load java/OracleJDK_11.0.9
 module load bioinfo-tools
-module load Nextflow/latest
+#module load Nextflow/latest
+Nextflow/22.10.1
 
 nextflow run /proj/sllstore2017103/software/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -profile cluster,singularity
 ```
@@ -119,6 +120,10 @@ RSL:
 
 ```
 module load java/OracleJDK_11.0.9
+module load bioinfo-tools
+#module load Nextflow/latest
+Nextflow/22.10.1
+
 nextflow run /proj/sllstore2017103/software/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -entry RSL -profile cluster,singularity
 ```
 
