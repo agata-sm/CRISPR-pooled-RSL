@@ -1,6 +1,13 @@
 # CRISPR-pooled-RSL
 Pipeline for processing data from pooled CRISPR screens with RSL barcodes.
 
+## Instructions for training
+
+3 February 2023
+
+Please check file training-2ii2023.md
+
+
 ## About
 
 This pipeline performs two types of analyses of pooled CRISPR screens:
@@ -64,13 +71,13 @@ Two main pipeline modes are analysis based on reads (default) or analysis based 
 Tu run the main workflow for analysis based on **reads**
 
 ```
-nextflow run /proj/sllstore2017103/nbis5351/CRISPR-pooled-RSL/crispr-pooled-rsl.nf 
+nextflow run /proj/sllstore2017103/software/CRISPR-pooled-RSL/crispr-pooled-rsl.nf 
 ```
 
 To run the alternative workflow for analysis based on **RSL counts**
 
 ```
-nextflow run /proj/sllstore2017103/nbis5351/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -entry RSL
+nextflow run /proj/sllstore2017103/software/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -entry RSL
 ```
 
 The pipeline can be run on Rackham (recommended) or locally.
@@ -78,7 +85,7 @@ The pipeline can be run on Rackham (recommended) or locally.
 
 ### using SLURM queue on Rackham
 
-**This is the preferred way to run the pipeline.**
+**This is the preferred way to run the pipeline.** All other ways have not been recently tested.
 
 The file `nextflow.config` in *the directory where the pipeline is installed* contains profiles for pipeline execution. This is different than `nextflow.config` in the project directory where the code is run.
 
@@ -102,14 +109,14 @@ reads:
 
 ```
 module load java/OracleJDK_11.0.9
-nextflow run /proj/sllstore2017103/nbis5351/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -profile cluster,singularity
+nextflow run /proj/sllstore2017103/software/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -profile cluster,singularity
 ```
 
 RSL:
 
 ```
 module load java/OracleJDK_11.0.9
-nextflow run /proj/sllstore2017103/nbis5351/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -entry RSL -profile cluster,singularity
+nextflow run /proj/sllstore2017103/software/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -entry RSL -profile cluster,singularity
 ```
 
 
@@ -142,12 +149,6 @@ module load MAGeCK/0.5.9.4
 module load pandoc/2.17.1.1
 module load R_packages/4.1.1
 module load FastQC/0.11.9
-```
-
-If using profile ``singularity``, which runs processes in containers, the dependency required to run the pipeline is:
-
-```
-module load java/OracleJDK_11.0.9
 ```
 
 To run the pipeline several configuration and metadata files need to present in the working directory. They are described in detail below, and the examples are given in `config-files`.
