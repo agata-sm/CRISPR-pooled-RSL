@@ -232,7 +232,7 @@ This table is saved as **`r fname`**.
 
 
 `r if(is.RSL){"RSL"}else{"Reads"}`
-per guide diagnostic plot is presented on Figure \@ref(fig:reads-per-guide-boxplot).
+per guide diagnostic plot is presented on Figures \@ref(fig:reads-per-guide-boxplot) and \@ref(fig:reads-per-guide-boxplot-log).
 
 
 
@@ -248,6 +248,11 @@ The violin and box plot combination with removed outliers is to demonstrate the 
 ```{r reads-per-guide-boxplot, echo=FALSE, fig.show='show', fig.width=10, cache=FALSE, fig.cap="Number of reads per sgRNA."}
 
 ```
+
+```{r reads-per-guide-boxplot-log, echo=FALSE, fig.show='show', fig.width=10, cache=FALSE, fig.cap="Number of reads per sgRNA, log scale."}
+
+```
+
 
 
 ```{r reads-per-guide-violinplot, echo=FALSE, fig.show='show',fig.width=10,cache=FALSE, fig.cap="Number of reads per sgRNA after outliers removal."}

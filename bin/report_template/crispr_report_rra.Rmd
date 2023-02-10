@@ -266,8 +266,11 @@ DT::datatable(rep.g_pos[,1:9] %>% filter(pos.rank <=100), rownames = FALSE) %>% 
 ```{r include=FALSE, warning=FALSE}
 
 if(is.RSL){
-  dat=gdata_i_RRA
-  xaxis="RRA Score"
+  # dat=gdata_i_RRA
+  # xaxis="RRA Score"
+  dat=gdata_lfc
+  xaxis="Effect size (log2-fold change)"
+
 }else{
   dat=gdata_i_lfc
   xaxis="Effect size (log2-fold change)"

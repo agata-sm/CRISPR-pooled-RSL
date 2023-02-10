@@ -152,7 +152,7 @@ if(!is.RSL){
   summary.stats=read.delim(file.summary.stats, header = TRUE, sep = "\t", quote = "\"", dec = ".", fill = TRUE, row.names=NULL)
   summary.stats$sample=factor(summary.stats$Label, levels=samples.tab$library)
   summary.stats$detected=summary.stats$TotalsgRNAs-summary.stats$Zerocounts
-  summary.stats.table=summary.stats[,c(14,15,8,6,4,3,5,7)]
+  summary.stats.table=summary.stats[,c(14,7,8,6,4,3,5,15)]
   summary.stats.table=summary.stats.table[match(samples.tab$library, summary.stats.table$sample),]
 
   seq_plot2=ggplot(data=summary.stats.table, aes(x=sample, y=Mapped, fill=sample)) + geom_bar(stat="identity") +
@@ -279,6 +279,16 @@ box_rawreads_perguide=ggplot(dat_reads_h_ord, aes(x=variable, y=value, color=var
 #   	coord_flip()
 
 
+# log scale
+box_rawreads_perguide_log=ggplot(dat_reads_h_ord, aes(x=variable, y=value, color=variable))  + geom_boxplot()+
+  theme_bw()+theme(legend.position="none")+
+  scale_y_continuous(trans='log10')+
+  scale_color_viridis(discrete=TRUE, alpha=0.35,option="turbo") +
+  theme(axis.text.x=element_text(angle=90,hjust=1)) +
+    labs(y=paste("log10 (",ylab.txt,") per guide",sep=""),x="") +
+    coord_flip()
+
+
 
 #outliers removed
 violin_rawreads_perguide3=ggplot(dat_reads_h_ord, aes(x=variable, y=value,color=variable))  + theme(legend.position="none") +
@@ -304,6 +314,12 @@ violin_rawreads_perguide3=ggplot(dat_reads_h_ord, aes(x=variable, y=value,color=
 box_rawreads_perguide + theme(legend.position="none")
 #box_rawreads_perguide3
 #box_rawreads_perguide4
+
+## ---- reads-per-guide-boxplot-log
+box_rawreads_perguide_log + theme(legend.position="none")
+#box_rawreads_perguide3
+#box_rawreads_perguide4
+
 
 ## ---- reads-per-guide-violinplot
 #violin_rawreads_perguide2 + theme(legend.position="none")
@@ -627,13 +643,14 @@ for (i in c(1:contrasts.pairs.number)){
   #https://stackoverflow.com/questions/53075331/error-using-geom-density-2d-in-r-computation-failed-in-stat-density2d-b
   #Error in MASS::kde2d(x, y, ...) : 
   #  missing or infinite values in the data are not allowed
+  # OBS! this still does not work for RSL data, so will only be run for reads data
   pseudocount=0.01
   df_scatter[,4]=df_scatter[,2]+pseudocount
   df_scatter[,5]=df_scatter[,3]+pseudocount
 
   df_scatter$density <- get_density(df_scatter[,2], df_scatter[,3], n = 100)
 
-  pl2=ggplot(df_scatter, aes(x=df_scatter[,4],y=df_scatter[,5], text=paste(id,"; lfc replicate1",round(df_scatter[,2],digits=3),"; lfc replicate2",round(df_scatter[,3],digits=3)) ))+
+  pl2=ggplot(df_scatter, aes(x=df_scatter[,4],y=df_scatter[,5], text=paste(id,"; lfc",colnames(df_scatter)[2],round(df_scatter[,2],digits=3),"; lfc",colnames(df_scatter)[3],round(df_scatter[,3],digits=3)) ))+
     geom_point() +
     theme_bw() +
      xlab(paste0("log2 Fold Change in ",colnames(df_scatter)[2])) + ylab(paste0("log2 Fold Change in ",colnames(df_scatter)[3]))
