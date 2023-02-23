@@ -120,7 +120,7 @@ samples.tab$library=samples.tab$sample
 if(is.RSL){
     if(seqstatsSTAUS){
 
-  seqstats=read.delim(file.seqstats, header = TRUE, sep = "\t", quote = "\"", dec = ".", fill = TRUE, row.names=NULL)
+  seqstats=read.delim(file.seqstats, header = TRUE, sep = "\t", quote = "\"", dec = ".", fill = TRUE, row.names=NULL,blank.lines.skip=TRUE)
   seqstats$missing_sgRNA=seqstats$sgRNA_total-seqstats$sgRNA_file
 
   seqstats$file_fastq=factor(seqstats$file_fastq, levels=samples.tab$file)
@@ -153,7 +153,7 @@ colnames(seqstats)=c("sample","sgRNA detected","sgRNAs not detected","sgRNA tota
 ## ---- data_countingstats_reads
 if(!is.RSL){
   file.summary.stats=file.path(ctable_datadir,paste0(proj.name.pref,".countsummary.txt"))
-  summary.stats=read.delim(file.summary.stats, header = TRUE, sep = "\t", quote = "\"", dec = ".", fill = TRUE, row.names=NULL)
+  summary.stats=read.delim(file.summary.stats, header = TRUE, sep = "\t", quote = "\"", dec = ".", fill = TRUE, row.names=NULL,blank.lines.skip=TRUE)
   summary.stats$sample=factor(summary.stats$Label, levels=samples.tab$library)
   summary.stats$detected=summary.stats$TotalsgRNAs-summary.stats$Zerocounts
   summary.stats.table=summary.stats[,c(14,15,7,4,3,5,8)]

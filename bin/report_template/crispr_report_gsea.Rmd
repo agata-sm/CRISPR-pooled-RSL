@@ -117,20 +117,15 @@ ggsave(filename=paste("Figure",fig_n,functest,"GSEA.dotplot",i,selection,"pdf",s
 <br />
 <br />
 
-```{asis, eval=!is.RSL, echo=print_plots}
-Relationships between gene abundance and functional category membership are visualised as a heatmap.
-```
 
-```{asis, eval=is.RSL, echo=print_plots}
-Relationships between effect size (RRA pathway score) and functional category membership are visualised as a heatmap.
-```
+Relationships between effect size (log2FC) and functional category membership are visualised as a heatmap.
 
 
 ```{r eval=print_plots}
 if (data.type == "reads"){
 	figurecap.heatpl=figurecap.heatpl.lfc
 } else if (data.type == "RSL"){
-	figurecap.heatpl=figurecap.heatpl.rra
+	figurecap.heatpl=figurecap.heatpl.lfc
 }
 ```
 

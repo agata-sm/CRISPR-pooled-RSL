@@ -446,8 +446,8 @@ plot_lfc_alpha=ggplot(dat_sorted, aes(x=id,y=Score,color=group, fill=group)) +
 
 figurecap=paste("LogFC by (alphabetially sorted) gene in comparison\n",i, "project",proj.name.pref,".\n Analysis type:",data.type)
 
-fname=paste("Figure","Sorted_lfc",i,"pdf",sep=".")
-pdf(file.path(plotdir_qc,fname))
+fnameQC=paste("Figure","Sorted_lfc",i,"pdf",sep=".")
+pdf(file.path(plotdir_qc,fnameQC))
 plot_lfc_alpha + ggtitle(figurecap)
 dev.off()
 
