@@ -230,9 +230,7 @@ for (i in my.cutoffs){
 
   ### histogram of reads / RSL-guide with x log scale
 
-  raw_freq_r_log=log10(raw_freq_r[-1,])
-
-  plot3=ggplot(data=raw_freq_r_log, aes(x=log10(readcount), y=frequency, colour=sample, fill=sample)) + geom_histogram(bins = 100) +
+  plot3=ggplot(data=raw_freq_r[-1,], aes(x=log10(readcount), y=frequency, colour=sample, fill=sample)) + geom_histogram(bins = 100) +
   facet_wrap(~sample)+
     scale_fill_viridis(discrete=TRUE,option="turbo")+
     scale_colour_viridis(discrete=TRUE,option="turbo")+
