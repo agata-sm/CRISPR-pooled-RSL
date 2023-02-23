@@ -1,7 +1,7 @@
 # Training instructions 
 
 3 Feb 2023
-
+updated 23 Feb 2023
 
 ## Before we start
 
@@ -98,18 +98,69 @@ params {
 
 ## Running the pipeline
 
+First we run a program called `screen` which would allow us to disconnect the session when the pipeline is running.
 
+```
+screen
+```
+
+A new bash session starts (one which can be detached after the pipeline is started).
+
+We load necessary modules and export path for Nextflow temporary files:
+
+```
 module load java/OracleJDK_11.0.9
-module load Nextflow/latest
+module load bioinfo-tools
+module load Nextflow/22.10.1
 
-at the moment this is `Nextflow/22.10.1`
+export NXF_HOME=/proj/sllstore2017103/software/nextflow_tmp
+```
 
+
+To start a new screen press Ctrl-a, then c. To run the pipeline:
+
+reads:
+
+```
+module load java/OracleJDK_11.0.9
+module load bioinfo-tools
+module load Nextflow/22.10.1
+
+export NXF_HOME=/proj/sllstore2017103/software/nextflow_tmp
+
+nextflow run /proj/sllstore2017103/software/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -profile cluster,singularity
+```
+
+RSL:
+
+```
+module load java/OracleJDK_11.0.9
+module load bioinfo-tools
+module load Nextflow/22.10.1
+
+export NXF_HOME=/proj/sllstore2017103/software/nextflow_tmp
+
+nextflow run /proj/sllstore2017103/software/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -entry RSL -profile cluster,singularity
+```
+
+
+To disconnect (detach): `Ctrl+a d `(you can do it when the nextflow command is running)
+
+To reconnect: `screen -r`
+
+To view the progress of the jobs in the queue: `jobinfo -u $USER`
 
 
 
 ## To think about before the run
 
+Common pitfals when running the pipeline:
 
+1. Incorrect allocation in `nextflow.config` - has it expired? The error message says `Failed to submit process to grid scheduler for execution`
+
+2. Library definition file e.g. `Brunello_Library_USE_THIS_ONLY.eol.csv` (see `nextflow.config` in the test directory for complete path) has incorrect line endings; the expected line endings are Linux style `\n`. If this file was open on any Windows / MacOS spreadsheet application, it is likely that the line endings have been converted to the Win or MacOS style, and this results in scripts not being able to read this file properly. The error messages may be less obvious, though. To run the pipeline the line endings need to be converted to Linux style.
+
+A discussion on line endings and how to convert them between formats please check [here]https://kuantingchen04.github.io/line-endings/.
 
 
 ## Report recompilation
