@@ -51,6 +51,10 @@ dir.create(resdir, recursive = TRUE)
 plotdir=file.path(resdir,"plots")
 dir.create(plotdir)
 
+plotdir_qc=file.path(resdir,"plots_QC")
+dir.create(plotdir_qc)
+
+
 ## ---- prep_environment
 options(connectionObserver = NULL) # https://github.com/rstudio/rstudio/issues/9219
 
