@@ -308,6 +308,33 @@ dev.off()
 p_v1=ggplotly(p_v1, tooltip=c("text"))
 
 
+
+### plot of effect size log2FC per gene in alphabetical order
+dat_sorted=dat[order(dat$id), ]
+
+dat_sorted$group[grep("CON",dat_sorted$id)] <-"CON"
+dat_sorted$group[grep("RPL",dat_sorted$id)] <-"RPL/S"
+dat_sorted$group[grep("RPS",dat_sorted$id)] <-"RPL/S"
+
+plot_lfc_alpha=ggplot(dat_sorted, aes(x=id,y=Score,color=group, fill=group)) +
+   geom_bar(stat="identity", width=0.1)+
+   #theme(legend.position = "none")+
+   theme(axis.text.x=element_blank(), axis.ticks = element_blank() )+
+   ylab("log2(fold change)") +
+   scale_color_manual(values=mycolour) +  scale_fill_manual(values=mycolour)
+
+
+figurecap=paste("LogFC by (alphabetially sorted) gene in comparison\n",i, "project",proj.name.pref,".\n Analysis type:",data.type)
+
+fig_n1="99"
+fname=paste("Figure",fig_n1,"Sorted_lfc",i,"pdf",sep=".")
+pdf(file.path(plotdir.i,fname))
+plot_lfc_alpha + ggtitle(figurecap)
+dev.off()
+
+
+
+
 ```
 
 
@@ -330,6 +357,7 @@ This plot is saved as a static plot in file
 ```{r dev='png', fig.show='show',fig.dim=c(6, 6), cache=FALSE, fig.cap=figurecap}
 p_v1
 ```
+
 
 
 #### Rank Plots

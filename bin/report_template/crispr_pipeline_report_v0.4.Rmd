@@ -87,7 +87,7 @@ source("./crispr_pipeline_report_functions.R")
 ***This report presents analysis based on read counts.***
 ```
 
-
+<!-- 
 # Contents
 
 1. [Project Description](#Project-Description)
@@ -106,7 +106,8 @@ source("./crispr_pipeline_report_functions.R")
 7. [References](#References)
 8. [Appendix](#Appendix)
 
-<br />
+<br /> -->
+
 <br />
 
 # Project Description <a name="Project-Description"></a>
@@ -211,7 +212,12 @@ This plot is saved as **`r fname`**.
 
 <br />
 
-Table \@ref(tab:data-countingstats-table) presents summary statistics of sgRNA quantification.
+Table \@ref(tab:data-countingstats-table) presents summary statistics of sgRNA quantification. Total number of sgRNAs in the library was n=`r summary.stats[1,6]`.
+
+
+```{asis, echo=!is.RSL}
+Gini index (coefficient) is a measure of inequality in data; it ranges between 0 in the case of perfect equality and 1 in the case of perfect inequality.
+```
 
 
 ```{r data-countingstats-table, echo=FALSE ,results='asis'}
@@ -362,7 +368,7 @@ Replicate concordance can be adressed using several methods probing different pr
 ### PCA <a name="PCA"></a>
 
 
-Principal Component Analysis (PCA) is a technique to summarize and to visualize the information in a data set containing observations described by multiple inter-correlated quantitative variable. PCA is used to extract the important information from a multivariate data table and to express this information as a set of few new variables called principal components. These new variables correspond to a linear combination of the originals. The information in a given data set corresponds to the total variation it contains. The goal of PCA is to identify directions (or principal components) along which the variation in the data is maximal.
+Principal Component Analysis (PCA) is a technique to summarize and visualize the information in a data set containing observations described by multiple inter-correlated quantitative variables. PCA is used to extract the important information from a multivariate data table and to express this information as a set of few new variables called principal components. These new variables correspond to a linear combination of the originals. The information in a given data set corresponds to the total variation it contains. The goal of PCA is to identify directions (or principal components) along which the variation in the data is maximal.
 In other words, PCA reduces the dimensionality of a multivariate data to two or three principal components, that can be visualized graphically, with minimal loss of information.
 
 PCA of TMM-normalised log2 read counts summarised to individual

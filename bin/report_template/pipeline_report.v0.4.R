@@ -98,7 +98,7 @@ tab_n_sv=0
 
 #set here - significance cutoff for RRA (mainly used for plot labeling)
 FDR.CO=0.05
-mycolour = c('ns'="gray80", 'dn'= "#377eb8", 'up'="#e41a1c")
+mycolour = c('ns'="gray80", 'dn'= "#377eb8", 'up'="#e41a1c", 'RPL/S'="#f3b10c", 'CON'="#43a436")
 
 
 source("./crispr_pipeline_report_functions.R")
@@ -152,7 +152,7 @@ if(!is.RSL){
   summary.stats=read.delim(file.summary.stats, header = TRUE, sep = "\t", quote = "\"", dec = ".", fill = TRUE, row.names=NULL)
   summary.stats$sample=factor(summary.stats$Label, levels=samples.tab$library)
   summary.stats$detected=summary.stats$TotalsgRNAs-summary.stats$Zerocounts
-  summary.stats.table=summary.stats[,c(14,7,8,6,4,3,5,15)]
+  summary.stats.table=summary.stats[,c(14,15,7,4,3,5,8)]
   summary.stats.table=summary.stats.table[match(samples.tab$library, summary.stats.table$sample),]
 
   seq_plot2=ggplot(data=summary.stats.table, aes(x=sample, y=Mapped, fill=sample)) + geom_bar(stat="identity") +
@@ -165,7 +165,7 @@ if(!is.RSL){
       labs(y="Reads assigned to sgRNA")
 
 
-  colnames(summary.stats.table)=c("sample","sgRNA detected","sgRNAs not detected","sgRNA total","reads assigned","reads total","fraction reads assigned","Gini index")
+  colnames(summary.stats.table)=c("sample","sgRNA detected","sgRNAs not detected","reads assigned","reads total","fraction reads assigned","Gini index")
 
 }
 
@@ -333,6 +333,9 @@ fname=paste("Figure",fig_n,"ReadssgRNA.pdf",sep=".")
 pdf(file.path(plotdir,fname))
 
 box_rawreads_perguide + theme(legend.position="none")+ 
+  theme(aspect.ratio = 1) + theme(plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"))
+
+box_rawreads_perguide_log + theme(legend.position="none")+ 
   theme(aspect.ratio = 1) + theme(plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"))
 
 violin_rawreads_perguide3 + theme(legend.position="none") + 
