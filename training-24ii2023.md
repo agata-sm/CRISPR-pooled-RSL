@@ -161,7 +161,7 @@ This pipeline was tested recently and the last run can be found at
 
 The command to run this pipeline is:
 
-````
+```
 nextflow run /proj/sllstore2017103/software/tests_2023/CRISPR-pooled-RSL/miscellaneous/input-filtering/Input-filter.nf -profile cluster
 ```
 
