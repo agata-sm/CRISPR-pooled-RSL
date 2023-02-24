@@ -84,7 +84,7 @@ Let's work with
 We need to copy the entire directory to our local system:
 
 ```
-scp -r <USER>@rackham.uppmax.uu.se:/proj/sllstore2017103/software/tests_2023/runs/Yumeng_1/work/a9/f7cc52bbd0ce68aefea6d2967c60c9/report.reads
+scp -r <USER>@rackham.uppmax.uu.se:/proj/sllstore2017103/software/tests_2023/runs/Yumeng_1/work/a9/f7cc52bbd0ce68aefea6d2967c60c9/report.reads .
 ```
 
 **OBS! This is a large chunk of data!** For this test data set it's 2.5 GB.
