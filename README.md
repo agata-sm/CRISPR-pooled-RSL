@@ -3,7 +3,11 @@ Pipeline for processing data from pooled CRISPR screens with RSL barcodes.
 
 ## Instructions for training
 
-3 February 2023
+**24 February 2023**
+
+Please check file training-24ii2023.md
+
+**3 February 2023**
 
 Please check file training-2ii2023.md
 
