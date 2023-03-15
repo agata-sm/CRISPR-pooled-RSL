@@ -14,6 +14,31 @@ params.scripts="${projectDir}/bin"
 
 /// modules
 
+process crispr_counter {
+    publishDir params.counterRSLOut, mode:'copy'
+
+    label 'big_mem'
+
+    input:
+    path "${params.properties}"
+
+    output:
+    path "${params.projname}.csv", emit: countstable_ch
+    path "counter.stdout.txt"
+    path "counter.stdout.parsed.txt"
+
+
+    script:
+    """
+    java -Xmx${task.memory.giga}g -jar ${params.crisprcounterpath}/CrisprCounter.jar ${params.projname}.properties &> counter.stdout.txt
+
+    perl ${params.scripts}/parseCrisprCounter.pl -i counter.stdout.txt -o counter.stdout.parsed.txt
+
+    """
+
+}
+
+
 process filter_input {
     publishDir params.filtOut, mode:'copy'
 
@@ -35,14 +60,31 @@ process filter_input {
 
 
     script:
-    """
-    module load perl_modules/5.18.4
 
-    perl ${params.scripts}/filter_RSL_input.v0.12.pl --infile $cntable --pref ${params.projname} --outdir ${params.projname}.${cutoff} --CO $cutoff
+    if ( "${params.usereference}"== "TRUE" ){
 
-    perl ${params.scripts}/processUMIcounts.v0.14.1.pl --filter CO=${params.filtRowSums} --pref ${params.refdatapref}.$cutoff --infile ${params.refdatacnttable} --input_lib ${params.projname}.${cutoff}/${params.projname}.filtered.csv --outdir ${params.projname}.${cutoff}.${params.refdatapref} --input_lib_design $params.librarydesign
+        """
+        perl ${params.scripts}/filter_RSL_input.v0.12.pl --infile $cntable --pref ${params.projname} --outdir ${params.projname}.${cutoff} --CO $cutoff
 
-    """
+        perl ${params.scripts}/processUMIcounts.v0.14.1.pl --filter CO=${params.filtRowSums} --pref ${params.refdatapref}.${cutoff} --infile ${params.refdatacnttable} --input_lib ${params.projname}.${cutoff}/${params.projname}.filtered.csv --outdir ${params.projname}.${cutoff}.${params.refdatapref} --input_lib_design $params.librarydesign
+
+        """
+
+    }else{
+
+        """
+        perl ${params.scripts}/filter_RSL_input.v0.12.pl --infile $cntable --pref ${params.projname} --outdir ${params.projname}.${cutoff} --CO $cutoff
+
+        touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.RSL.perguide.tsv
+        touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.frequencies.filt_reads.tsv
+        touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.nonfilt_reads.perguide.tsv
+        touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.readme.log
+
+        """
+
+
+    }
+
 
 }
 
@@ -50,6 +92,8 @@ process filter_input {
 
 process report {
     publishDir params.outdir, mode:'copy'
+
+    label 'small'
 
     input:
     path('*')
@@ -60,15 +104,11 @@ process report {
    
     script:
     """
-    module load bioinfo-tools
-    module load MAGeCK/0.5.9.4
-    module load R_packages/4.1.1
-    module load pandoc/2.17.1.1
-
     cp -r ${params.projdir} .
     cp -r ${projectDir}/bin/report_template-input/* .
     Rscript input_report_launcher.R ${params.inputcnttable} ${params.filtOut} ${params.projname} ${params.refdatapref} ${params.usereference}
     """
 }
+
 
 

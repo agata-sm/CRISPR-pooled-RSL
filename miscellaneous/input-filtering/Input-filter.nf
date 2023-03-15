@@ -41,16 +41,19 @@ println ""
 
 cutoffs_ch= Channel.of( 0, 1, 2, 3, 4, 5, 7, 10 )
 
-cnts_ch= Channel.fromPath(params.inputcnttable, checkIfExists:true)
-	cnts_ch
-		.combine(cutoffs_ch)
-		.view()
-		.set {cnts_ch}
+// cnts_ch= Channel.fromPath(params.inputcnttable, checkIfExists:true)
+// 	cnts_ch
+// 		.combine(cutoffs_ch)
+// 		.view()
+// 		.set {cnts_ch}
+
+
+input_properties_ch=Channel.fromPath(params.properties, checkIfExists:true)
 
 
 /////////////////////////////
 // processes
-include { filter_input; report } from './Input-filter-modules.nf'
+include { crispr_counter; filter_input; report } from './Input-filter-modules.nf'
 
 
 /////////////////////////////
@@ -60,8 +63,10 @@ include { filter_input; report } from './Input-filter-modules.nf'
 
 workflow {
 
+	crispr_counter(input_properties_ch)
+
 	//filter input library using different cutoffs
-	filter_input(cnts_ch)
+	filter_input(crispr_counter.out.countstable_ch)
 
 	//report
 	input_filt_ch=filter_input.out.rsl_countstable_filt_ch
