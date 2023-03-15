@@ -24,7 +24,7 @@ params.outdir = "${params.projdir}/${params.resdir}"
 log.info """\
  INPUT FILTERING - N F   P I P E L I N E
  =========================================
- input library count table : ${params.inputcnttable}
+ properties file for read summarisation : ${params.properties}
 
  outdir       : ${params.outdir}
  """
