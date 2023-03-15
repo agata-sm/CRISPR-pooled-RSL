@@ -1,13 +1,18 @@
 params {
 	// counts table with input sequenced in tech replicates, as output by CrisprCounter.jar
 	inputcnttable = "/path/to/Input_Brunello_unfiltered.csv"
-
-	// path to count table with evaluation data set
-	refdatacnttable = "/path/to/PROJ.UMIcounts.csv"
-
 	librarydesign = "/path/to/Brunello_Library_USE_THIS_ONLY.csv"
 
 	projname = "Brunello_v2022"
+
+	// should reference data set be used
+	// TRUE if yes, FALSE if no
+	// usereference = "TRUE"
+
+	// please define regardless of whether they are used or not; if not use dummy values
+
+	// path to count table with evaluation data set
+	refdatacnttable = "/path/to/PROJ.UMIcounts.csv"
 
 	refdatapref = "PROJ"
 

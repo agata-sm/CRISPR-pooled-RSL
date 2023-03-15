@@ -38,7 +38,7 @@ process filter_input {
     """
     module load perl_modules/5.18.4
 
-    perl ${params.scripts}/filter_RSL_input.v0.11.pl --infile $cntable --pref ${params.projname} --outdir ${params.projname}.${cutoff} --CO $cutoff
+    perl ${params.scripts}/filter_RSL_input.v0.12.pl --infile $cntable --pref ${params.projname} --outdir ${params.projname}.${cutoff} --CO $cutoff
 
     perl ${params.scripts}/processUMIcounts.v0.14.1.pl --filter CO=${params.filtRowSums} --pref ${params.refdatapref}.$cutoff --infile ${params.refdatacnttable} --input_lib ${params.projname}.${cutoff}/${params.projname}.filtered.csv --outdir ${params.projname}.${cutoff}.${params.refdatapref} --input_lib_design $params.librarydesign
 
@@ -67,7 +67,8 @@ process report {
 
     cp -r ${params.projdir} .
     cp -r ${projectDir}/bin/report_template-input/* .
-    Rscript input_report_launcher.R ${params.inputcnttable} ${params.filtOut} ${params.projname} ${params.refdatapref}
+    Rscript input_report_launcher.R ${params.inputcnttable} ${params.filtOut} ${params.projname} ${params.refdatapref} ${params.usereference}
     """
 }
+
 

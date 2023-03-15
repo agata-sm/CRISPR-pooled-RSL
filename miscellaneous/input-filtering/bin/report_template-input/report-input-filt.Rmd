@@ -56,15 +56,17 @@ Run by: `r Sys.getenv("USER")`
 
 ```{r local-tsts, include=FALSE,cache=FALSE}
 #path to count table for reference data
-#refdata.path="/Users/agata.smialowska/NBISproj/5351_CRISPR_pipeline/data/ctables/Calle_Heldin.UMIcounts.csv"
+#refdata.path="/Users/agata.smialowska/NBISproj/5351_CRISPR_pipeline/CRISPR_proj_cont/tests/input/data/Calle_Heldin.UMIcounts.csv"
 
 #root dir for filtered input libraries
-#inputdata.path="/Users/agata.smialowska/NBISproj/5351_CRISPR_pipeline/gh/rackham_tsts/input/Brunello_v2022/results/input_filtered"
+#inputdata.path="/Users/agata.smialowska/NBISproj/5351_CRISPR_pipeline/CRISPR_proj_cont/tests/input/data/Brunello_v2022/results/input_filtered"
 
 #inputlib.name="Brunello_v2022"
 
 #refdata.pref="Calle_Heldin.UMIcounts"
 
+#refdata.defined=TRUE
+#refdata.defined=FALSE
 
 ```
 
@@ -133,9 +135,21 @@ for (i in resdirs){
 
 
 input.stats.df <- data.frame(matrix(unlist(input.stats), nrow=length(input.stats), byrow=TRUE))
-colnames(input.stats.df)=c("CO","sgRNA-RSL","ColSums")
+colnames(input.stats.df)=c("CO","sgRNA.RSL","ColSums")
 input.stats.df$CO=as.numeric(as.character(input.stats.df$CO))
 input.stats.df=input.stats.df[order(input.stats.df$CO,decreasing=FALSE),]
+
+input.stats.df$sgRNA.RSL=format(as.numeric(input.stats.df$sgRNA.RSL), nsmall=0, big.mark=",")
+colnames(input.stats.df)=c("CO","sgRNA-RSL","ColSums")
+
+input.stats.df$Rep1=gsub("\\,.*","",input.stats.df$ColSums)
+input.stats.df$Rep2=gsub(".*,","",input.stats.df$ColSums)
+
+input.stats.df$Rep1=format(as.numeric(input.stats.df$Rep1), nsmall=0, big.mark=",")
+input.stats.df$Rep2=format(as.numeric(input.stats.df$Rep2), nsmall=0, big.mark=",")
+
+input.stats.df=input.stats.df[,-3]
+
 
 ```
 
@@ -145,8 +159,8 @@ title.1="Number of detected sgRNA-RSL combination under different filtering cut-
 
 footnote.1="Number of sgRNA-RSL combinations and library sizes are calculated after the filtering of the input library using the indicated cutoff."
 
-kable(input.stats.df, align = c("l", "c", "c"), booktabs = TRUE, row.names = FALSE, caption = title.1, 
-  col.names=c("Cut Off","Number of sgRNA-RSL Combinations","Library Sizes (in technical replicates)") )%>%
+kable(input.stats.df, align = c("l", "c", "c", "c"), booktabs = TRUE, row.names = FALSE, caption = title.1, 
+  col.names=c("Cut Off","Number of sgRNA-RSL Combinations","Library Size (technical replicate 1)","Library Size (technical replicate 2)") )%>%
     footnote(
       general = footnote.1,
       general_title = "Note.",
@@ -156,14 +170,143 @@ kable(input.stats.df, align = c("l", "c", "c"), booktabs = TRUE, row.names = FAL
 
 ```
 
-# Effect of Filtering on Reference Data `r refdata.pref`
+
+
+```{r input-stats-hist, include=FALSE,cache=FALSE}
+
+fname_freq=paste0(inputlib.name,".frequencies.raw_reads_aggregated.tsv")
+
+freq.stats <- vector(mode = "list", length=length(resdirs))
+
+freq.hist <- vector(mode = "list")
+
+
+for (i in resdirs){
+  freq.stats.i=file.path(inputdata.path,i,fname_freq)
+  print("Processing")
+  print(freq.stats.i)
+
+  freq.metrics.i=read.table(freq.stats.i, sep="\t", header=FALSE, blank.lines.skip=TRUE)
+  #colnames(freq.metrics.i)=c("sgRNA.RSL.readcount","frequency")
+  colnames(freq.metrics.i)=c("readcount","frequency")
+  freq.metrics.i$CO=i
+
+  freq.stats[[i]]=freq.metrics.i
+
+}
+
+freqs=bind_rows(freq.stats)
+
+title_hist_fs="Histogram of sgRNA-RSL readcount frequncies in Input library under different filiering cut-offs. Full Y and X scales."
+title_hist_fs_logx="Histogram of sgRNA-RSL readcount frequncies in Input library under different filiering cut-offs. Full Y and log(X) scales."
+title_hist_lim_logx="Histogram of sgRNA-RSL readcount frequncies in Input library under different filiering cut-offs. Limited Y and log(X) scales to focus on region with most data points."
+
+
+  hist.fs=ggplot(data=freqs, aes(x=readcount, y=frequency, colour=CO, fill=CO)) + geom_bar(stat="identity") +
+  facet_wrap(~CO)+
+    scale_fill_viridis(discrete=TRUE,option="turbo")+
+    scale_colour_viridis(discrete=TRUE,option="turbo")+
+    theme_bw() + theme(plot.margin = unit(c(0.5, -0.5, 0, -0.5), "cm"))+ 
+    labs(title=title_hist_fs, y="count",x="reads per RSL-guide")+
+    theme(aspect.ratio = 2/(1+sqrt(5)) ) + theme(legend.position="none",legend.margin=unit(c(0, -0.5, 0, -0.5), "cm"))
+
+
+# in new ggplo2
+# still older v in docker, so keeping it as before
+# Warning message:
+# `legend.margin` must be specified using `margin()`
+# For the old behavior use `legend.spacing` 
+
+
+
+# log scale X
+
+freqs.n0=freqs[-1,]
+
+hist.fs.logx=ggplot(data=freqs.n0, aes(x=readcount, y=frequency, colour=CO, fill=CO)) + geom_bar(stat="identity") +
+  facet_wrap(~CO)+
+    scale_fill_viridis(discrete=TRUE,option="turbo")+
+    scale_colour_viridis(discrete=TRUE,option="turbo")+
+    theme_bw() + theme(plot.margin = unit(c(0.5, -0.5, 0, -0.5), "cm"))+ 
+    scale_x_continuous(trans='log10') +
+    labs(title=title_hist_fs_logx, y="count",x="reads per RSL-guide")+
+    theme(aspect.ratio = 2/(1+sqrt(5)) ) + theme(legend.position="none",legend.margin=unit(c(0, -0.5, 0, -0.5), "cm"))
+
+
+# set limits
+# y_lim is max in readcount range 2 - 50 + 10%
+x_lim=50
+freqs.2_50=freqs%>%filter(readcount>=2, readcount<=50)
+y_lim=round(max(freqs.2_50$frequency)+0.1*(max(freqs.2_50$frequency)))
+
+
+hist.lim.logx=ggplot(data=freqs.n0, aes(x=readcount, y=frequency, colour=CO, fill=CO)) + geom_bar(stat="identity") +
+  facet_wrap(~CO)+
+    scale_fill_viridis(discrete=TRUE,option="turbo")+
+    scale_colour_viridis(discrete=TRUE,option="turbo")+
+    theme_bw() + theme(plot.margin = unit(c(0.5, -0.5, 0, -0.5), "cm"))+ 
+    coord_cartesian(xlim=c(1,x_lim),ylim=c(1,y_lim) )+
+    scale_x_continuous(trans='log10') +
+    labs(title=title_hist_lim_logx, y="count",x="reads per RSL-guide")+
+    theme(aspect.ratio = 2/(1+sqrt(5)) ) + theme(legend.position="none",legend.margin=unit(c(0, -0.5, 0, -0.5), "cm"))
+
+```
+
+## Histogram plots
+
+## Histogram plots - full data range
+
+
+Histogram plots depicing sgRNA-RSL read count frequencies are presented on Figures below. 
+Full scales are to present data range, and limited scales (X scale after log10 transformation) to focus on data rich region. 
+Limits to Y scale are set to include maximal read count in range 2-50 under all filtering cut offs.
+
+
+
+```{r fig.align="center", fig.width=8,fig.height=16, echo = FALSE}
+hist.fs
+```
+
+
+<br>
+<br>
+
+## Histogram plots - limited data range, X axis log10-transformed
+
+
+```{r fig.align="center", fig.width=8,fig.height=16, echo = FALSE}
+hist.lim.logx
+```
+
+
+<br>
+<br>
+
+
+
+`r if(refdata.defined){paste("# Effect of Filtering on Reference Data", refdata.pref, sep=" ")}`
+
+
+```{asis, echo=refdata.defined}
 
 ## Read and RSL counts
 
-Reads per RSL-sgRNA histograms
+Read counts per RSL-sgRNA histograms in the reference data set filtered using Input data prefiltered under different read count cut offs (see section above) are presented on Figures below.
+
+Full scales are to present data range, and limited scales (X scale after log10 transformation) to focus on data rich region. 
+Limits to Y scale are set to include maximal read count in range 1-50 under all filtering cut offs.
 
 
-```{r include=TRUE,cache=FALSE}
+### Histogram plots - full data range
+
+
+```
+
+
+
+
+
+```{r include=TRUE,cache=FALSE, eval=refdata.defined}
 
 #my.cutoffs=c(1,2,3,4,5,7,10)
 
@@ -211,8 +354,10 @@ for (i in my.cutoffs){
     theme(aspect.ratio = 2/(1+sqrt(5)) ) + theme(legend.position="none",legend.margin=unit(c(0, -0.5, 0, -0.5), "cm"))
 
 
-  x_lim=40 
-  y_lim=200000
+  x_lim=50 
+  freqs.lim.i=raw_freq_r%>%filter(readcount>=1, readcount<=x_lim)
+  y_lim=round(max(freqs.lim.i$frequency)+0.1*(max(freqs.lim.i$frequency)))
+
 
   plot2=ggplot(data=raw_freq_r, aes(x=readcount, y=frequency, colour=sample, fill=sample)) + geom_bar(stat="identity") +
   facet_wrap(~sample)+
@@ -230,12 +375,16 @@ for (i in my.cutoffs){
 
   ### histogram of reads / RSL-guide with x log scale
 
-  plot3=ggplot(data=raw_freq_r[-1,], aes(x=log10(readcount), y=frequency, colour=sample, fill=sample)) + geom_histogram(bins = 100) +
+raw_freq_r_n0=raw_freq_r%>%filter(readcount>0)
+
+
+  plot3=ggplot(data=raw_freq_r_n0, aes(x=readcount, y=frequency, colour=sample, fill=sample)) + geom_bar(stat="identity") +
   facet_wrap(~sample)+
     scale_fill_viridis(discrete=TRUE,option="turbo")+
     scale_colour_viridis(discrete=TRUE,option="turbo")+
     theme_bw() + theme(plot.margin = unit(c(0.5, -0.5, 0, -0.5), "cm"))+ 
-    coord_cartesian()+
+    coord_cartesian(xlim=c(1,x_lim),ylim=c(0,y_lim) )+
+    scale_x_continuous(trans='log10') +
     labs(title=title_plot1, y="count",x="reads per RSL-guide")+
     theme(aspect.ratio = 2/(1+sqrt(5)) ) + theme(legend.position="none",legend.margin=unit(c(0, -0.5, 0, -0.5), "cm"))
 
@@ -306,7 +455,8 @@ for (i in my.cutoffs){
 
 
 
-```{r fig.align="center", fig.width=8,fig.height=16, echo = FALSE}
+
+```{r fig.align="center", fig.width=8,fig.height=16, echo = FALSE, eval=refdata.defined}
 
 plotheights=rep(8,ceiling(length(my.cutoffs)/2))
 
@@ -321,10 +471,18 @@ grid.arrange(grobs = hist.reads_per_RSLsgRNA, ncol=2, top = "Reads per RSL-sgRNA
 
 
 
-Reads per RSL-guide plotted with the reduced range on the X and Y axes displaying the lower-left quandrant of the plot (i.e. region where most of the signal can be observed, as most RSL-sgRNA combinations do not tend to gather high numbers of reads).
+
+```{asis, echo=refdata.defined}
+
+## Histogram plots - limited data range
+
+Reads per RSL-guide plotted with the reduced range on the X and Y axes displaying the lower-left quandrant of the plot 
+(i.e. region where most of the signal can be observed, as most RSL-sgRNA combinations do not tend to gather high numbers of reads).
+
+```
 
 
-```{r fig.align="center", fig.width=8,fig.height=16, echo = FALSE}
+```{r fig.align="center", fig.width=8,fig.height=16, echo = FALSE, eval=refdata.defined}
 
 plotheights=rep(8,ceiling(length(my.cutoffs)/2))
 
@@ -337,14 +495,22 @@ grid.arrange(grobs = hist.reads_per_RSLsgRNA2, ncol=2, top = "Reads per RSL-sgRN
 <br>
 
 
-Reads per RSL-guide plotted with the reduced range on the Y axis and X axis on log10 scale.
 
 
-```{r fig.align="center", fig.width=8,fig.height=16, echo = FALSE}
+
+```{asis, echo=refdata.defined}
+
+## Histogram plots - limited data range, X axis log10-transformed
+
+Reads per RSL-guide plotted with the reduced range on both Y axis and X axis; X axis on log10 scale.
+
+```
+
+```{r fig.align="center", fig.width=8,fig.height=16, echo = FALSE, eval=refdata.defined}
 
 plotheights=rep(8,ceiling(length(my.cutoffs)/2))
 
-grid.arrange(grobs = hist.reads_per_RSLsgRNA2.log, ncol=2, top = "Reads per RSL-sgRNA combination. Reduced axes range.", heights=unit(plotheights,"cm"))
+grid.arrange(grobs = hist.reads_per_RSLsgRNA2.log, ncol=2, top = "Reads per RSL-sgRNA combination. Reduced axes range. X axis log10 transformed.", heights=unit(plotheights,"cm"))
 
 
 ```
@@ -353,10 +519,16 @@ grid.arrange(grobs = hist.reads_per_RSLsgRNA2.log, ncol=2, top = "Reads per RSL-
 <br>
 
 
+
+
+```{asis, echo=refdata.defined}
+
+## Histogram plots - RSL per guide
+
 Number of RSL per guide is presented on the following plots. Too high filtering cutoff results in more sgRNAs with low RSL count, which is manifested by signal flattening in the higher ranges of RSL per sgRNA (X axis).
+```
 
-
-```{r fig.align="center", fig.width=8,fig.height=16, echo = FALSE}
+```{r fig.align="center", fig.width=8,fig.height=16, echo = FALSE, eval=refdata.defined}
 plotheights=rep(8,ceiling(length(my.cutoffs)/2))
 
 grid.arrange(grobs = hist.RSL_per_sgRNA, ncol=2, top = "Number of distinct RSL per guide.", heights=unit(plotheights,"cm"))
@@ -366,18 +538,18 @@ grid.arrange(grobs = hist.RSL_per_sgRNA, ncol=2, top = "Number of distinct RSL p
 
 <br>
 
-```{r ig.align="center", fig.width=8,fig.height=10, echo = FALSE}
+```{r ig.align="center", fig.width=8,fig.height=10, echo = FALSE, eval=refdata.defined}
 grid.arrange(grobs = box.RSL_per_sgRNA, ncol=2, top = "Number of distinct RSL per guide.")
 
 
 ```
 
 
-## Number of detected guides in reference dataset `r refdata.pref`
+`r if(refdata.defined){paste("## Number of detected guides in reference dataset", refdata.pref, sep=" ")}`
 
 
 
-```{r refdata-stats-table, include=TRUE,cache=FALSE, results='asis'}
+```{r refdata-stats-table, include=TRUE,cache=FALSE, results='asis', eval=refdata.defined}
 
 refdata.sgRNA.df <- data.frame(matrix(unlist(detected_sgRNAs), nrow=length(detected_sgRNAs), byrow=TRUE))
 refdata.sgRNA.df$CO=my.cutoffs
@@ -400,6 +572,8 @@ kable(refdata.sgRNA.df, align = c("l", "c", "c"), booktabs = TRUE, row.names = F
 
 ```
 
+```{asis, echo=refdata.defined}
+
 
 ## Relationships between data from different filtering strategies
 
@@ -407,10 +581,18 @@ Scatterplots are used to visualise RSL counts for corresponding guides under dif
 
 Each point corresponds to one sgRNA. RSL counts under different cutoffs are compared to each other.
 
-Data from sample `r colnames(RSL_data)[3]`
+Data from sample 
+```
 
 
-```{r include=TRUE,cache=FALSE,results='asis'}
+`r if(refdata.defined) colnames(RSL_data)[3]`
+
+
+
+
+
+
+```{r include=TRUE,cache=FALSE,results='asis', eval=refdata.defined}
 
 
 
@@ -445,7 +627,7 @@ for (i in c(1:cutoff.pairs.number)){
 
 <br>
 
-```{r ig.align="center", fig.width=8, fig.height=32, echo = FALSE}
+```{r ig.align="center", fig.width=8, fig.height=32, echo = FALSE, eval=refdata.defined}
 grid.arrange(grobs = scatters, ncol=2, top = "Scatter plots RSL counts per sgRNA under different filtering cut offs.")
 
 ```
