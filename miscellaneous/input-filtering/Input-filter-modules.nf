@@ -8,7 +8,7 @@ params.filt="input_filtered"
 params.filtOut="${params.outdir}/${params.filt}"
 
 params.counterRSL="Counter"
-params.counterRSLOut="${params.outdir}/${counterRSL}"
+params.counterRSLOut="${params.outdir}/${params.counterRSL}"
 
 // scripts
 params.scripts="${projectDir}/bin"
