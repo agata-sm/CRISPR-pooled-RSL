@@ -66,7 +66,14 @@ workflow {
 	crispr_counter(input_properties_ch)
 
 	//filter input library using different cutoffs
-	filter_input(crispr_counter.out.countstable_ch)
+	// cnts_ch= crispr_counter.out.countstable_ch
+	// 	cnts_ch
+	// 		.combine(cutoffs_ch)
+	// 		.view()
+	// 		.set {cnts_ch}
+
+
+	filter_input(cnts_c)
 
 	//report
 	input_filt_ch=filter_input.out.rsl_countstable_filt_ch
