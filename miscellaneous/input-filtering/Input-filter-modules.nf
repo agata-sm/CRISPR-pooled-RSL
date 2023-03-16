@@ -22,7 +22,7 @@ process crispr_counter {
     label 'big_mem'
 
     input:
-    path "${params.properties}"
+    path "${params.projname}.properties"
 
     output:
     path "${params.projname}.csv", emit: countstable_ch
@@ -32,7 +32,7 @@ process crispr_counter {
 
     script:
     """
-    java -Xmx${task.memory.giga}g -jar ${params.crisprcounterpath}/CrisprCounter.jar ${params.projname}.properties &> counter.stdout.txt
+    java -Xmx${task.memory.giga}g -jar ${params.crisprcounterpath}/CrisprCounter.jar ${params.properties} &> counter.stdout.txt
 
     perl ${params.scripts}/parseCrisprCounter.pl -i counter.stdout.txt -o counter.stdout.parsed.txt
 
