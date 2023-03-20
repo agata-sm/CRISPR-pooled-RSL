@@ -79,10 +79,10 @@ process filter_input {
 
         mkdir ${params.projname}.${cutoff}.${params.refdatapref}
 
-        touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.RSL.perguide.tsv
-        touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.frequencies.filt_reads.tsv
-        touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.nonfilt_reads.perguide.tsv
-        touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.readme.log
+        touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.${params.projname}.${cutoff}.${params.refdatapref}.RSL.perguide.tsv
+        touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL${params.projname}.${cutoff}.${params.refdatapref}.frequencies.filt_reads.tsv
+        touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.${params.projname}.${cutoff}.${params.refdatapref}.nonfilt_reads.perguide.tsv
+        touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.${params.projname}.${cutoff}.${params.refdatapref}.readme.log
 
         """
 
