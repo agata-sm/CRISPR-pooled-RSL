@@ -77,6 +77,8 @@ process filter_input {
         """
         perl ${params.scripts}/filter_RSL_input.v0.12.pl --infile $cntable --pref ${params.projname} --outdir ${params.projname}.${cutoff} --CO $cutoff
 
+        mkdir ${params.projname}.${cutoff}.${params.refdatapref}
+
         touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.RSL.perguide.tsv
         touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.frequencies.filt_reads.tsv
         touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.nonfilt_reads.perguide.tsv
