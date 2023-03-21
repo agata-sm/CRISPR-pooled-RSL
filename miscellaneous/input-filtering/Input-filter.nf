@@ -77,7 +77,8 @@ workflow {
 	filter_input(cnts_ch)
 
 	//report
-	input_filt_ch=filter_input.out.rsl_countstable_filt_ch
+	//input_filt_ch=filter_input.out.rsl_countstable_filt_ch
+	input_filt_ch=filter_input.out.filt_input_list_ch
 	
 	// input_filt_ch_col=input_filt_ch.collect()
 	// 	input_filt_ch_col
