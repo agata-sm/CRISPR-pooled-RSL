@@ -5,7 +5,7 @@ rm(list=ls())
 library(knitr)
 args <- commandArgs(TRUE)
 
-if (length(args) < 4) stop("Not all args are set; required: refdata.path inputdata.path inputlib.name refdata.pref")
+if (length(args) < 5) stop("Not all args are set; required: inputdata.path inputlib.name refdata.path refdata.pref refdata.defined")
 
 inputdata.path <- args[1]
 inputlib.name <- args[2]
