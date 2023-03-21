@@ -71,7 +71,7 @@ process filter_input {
 
         perl ${params.scripts}/processUMIcounts.v0.14.1.pl --filter CO=${params.filtRowSums} --pref ${params.refdatapref}.${cutoff} --infile ${params.refdatacnttable} --input_lib ${params.projname}.${cutoff}/${params.projname}.filtered.csv --outdir ${params.projname}.${cutoff}.${params.refdatapref} --input_lib_design $params.librarydesign
 
-        cp ${params.projname}.readme.log ${params.projname}.${cutoff}.readme.log 
+        cp ${params.projname}.${cutoff}/${params.projname}.readme.log ${params.projname}.${cutoff}/${params.projname}.${cutoff}.readme.log 
 
         """
 
@@ -80,7 +80,7 @@ process filter_input {
         """
         perl ${params.scripts}/filter_RSL_input.v0.12.pl --infile $cntable --pref ${params.projname} --outdir ${params.projname}.${cutoff} --CO $cutoff
 
-        cp ${params.projname}.readme.log ${params.projname}.${cutoff}.readme.log 
+        cp ${params.projname}.${cutoff}/${params.projname}.readme.log ${params.projname}.${cutoff}/${params.projname}.${cutoff}.readme.log 
 
         #mkdir ${params.projname}.${cutoff}.${params.refdatapref}
 
