@@ -120,25 +120,3 @@ process report {
 }
 
 
-
-process report {
-    publishDir params.outdir, mode:'copy'
-
-    label 'small'
-
-    input:
-    path('*')
-
-    output:
-    path "report.${params.projname}"
-
-   
-    script:
-    """
-    cp -r ${params.projdir} .
-    cp -r ${projectDir}/bin/report_template-input/* .
-    Rscript input_report_launcher.R ${params.inputcnttable} ${params.filtOut} ${params.projname} ${params.refdatapref} ${params.usereference}
-    """
-}
-
-
