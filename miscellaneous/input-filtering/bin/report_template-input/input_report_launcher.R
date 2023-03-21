@@ -7,11 +7,12 @@ args <- commandArgs(TRUE)
 
 if (length(args) < 4) stop("Not all args are set; required: refdata.path inputdata.path inputlib.name refdata.pref")
 
-refdata.path <- args[1]
-inputdata.path <- args[2]
-inputlib.name <- args[3]
+inputdata.path <- args[1]
+inputlib.name <- args[2]
+refdata.path <- args[3]
 refdata.pref <- args[4]
 refdata.defined <- args[5]
+
 
 
 

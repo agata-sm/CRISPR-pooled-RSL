@@ -115,8 +115,11 @@ process report {
     """
     cp -r ${params.projdir} .
     cp -r ${projectDir}/bin/report_template-input/* .
-    Rscript input_report_launcher.R ${params.inputcnttable} ${params.filtOut} ${params.projname} ${params.refdatapref} ${params.usereference}
+    Rscript input_report_launcher.R ${params.filtOut} ${params.projname} ${params.refdatacnttable} ${params.refdatapref} ${params.usereference}
     """
 }
+
+
+
 
 
