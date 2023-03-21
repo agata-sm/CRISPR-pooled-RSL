@@ -30,7 +30,7 @@ report version v 0.4
 
 <!-- 
 draft of pipeline report
-to be used with pipeline_report.v0.4.R
+to be used with pipeline_report.v0.4.1.R
 
 17i2022 - 22iii2022 - 4v2022
 
@@ -58,7 +58,7 @@ knitr::opts_chunk$set(echo = FALSE,
                       message = FALSE)
 
 
-script_pth="./pipeline_report.v0.4.R"
+script_pth="./pipeline_report.v0.4.1.R"
 knitr::read_chunk(script_pth)
 
 source("./crispr_pipeline_report_functions.R")
@@ -87,26 +87,6 @@ source("./crispr_pipeline_report_functions.R")
 ***This report presents analysis based on read counts.***
 ```
 
-<!-- 
-# Contents
-
-1. [Project Description](#Project-Description)
-2. [Practical Information](#Practical-Information)
-3. [Materials and Methods](#Materials-and-Methods)
-4. [Results](#Results)
-
-	4.1 [Library Summary Statistics](#sumstat)
-
-	4.2 [Statistical Analysis](#mageck)
-	
-	4.3 [Replicate Concordance](#RepCon)
-
-5. [Comments](#Comments)
-6. [Deliverables](#Deliverables)
-7. [References](#References)
-8. [Appendix](#Appendix)
-
-<br /> -->
 
 <br />
 
@@ -116,20 +96,11 @@ source("./crispr_pipeline_report_functions.R")
 <br />
 <br />
 
-# Practical Information <a name="Practical-Information"></a>
+# Comments <a name="Comments"></a>
 
+Custom text which helps to interpret the screen results.
 
-## Important practical information
-
-### Data responsibility
-
-Unfortunately, we do not have resources to keep any files associated with this project.
-We recommend that you back up the results delivered by us.
-
-### Acknowledgments
-
-If you use results obtained with help of the **CRISPR Functional Genomics Facility** in a publication, we kindly ask you to acknowledge and cite us [@crisprRSL].
-
+<br />
 <br />
 <br />
 
@@ -138,6 +109,10 @@ If you use results obtained with help of the **CRISPR Functional Genomics Facili
 
 ## Library Preparation
 
+
+<!-- 
+Project specific changes up to this section. Please make any further changes with caution.
+ -->
 
 ## Data Processing
 
@@ -170,10 +145,30 @@ sgRNA - RSL combinations which were detected in only one of the technical replic
 
 <br />
 <br />
+<br />
+
+
+
+# Practical Information <a name="Practical-Information"></a>
+
+
+## Important practical information
+
+### Data responsibility
+
+Unfortunately, we do not have resources to keep any files associated with this project.
+We recommend that you back up the data and results delivered by us.
+
+### Acknowledgments
+
+If you use results obtained with help of the **CRISPR Functional Genomics Facility** in a publication, we kindly ask you to acknowledge and cite us [@crisprRSL].
+
+<br />
+<br />
+
 
 
 # Results <a name="Results"></a>
-
 
 
 
