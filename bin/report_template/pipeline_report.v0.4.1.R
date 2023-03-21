@@ -19,8 +19,6 @@
 
 ## ---- dirs
 
-source(file.path(rootdir,"crispr_pipeline_report_functions.R"))
-
 
 # types of data for chunk evaluation
 is.RSL=isTRUE(data.type=="RSL")
