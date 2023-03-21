@@ -55,10 +55,10 @@ process filter_input {
     path "${params.projname}.${cutoff}/*readme.log"
     path "${params.projname}.${cutoff}/*report.log", emit: filt_input_log_ch
 
-    path "${params.projname}.${cutoff}.${params.refdatapref}/*.RSL.perguide.tsv", emit: rsl_countstable_filt_ch
-    path "${params.projname}.${cutoff}.${params.refdatapref}/*.frequencies.filt_reads.tsv"
-    path "${params.projname}.${cutoff}.${params.refdatapref}/*.nonfilt_reads.perguide.tsv"
-    path "${params.projname}.${cutoff}.${params.refdatapref}/*.readme.log"
+    path "${params.projname}.${cutoff}.${params.refdatapref}/*.RSL.perguide.tsv", optional: true, emit: rsl_countstable_filt_ch
+    path "${params.projname}.${cutoff}.${params.refdatapref}/*.frequencies.filt_reads.tsv", optional: true
+    path "${params.projname}.${cutoff}.${params.refdatapref}/*.nonfilt_reads.perguide.tsv", optional: true
+    path "${params.projname}.${cutoff}.${params.refdatapref}/*.readme.log", optional: true
 
 
     script:
@@ -77,12 +77,12 @@ process filter_input {
         """
         perl ${params.scripts}/filter_RSL_input.v0.12.pl --infile $cntable --pref ${params.projname} --outdir ${params.projname}.${cutoff} --CO $cutoff
 
-        mkdir ${params.projname}.${cutoff}.${params.refdatapref}
+        #mkdir ${params.projname}.${cutoff}.${params.refdatapref}
 
-        touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.${params.projname}.${cutoff}.${params.refdatapref}.RSL.perguide.tsv
-        touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL${params.projname}.${cutoff}.${params.refdatapref}.frequencies.filt_reads.tsv
-        touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.${params.projname}.${cutoff}.${params.refdatapref}.nonfilt_reads.perguide.tsv
-        touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.${params.projname}.${cutoff}.${params.refdatapref}.readme.log
+        #touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.${params.projname}.${cutoff}.${params.refdatapref}.RSL.perguide.tsv
+        #touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL${params.projname}.${cutoff}.${params.refdatapref}.frequencies.filt_reads.tsv
+        #touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.${params.projname}.${cutoff}.${params.refdatapref}.nonfilt_reads.perguide.tsv
+        #touch ${params.projname}.${cutoff}.${params.refdatapref}/NULL.${params.projname}.${cutoff}.${params.refdatapref}.readme.log
 
         """
 
