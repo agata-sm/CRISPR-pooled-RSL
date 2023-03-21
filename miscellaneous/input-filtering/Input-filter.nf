@@ -24,9 +24,10 @@ params.outdir = "${params.projdir}/${params.resdir}"
 log.info """\
  INPUT FILTERING - N F   P I P E L I N E
  =========================================
- properties file for read summarisation : ${params.properties}
+ properties file for read summarisation:   ${params.properties}
 
- outdir       : ${params.outdir}
+ outdir:                 ${params.outdir}
+ reference data used:    ${params.usereference}
  """
  .stripIndent()
 
