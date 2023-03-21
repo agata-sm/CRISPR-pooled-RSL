@@ -52,7 +52,7 @@ process filter_input {
     output:
     path "${params.projname}.${cutoff}/*filtered.csv", emit: filt_input_list_ch
     path "${params.projname}.${cutoff}/*frequencies.raw_reads_aggregated.tsv"
-    path "${params.projname}.${cutoff}/*readme.log", 
+    path "${params.projname}.${cutoff}/*readme.log"
     path "${params.projname}.${cutoff}/*report.log", emit: filt_input_log_ch
     path "${params.projname}.${cutoff}/${params.projname}.${cutoff}.readme.log", emit: filt_input_readme_ch
 
