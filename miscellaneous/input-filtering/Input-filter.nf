@@ -76,14 +76,20 @@ workflow {
 
 	filter_input(cnts_ch)
 
-	//report
-	//input_filt_ch=filter_input.out.rsl_countstable_filt_ch
-	input_filt_ch=filter_input.out.filt_input_list_ch
+	// if (params.usereference == "TRUE") {
+	// 	//report
+	// 	input_filt_ch=filter_input.out.rsl_countstable_filt_ch
 	
-	// input_filt_ch_col=input_filt_ch.collect()
-	// 	input_filt_ch_col
-	// 		.view()
+	// 	report(input_filt_ch.collect())
+	// } else{
 
+	// 	input_filt_ch=filter_input.out.filt_input_readme_ch
+
+	// 	report(input_filt_ch.collect())
+	// }
+
+	input_filt_ch=filter_input.out.filt_input_readme_ch
 	report(input_filt_ch.collect())
+
 
 }
