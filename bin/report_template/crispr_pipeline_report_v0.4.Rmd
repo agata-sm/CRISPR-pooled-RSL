@@ -250,15 +250,26 @@ The violin and box plot combination with removed outliers is to demonstrate the 
 
 ```
 
+<br />
+<br />
+
 ```{r reads-per-guide-boxplot-log, echo=FALSE, fig.show='show', fig.width=10, cache=FALSE, fig.cap="Number of reads per sgRNA, log scale."}
 
 ```
 
 
+<br />
+<br />
+
 
 ```{r reads-per-guide-violinplot, echo=FALSE, fig.show='show',fig.width=10,cache=FALSE, fig.cap="Number of reads per sgRNA after outliers removal."}
 
 ```
+
+
+<br />
+<br />
+
 
 ```{r boxplots-save, include=FALSE,cache=FALSE}
 
@@ -272,10 +283,6 @@ These plots are saved as **`r fname`**.
 
 
 
-```{asis, echo=is.RSL}
-*Some RSL specific text*
-```
-
 
 ```{r histogram-rslguide, eval=is.RSL}
 
@@ -285,6 +292,11 @@ These plots are saved as **`r fname`**.
 ```{r histogram-rslguide-plot1, eval=is.RSL, dev='png', fig.show='show',fig.dim=c(10, 5), cache=FALSE, fig.cap="Reads per RSL-guide after input-based filtering for RSL analysis. Full scale."}
 
 ```
+
+
+<br />
+<br />
+
 
 ```{r histogram-rslguide-plot2, eval=is.RSL, dev='png', fig.show='show',fig.dim=c(10, 5), cache=FALSE, fig.cap="Reads per RSL-guide after input-based filtering for RSL analysis. Reduced X abd Y scale to visualise region of largest data density."}
 
@@ -440,7 +452,9 @@ for (i in c(1:contrasts.pairs.number)){
 options(knitr.duplicate.label = "allow")
 scatter_plots <- vector(mode = "list", length = n.cont)
 
-for (i in c(1:contrasts.pairs.number)){
+#for (i in c(1:length(scatter_plots))){
+ 
+for (i in c(1:pairs_to_plot)){
     scatter_plots[[i]] <- knitr::knit_child("crispr_report_int_scatter.Rmd", quiet = TRUE, envir = environment())
 }
 

@@ -144,11 +144,15 @@ if(is.RSL){
       theme(axis.title.x = element_blank()) +
       labs(y="Reads assigned to sgRNA")
 
-tot_sgRNAs=seqstats[1,3]
+  tot_sgRNAs=seqstats[1,3]
 
-##change
-seqstats=seqstats[,c(8,2,7,4,5,6)]
-colnames(seqstats)=c("sample","sgRNA detected","sgRNAs not detected","reads assigned","reads total","fraction reads assigned")
+  seqstats$sgRNA_file=format(as.numeric(seqstats$sgRNA_file), nsmall=0, big.mark=",")
+  summary.stats$reads_assigned_file=format(as.numeric(summary.stats$reads_assigned_file), nsmall=0, big.mark=",")
+  summary.stats$reads_total=format(as.numeric(summary.stats$reads_total), nsmall=0, big.mark=",")
+
+  ##change
+  seqstats=seqstats[,c(8,2,7,4,5,6)]
+  colnames(seqstats)=c("sample","sgRNA detected","sgRNAs not detected","reads assigned","reads total","fraction reads assigned")
 
 
   }else{
@@ -175,6 +179,10 @@ if(!is.RSL){
       labs(y="Reads assigned to sgRNA")
 
   tot_sgRNAs=summary.stats[1,6]
+
+  summary.stats$detected=format(as.numeric(summary.stats$detected), nsmall=0, big.mark=",")
+  summary.stats$Reads=format(as.numeric(summary.stats$Reads), nsmall=0, big.mark=",")
+  summary.stats$Mapped=format(as.numeric(summary.stats$Mapped), nsmall=0, big.mark=",")
 
   colnames(summary.stats.table)=c("sample","sgRNA detected","sgRNAs not detected","reads assigned","reads total","fraction reads assigned","Gini index")
 
