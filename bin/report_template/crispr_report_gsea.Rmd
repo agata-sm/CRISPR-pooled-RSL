@@ -50,7 +50,7 @@ tablabel=paste(tab_n, "Table", sep="")
 
 sel_cat_caption=paste("(A)",gse.res$Description[1],"(B)",gse.res$Description[2],"(C)",gse.res$Description[3],"(D)",gse.res$Description[4],"(E)",gse.res$Description[5],"(F)",gse.res$Description[6],sep=" ")
 figurecap.dot=paste("Top enriched terms in comparison ",i,"; genes under ",selection," selection. Sorted by effect size (normalised enrichment score, NES).",sep="")
-figurecap.heatpl.lfc=paste("Heatmap to display relationships between gene abundance and functional category membership in comparison ",i,"; genes under ",selection," selection.",sep="")
+figurecap.heatpl.lfc=paste("Heatmap to display relationships between log fold change at a gene level and functional category membership in comparison ",i,"; genes under ",selection," selection.",sep="")
 figurecap.heatpl.rra=paste("Heatmap to display relationships between RRA pathway score and functional category membership in comparison ",i,"; genes under ",selection," selection.",sep="")
 figurecap.tree=paste("Treeplot to visualise hierarchical clustering of enriched categories in comparison ",i,"; genes under ",selection," selection. Number of genes - number of genes in set; Color - FDR.",sep="")
 
@@ -117,20 +117,15 @@ ggsave(filename=paste("Figure",fig_n,functest,"GSEA.dotplot",i,selection,"pdf",s
 <br />
 <br />
 
-```{asis, eval=!is.RSL, echo=print_plots}
-Relationships between gene abundance and functional category membership are visualised as a heatmap.
-```
 
-```{asis, eval=is.RSL, echo=print_plots}
-Relationships between effect size (RRA pathway score) and functional category membership are visualised as a heatmap.
-```
+Relationships between effect size (log2FC) and functional category membership are visualised as a heatmap.
 
 
 ```{r eval=print_plots}
 if (data.type == "reads"){
 	figurecap.heatpl=figurecap.heatpl.lfc
 } else if (data.type == "RSL"){
-	figurecap.heatpl=figurecap.heatpl.rra
+	figurecap.heatpl=figurecap.heatpl.lfc
 }
 ```
 

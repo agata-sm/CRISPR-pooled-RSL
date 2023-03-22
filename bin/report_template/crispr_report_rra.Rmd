@@ -265,9 +265,23 @@ DT::datatable(rep.g_pos[,1:9] %>% filter(pos.rank <=100), rownames = FALSE) %>% 
 
 ```{r include=FALSE, warning=FALSE}
 
+# if(is.RSL){
+#   # dat=gdata_i_RRA
+#   # xaxis="RRA Score"
+#   dat=gdata_lfc
+#   xaxis="Effect size (log2-fold change)"
+
+# }else{
+#   dat=gdata_i_lfc
+#   xaxis="Effect size (log2-fold change)"
+# }
+
 if(is.RSL){
   dat=gdata_i_RRA
-  xaxis="RRA Score"
+  dat=left_join(gdata_i_RRA,rep.g.i.annot[,c(1,15)])
+  dat=dat[,c(1,4,3)]
+  colnames(dat)=c("id","Score","FDR")
+  xaxis="Effect size (median log2-fold change)"
 }else{
   dat=gdata_i_lfc
   xaxis="Effect size (log2-fold change)"
@@ -305,6 +319,33 @@ dev.off()
 p_v1=ggplotly(p_v1, tooltip=c("text"))
 
 
+
+### plot of effect size log2FC per gene in alphabetical order
+dat_sorted=dat[order(dat$id), ]
+
+dat_sorted$group[grep("CON",dat_sorted$id)] <-"CON"
+dat_sorted$group[grep("RPL",dat_sorted$id)] <-"RPL/S"
+dat_sorted$group[grep("RPS",dat_sorted$id)] <-"RPL/S"
+
+plot_lfc_alpha=ggplot(dat_sorted, aes(x=id,y=Score,color=group, fill=group)) +
+   geom_bar(stat="identity", width=0.1)+
+   #theme(legend.position = "none")+
+   theme(axis.text.x=element_blank(), axis.ticks = element_blank() )+
+   ylab("log2(fold change)") +
+   scale_color_manual(values=mycolour) +  scale_fill_manual(values=mycolour)
+
+
+figurecap=paste("LogFC by (alphabetially sorted) gene in comparison\n",i, "project",proj.name.pref,".\n Analysis type:",data.type)
+
+fig_n1="99"
+fname=paste("Figure",fig_n1,"Sorted_lfc",i,"pdf",sep=".")
+pdf(file.path(plotdir.i,fname))
+plot_lfc_alpha + ggtitle(figurecap)
+dev.off()
+
+
+
+
 ```
 
 
@@ -329,20 +370,23 @@ p_v1
 ```
 
 
+
 #### Rank Plots
 
 ##### Gene Level
 
 ```{r include=FALSE}
 
-if (data.type == "RSL"){
+if(is.RSL){
   dat=gdata_i_RRA
-
-}else if (data.type == "reads"){
+  dat=left_join(gdata_i_RRA,rep.g.i.annot[,c(1,15)])
+  dat=dat[,c(1,4,3)]
+  colnames(dat)=c("id","Score","FDR")
+  xaxis="Effect size (median log2-fold change)"
+}else{
   dat=gdata_i_lfc
+  xaxis="Effect size (log2-fold change)"
 }
-
-
 
 dat$group="ns"
 dat$group[dat$FDR<=FDR.CO] <-"sig"
@@ -352,13 +396,14 @@ dat$group[dat$group=="sig" & dat$Score>0] <-"up"
 dat$group[dat$group=="sig" & dat$Score<0] <-"dn"
 
 
-
 dat$Rank = rank(dat$Score)
 
 dat_plot=dat[dat$FDR<=0.8,]
 
-p4_v1=ggplot(dat_plot, aes(x=Score, y=Rank, color=group, text=paste(id,"; Score",round(Score, digits=3),"; Rank",Rank))) +  geom_point(alpha=0.5) + scale_color_manual(values=mycolour) +
-theme_bw() + theme(legend.position = "none")# +
+p4_v1=ggplot(dat_plot, aes(x=Score, y=Rank, color=group, text=paste(id,"; log2(fold change)",round(Score, digits=3),"; Rank",Rank))) +  geom_point(alpha=0.5) + scale_color_manual(values=mycolour) +
+theme_bw() + theme(legend.position = "none") +  ylab("log2(fold change)") + xlab(xaxis)
+
+# +
 # geom_vline(xintercept=1.5, linetype="dashed", color = "grey50") + geom_vline(xintercept=-1.5, linetype="dashed", color = "grey50") +  
 # geom_hline(yintercept=-log10(0.05), linetype="dashed", color = "grey50")
 
@@ -374,6 +419,38 @@ dev.off()
 
 
 p4_v1=ggplotly(p4_v1, tooltip=c("text"))
+
+
+
+### plot of effect size log2FC per gene in alphabetical order - internal QC only
+dat_sorted=dat[order(dat$id), ]
+
+dat_sorted$group[grep("CON",dat_sorted$id)] <-"CON"
+dat_sorted$group[grep("RPL",dat_sorted$id)] <-"RPL/S"
+dat_sorted$group[grep("RPS",dat_sorted$id)] <-"RPL/S"
+
+# plot_lfc_alpha=ggplot(dat_sorted, aes(x=id,y=Score,color=group, fill=group)) +
+#    geom_bar(stat="identity", width=0.1)+
+#    #theme(legend.position = "none")+
+#    theme(axis.text.x=element_blank(), axis.ticks = element_blank() )+
+#    ylab("log2(fold change)") +
+#    scale_color_manual(values=mycolour) +  scale_fill_manual(values=mycolour)
+
+plot_lfc_alpha=ggplot(dat_sorted, aes(x=id,y=Score,color=group, fill=group)) +
+   geom_point(stat="identity")+
+   #theme(legend.position = "none")+
+   theme(axis.text.x=element_blank(), axis.ticks = element_blank() )+
+   ylab("log2(fold change)") +
+   scale_color_manual(values=mycolour) +  scale_fill_manual(values=mycolour)
+
+
+figurecap=paste("LogFC by (alphabetially sorted) gene in comparison\n",i, "project",proj.name.pref,".\n Analysis type:",data.type)
+
+fnameQC=paste("Figure","Sorted_lfc",i,"pdf",sep=".")
+pdf(file.path(plotdir_qc,fnameQC))
+plot_lfc_alpha + ggtitle(figurecap)
+dev.off()
+
 
 ```
 

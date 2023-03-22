@@ -30,7 +30,7 @@ report version v 0.4
 
 <!-- 
 draft of pipeline report
-to be used with pipeline_report.v0.4.R
+to be used with pipeline_report.v0.4.1.R
 
 17i2022 - 22iii2022 - 4v2022
 
@@ -58,7 +58,7 @@ knitr::opts_chunk$set(echo = FALSE,
                       message = FALSE)
 
 
-script_pth="./pipeline_report.v0.4.R"
+script_pth="./pipeline_report.v0.4.1.R"
 knitr::read_chunk(script_pth)
 
 source("./crispr_pipeline_report_functions.R")
@@ -88,25 +88,6 @@ source("./crispr_pipeline_report_functions.R")
 ```
 
 
-# Contents
-
-1. [Project Description](#Project-Description)
-2. [Practical Information](#Practical-Information)
-3. [Materials and Methods](#Materials-and-Methods)
-4. [Results](#Results)
-
-	4.1 [Library Summary Statistics](#sumstat)
-
-	4.2 [Statistical Analysis](#mageck)
-	
-	4.3 [Replicate Concordance](#RepCon)
-
-5. [Comments](#Comments)
-6. [Deliverables](#Deliverables)
-7. [References](#References)
-8. [Appendix](#Appendix)
-
-<br />
 <br />
 
 # Project Description <a name="Project-Description"></a>
@@ -116,20 +97,11 @@ Here we have written about the project.
 <br />
 <br />
 
-# Practical Information <a name="Practical-Information"></a>
+# Comments <a name="Comments"></a>
 
+Custom text which helps to interpret the screen results.
 
-## Important practical information
-
-### Data responsibility
-
-Unfortunately, we do not have resources to keep any files associated with this project.
-We recommend that you back up the results delivered by us.
-
-### Acknowledgments
-
-If you use results obtained with help of the **CRISPR Functional Genomics Facility** in a publication, we kindly ask you to acknowledge and cite us [@crisprRSL].
-
+<br />
 <br />
 <br />
 
@@ -138,6 +110,10 @@ If you use results obtained with help of the **CRISPR Functional Genomics Facili
 
 ## Library Preparation
 
+
+<!-- 
+Project specific changes up to this section. Please make any further changes with caution.
+ -->
 
 ## Data Processing
 
@@ -170,10 +146,30 @@ sgRNA - RSL combinations which were detected in only one of the technical replic
 
 <br />
 <br />
+<br />
+
+
+
+# Practical Information <a name="Practical-Information"></a>
+
+
+## Important practical information
+
+### Data responsibility
+
+Unfortunately, we do not have resources to keep any files associated with this project.
+We recommend that you back up the data and results delivered by us.
+
+### Acknowledgments
+
+If you use results obtained with help of the **CRISPR Functional Genomics Facility** in a publication, we kindly ask you to acknowledge and cite us [@crisprRSL].
+
+<br />
+<br />
+
 
 
 # Results <a name="Results"></a>
-
 
 
 
@@ -212,7 +208,12 @@ This plot is saved as **`r fname`**.
 
 <br />
 
-Table \@ref(tab:data-countingstats-table) presents summary statistics of sgRNA quantification.
+Table \@ref(tab:data-countingstats-table) presents summary statistics of sgRNA quantification. Total number of sgRNAs in the library was n=`r tot_sgRNAs`.
+
+
+```{asis, echo=!is.RSL}
+Gini index (coefficient) is a measure of inequality in data; it ranges between 0 in the case of perfect equality and 1 in the case of perfect inequality.
+```
 
 
 ```{r data-countingstats-table, echo=FALSE ,results='asis'}
@@ -233,7 +234,7 @@ This table is saved as **`r fname`**.
 
 
 `r if(is.RSL){"RSL"}else{"Reads"}`
-per guide diagnostic plot is presented on Figure \@ref(fig:reads-per-guide-boxplot).
+per guide diagnostic plot is presented on Figures \@ref(fig:reads-per-guide-boxplot) and \@ref(fig:reads-per-guide-boxplot-log).
 
 
 
@@ -250,10 +251,23 @@ The violin and box plot combination with removed outliers is to demonstrate the 
 
 ```
 
+```{r reads-per-guide-boxplot-log, echo=FALSE, fig.show='show', fig.width=10, cache=FALSE, fig.cap="Number of reads per sgRNA, log scale."}
+
+```
+
+
+<br />
+<br />
+
 
 ```{r reads-per-guide-violinplot, echo=FALSE, fig.show='show',fig.width=10,cache=FALSE, fig.cap="Number of reads per sgRNA after outliers removal."}
 
 ```
+
+
+<br />
+<br />
+
 
 ```{r boxplots-save, include=FALSE,cache=FALSE}
 
@@ -267,10 +281,6 @@ These plots are saved as **`r fname`**.
 
 
 
-```{asis, echo=is.RSL}
-*Some RSL specific text*
-```
-
 
 ```{r histogram-rslguide, eval=is.RSL}
 
@@ -280,6 +290,11 @@ These plots are saved as **`r fname`**.
 ```{r histogram-rslguide-plot1, eval=is.RSL, dev='png', fig.show='show',fig.dim=c(10, 5), cache=FALSE, fig.cap="Reads per RSL-guide after input-based filtering for RSL analysis. Full scale."}
 
 ```
+
+
+<br />
+<br />
+
 
 ```{r histogram-rslguide-plot2, eval=is.RSL, dev='png', fig.show='show',fig.dim=c(10, 5), cache=FALSE, fig.cap="Reads per RSL-guide after input-based filtering for RSL analysis. Reduced X abd Y scale to visualise region of largest data density."}
 
@@ -358,7 +373,7 @@ Replicate concordance can be adressed using several methods probing different pr
 ### PCA <a name="PCA"></a>
 
 
-Principal Component Analysis (PCA) is a technique to summarize and to visualize the information in a data set containing observations described by multiple inter-correlated quantitative variable. PCA is used to extract the important information from a multivariate data table and to express this information as a set of few new variables called principal components. These new variables correspond to a linear combination of the originals. The information in a given data set corresponds to the total variation it contains. The goal of PCA is to identify directions (or principal components) along which the variation in the data is maximal.
+Principal Component Analysis (PCA) is a technique to summarize and visualize the information in a data set containing observations described by multiple inter-correlated quantitative variables. PCA is used to extract the important information from a multivariate data table and to express this information as a set of few new variables called principal components. These new variables correspond to a linear combination of the originals. The information in a given data set corresponds to the total variation it contains. The goal of PCA is to identify directions (or principal components) along which the variation in the data is maximal.
 In other words, PCA reduces the dimensionality of a multivariate data to two or three principal components, that can be visualized graphically, with minimal loss of information.
 
 PCA of TMM-normalised log2 read counts summarised to individual
@@ -433,9 +448,9 @@ for (i in c(1:contrasts.pairs.number)){
 
 ```{r eval=!is.RSL, echo=FALSE, results='asis'}
 options(knitr.duplicate.label = "allow")
-scatter_plots <- vector(mode = "list", length = n.cont)
-
-for (i in c(1:contrasts.pairs.number)){
+scatter_plots <- vector(mode = "list", length = length(pairs_to_plot))
+ 
+for (i in c(1:length(pairs_to_plot))){
     scatter_plots[[i]] <- knitr::knit_child("crispr_report_int_scatter.Rmd", quiet = TRUE, envir = environment())
 }
 
@@ -452,14 +467,6 @@ cat(unlist(scatter_plots), sep = '\n')
 <br />
 <br />
 
-
-# Comments <a name="Comments"></a>
-
-Custom text which helps to interpret the screen results.
-
-<br />
-<br />
-<br />
 
 
 # Deliverables <a name="Deliverables"></a> {#deliv}

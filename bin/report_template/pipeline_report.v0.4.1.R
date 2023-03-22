@@ -11,11 +11,14 @@
 #proj.name.pref
 #organism
 
+
+
 #Rscript report_launcher.R  proj.dir proj.name.pref data.type organism &> reads.report.stderrout
 #OBS! positional arguments
 
 
 ## ---- dirs
+
 
 # types of data for chunk evaluation
 is.RSL=isTRUE(data.type=="RSL")
@@ -51,9 +54,8 @@ dir.create(resdir, recursive = TRUE)
 plotdir=file.path(resdir,"plots")
 dir.create(plotdir)
 
-plotdir_qc=file.path(resdir,"plots_QC")
+plotdir_qc=file.path(plotdir,"QC_plots")
 dir.create(plotdir_qc)
-
 
 ## ---- prep_environment
 options(connectionObserver = NULL) # https://github.com/rstudio/rstudio/issues/9219
@@ -102,7 +104,7 @@ tab_n_sv=0
 
 #set here - significance cutoff for RRA (mainly used for plot labeling)
 FDR.CO=0.05
-mycolour = c('ns'="gray80", 'dn'= "#377eb8", 'up'="#e41a1c", 'RPL/S'="#f3b10c", 'CON'="#43a436")
+mycolour = c('ns'="gray80", 'dn'= "#377eb8", 'up'="#e41a1c")
 
 
 source("./crispr_pipeline_report_functions.R")
@@ -120,7 +122,7 @@ samples.tab$library=samples.tab$sample
 if(is.RSL){
     if(seqstatsSTAUS){
 
-  seqstats=read.delim(file.seqstats, header = TRUE, sep = "\t", quote = "\"", dec = ".", fill = TRUE, row.names=NULL,blank.lines.skip=TRUE)
+  seqstats=read.delim(file.seqstats, header = TRUE, sep = "\t", quote = "\"", dec = ".", fill = TRUE, row.names=NULL)
   seqstats$missing_sgRNA=seqstats$sgRNA_total-seqstats$sgRNA_file
 
   seqstats$file_fastq=factor(seqstats$file_fastq, levels=samples.tab$file)
@@ -142,22 +144,28 @@ if(is.RSL){
       theme(axis.title.x = element_blank()) +
       labs(y="Reads assigned to sgRNA")
 
-##change
-seqstats=seqstats[,c(8,2,7,3,4,5,6)]
-colnames(seqstats)=c("sample","sgRNA detected","sgRNAs not detected","sgRNA total","reads assigned","reads total","fraction reads assigned")
+  tot_sgRNAs=seqstats[1,3]
+
+  seqstats$sgRNA_file=format(as.numeric(seqstats$sgRNA_file), nsmall=0, big.mark=",")
+  seqstats$reads_assigned_file=format(as.numeric(seqstats$reads_assigned_file), nsmall=0, big.mark=",")
+  seqstats$reads_total=format(as.numeric(seqstats$reads_total), nsmall=0, big.mark=",")
+
+  ##change
+  seqstats=seqstats[,c(8,2,7,4,5,6)]
+  colnames(seqstats)=c("sample","sgRNA detected","sgRNAs not detected","reads assigned","reads total","fraction reads assigned")
 
 
+  }else{
+    tot_sgRNAs="na"
   }
 }
 
 ## ---- data_countingstats_reads
 if(!is.RSL){
   file.summary.stats=file.path(ctable_datadir,paste0(proj.name.pref,".countsummary.txt"))
-  summary.stats=read.delim(file.summary.stats, header = TRUE, sep = "\t", quote = "\"", dec = ".", fill = TRUE, row.names=NULL,blank.lines.skip=TRUE)
+  summary.stats=read.delim(file.summary.stats, header = TRUE, sep = "\t", quote = "\"", dec = ".", fill = TRUE, row.names=NULL)
   summary.stats$sample=factor(summary.stats$Label, levels=samples.tab$library)
   summary.stats$detected=summary.stats$TotalsgRNAs-summary.stats$Zerocounts
-  summary.stats.table=summary.stats[,c(14,15,7,4,3,5,8)]
-  summary.stats.table=summary.stats.table[match(samples.tab$library, summary.stats.table$sample),]
 
   seq_plot2=ggplot(data=summary.stats.table, aes(x=sample, y=Mapped, fill=sample)) + geom_bar(stat="identity") +
       scale_fill_viridis(discrete=TRUE, alpha=0.35,option="turbo") +
@@ -168,8 +176,17 @@ if(!is.RSL){
       theme(axis.title.x = element_blank()) +
       labs(y="Reads assigned to sgRNA")
 
+  tot_sgRNAs=summary.stats[1,6]
+
+  summary.stats$detected=format(as.numeric(summary.stats$detected), nsmall=0, big.mark=",")
+  summary.stats$Reads=format(as.numeric(summary.stats$Reads), nsmall=0, big.mark=",")
+  summary.stats$Mapped=format(as.numeric(summary.stats$Mapped), nsmall=0, big.mark=",")
+
+  summary.stats.table=summary.stats[,c(14,15,7,4,3,5,8)]
+  summary.stats.table=summary.stats.table[match(samples.tab$library, summary.stats.table$sample),]
 
   colnames(summary.stats.table)=c("sample","sgRNA detected","sgRNAs not detected","reads assigned","reads total","fraction reads assigned","Gini index")
+
 
 }
 
@@ -229,7 +246,6 @@ if (data.type == "RSL"){
   ylab.txt="Read counts"
 
 }
-
 
 
 
@@ -366,9 +382,14 @@ plot1=ggplot(data=raw_freq_r, aes(x=readcount, y=frequency, colour=sample, fill=
   labs(y="count",x="reads per RSL-guide")
 
 
+# x_lim=40
+# y_lim=500000
 
-x_lim=40
-y_lim=500000
+# better lim specification
+x_lim=40 
+freqs.lim.i=raw_freq_r%>%filter(readcount>=1, readcount<=x_lim)
+y_lim=round(max(freqs.lim.i$frequency)+0.1*(max(freqs.lim.i$frequency)))
+
 
 plot2=ggplot(data=raw_freq_r, aes(x=readcount, y=frequency, colour=sample, fill=sample)) + geom_bar(stat="identity") +
   facet_wrap(~sample)+
@@ -436,6 +457,7 @@ knitr::kable(detguides_table, row.names = FALSE, caption = "Number of detected g
 ## ---- read-contrasts
 contrasts.tab=read.table(comparisons.file, sep="\t", header=TRUE, blank.lines.skip=TRUE)
 my.contrasts=contrasts.tab$name
+my.contrasts=unique(my.contrasts)
 n.cont=nrow(contrasts.tab)
 
 
@@ -610,7 +632,39 @@ cor_hm_sgRNA +theme(aspect.ratio = 1) + theme(plot.margin = unit(c(0, 0, 0, 0), 
 
 ## ---- contrast_scatters
 
-my.contrasts=contrasts.tab$name
+
+# here check if it is a legit pair for scatter plotting
+groups_to_plot=unique(contrasts.tab$group)
+
+pairs_to_plot=list()
+
+
+for (g in groups_to_plot){
+  comparisons_tab=contrasts.tab[contrasts.tab$group==g,]
+  comparisons=comparisons_tab$name
+
+  if( length(comparisons) >=2 ){
+
+    comparison_pairs_g=combn(comparisons,2)
+
+    contrasts.pairs.number=ncol(comparison_pairs_g)
+
+    for (i in c(1:contrasts.pairs.number)){
+
+        contr.pair.i=comparison_pairs_g[,i]
+
+        name.gi=paste(g,i,sep=".")
+
+        pairs_to_plot[[name.gi]]=contr.pair.i
+      }
+  }
+}
+
+
+
+
+#this has been defined before, has to be unique now
+#my.contrasts=contrasts.tab$name
 
 
 #contrasts combinations
@@ -619,61 +673,68 @@ contrasts.pairs.mtx=combn(my.contrasts,2)
 contrasts.pairs.number=ncol(contrasts.pairs.mtx)
 
 #produce the plots
-scatters=vector(mode = "list", length = contrasts.pairs.number)
+#scatters=vector(mode = "list", length = contrasts.pairs.number)
+scatters=vector(mode = "list")
 
 
 for (i in c(1:contrasts.pairs.number)){
 
+#for (i in c(1:pairs_to_plot)){
+
   contr.pair.i=contrasts.pairs.mtx[,i]
 
-  res.df=data.frame()
-  for (j in c( contr.pair.i[1], contr.pair.i[2])){
- 
-    if(!is.RSL){
-      res.df.i=as.data.frame(cbind(all.res[[j]]$neg.lfc,all.res[[j]]$id ))
-      colnames(res.df.i)=c("lfc","id")
-      res.df.i$comparison=j
-      res.df=rbind(res.df,res.df.i)
+  if ( any(pairs_to_plot %in% list(contr.pair.i)) ){
+
+    res.df=data.frame()
+    for (j in c( contr.pair.i[1], contr.pair.i[2])){
+   
+      if(!is.RSL){
+        res.df.i=as.data.frame(cbind(all.res[[j]]$neg.lfc,all.res[[j]]$id ))
+        colnames(res.df.i)=c("lfc","id")
+        res.df.i$comparison=j
+        res.df=rbind(res.df,res.df.i)
+      }
+      if(is.RSL){
+        res.df.i=as.data.frame(cbind(all.res[[j]]$median.logFC,all.res[[j]]$id ))
+        colnames(res.df.i)=c("lfc","id")
+        res.df.i$comparison=j
+        res.df=rbind(res.df,res.df.i)
+      }
     }
-    if(is.RSL){
-      res.df.i=as.data.frame(cbind(all.res[[j]]$median.logFC,all.res[[j]]$id ))
-      colnames(res.df.i)=c("lfc","id")
-      res.df.i$comparison=j
-      res.df=rbind(res.df,res.df.i)
-    }
+
+    res.df$lfc=as.numeric(res.df$lfc)
+    df_scatter=spread(res.df,comparison,lfc)
+
+    #add this to avoid error in density distribution
+    #https://stackoverflow.com/questions/53075331/error-using-geom-density-2d-in-r-computation-failed-in-stat-density2d-b
+    #Error in MASS::kde2d(x, y, ...) : 
+    #  missing or infinite values in the data are not allowed
+    # OBS! this still does not work for RSL data, so will only be run for reads data
+    pseudocount=0.01
+    df_scatter[,4]=df_scatter[,2]+pseudocount
+    df_scatter[,5]=df_scatter[,3]+pseudocount
+
+    df_scatter$density <- get_density(df_scatter[,2], df_scatter[,3], n = 100)
+
+    pl2=ggplot(df_scatter, aes(x=df_scatter[,4],y=df_scatter[,5], text=paste(id,"; lfc",colnames(df_scatter)[2],round(df_scatter[,2],digits=3),"; lfc",colnames(df_scatter)[3],round(df_scatter[,3],digits=3)) ))+
+      geom_point() +
+      theme_bw() +
+       xlab(paste0("log2 Fold Change in ",colnames(df_scatter)[2])) + ylab(paste0("log2 Fold Change in ",colnames(df_scatter)[3]))
+
+
+    pl2.d=pl2+geom_point(aes(df_scatter[,4], df_scatter[,5], color = density)) + scale_color_viridis()
+
+    fig_n=fig_n+1
+    ggsave(filename=paste("Figure",fig_n,"log2FCscatterplot",colnames(df_scatter)[2],colnames(df_scatter)[3],"comparison_group",g,i,"pdf",sep="."),path=plotdir,device="pdf")
+
+
+    pl2_int=ggplotly(pl2.d, tooltip=c("text"))
+
+    scatters[[i]]=pl2_int
+
   }
-
-  res.df$lfc=as.numeric(res.df$lfc)
-  df_scatter=spread(res.df,comparison,lfc)
-
-  #add this to avoid error in density distribution
-  #https://stackoverflow.com/questions/53075331/error-using-geom-density-2d-in-r-computation-failed-in-stat-density2d-b
-  #Error in MASS::kde2d(x, y, ...) : 
-  #  missing or infinite values in the data are not allowed
-  # OBS! this still does not work for RSL data, so will only be run for reads data
-  pseudocount=0.01
-  df_scatter[,4]=df_scatter[,2]+pseudocount
-  df_scatter[,5]=df_scatter[,3]+pseudocount
-
-  df_scatter$density <- get_density(df_scatter[,2], df_scatter[,3], n = 100)
-
-  pl2=ggplot(df_scatter, aes(x=df_scatter[,4],y=df_scatter[,5], text=paste(id,"; lfc",colnames(df_scatter)[2],round(df_scatter[,2],digits=3),"; lfc",colnames(df_scatter)[3],round(df_scatter[,3],digits=3)) ))+
-    geom_point() +
-    theme_bw() +
-     xlab(paste0("log2 Fold Change in ",colnames(df_scatter)[2])) + ylab(paste0("log2 Fold Change in ",colnames(df_scatter)[3]))
-
-
-  pl2.d=pl2+geom_point(aes(df_scatter[,4], df_scatter[,5], color = density)) + scale_color_viridis()
-
-  fig_n=fig_n+1
-  ggsave(filename=paste("Figure",fig_n,"log2FCscatterplot",colnames(df_scatter)[2],colnames(df_scatter)[3],"comparison",i,"pdf",sep="."),path=plotdir,device="pdf")
-
-
-  pl2_int=ggplotly(pl2.d, tooltip=c("text"))
-
-  scatters[[i]]=pl2_int
-
 }
+
 
 ## ---- contrast-scatters-plot
 
