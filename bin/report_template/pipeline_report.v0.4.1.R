@@ -141,11 +141,15 @@ if(is.RSL){
       theme(axis.title.x = element_blank()) +
       labs(y="Reads assigned to sgRNA")
 
+tot_sgRNAs=seqstats[1,3]
+
 ##change
-seqstats=seqstats[,c(8,2,7,3,4,5,6)]
-colnames(seqstats)=c("sample","sgRNA detected","sgRNAs not detected","sgRNA total","reads assigned","reads total","fraction reads assigned")
+seqstats=seqstats[,c(8,2,7,4,5,6)]
+colnames(seqstats)=c("sample","sgRNA detected","sgRNAs not detected","reads assigned","reads total","fraction reads assigned")
 
 
+  }else{
+    tot_sgRNAs="na"
   }
 }
 
@@ -155,7 +159,7 @@ if(!is.RSL){
   summary.stats=read.delim(file.summary.stats, header = TRUE, sep = "\t", quote = "\"", dec = ".", fill = TRUE, row.names=NULL)
   summary.stats$sample=factor(summary.stats$Label, levels=samples.tab$library)
   summary.stats$detected=summary.stats$TotalsgRNAs-summary.stats$Zerocounts
-  summary.stats.table=summary.stats[,c(14,15,7,6,4,3,5,8)]
+  summary.stats.table=summary.stats[,c(14,15,7,4,3,5,8)]
   summary.stats.table=summary.stats.table[match(samples.tab$library, summary.stats.table$sample),]
 
   seq_plot2=ggplot(data=summary.stats.table, aes(x=sample, y=Mapped, fill=sample)) + geom_bar(stat="identity") +
@@ -167,8 +171,10 @@ if(!is.RSL){
       theme(axis.title.x = element_blank()) +
       labs(y="Reads assigned to sgRNA")
 
+  tot_sgRNAs=summary.stats[1,6]
 
-  colnames(summary.stats.table)=c("sample","sgRNA detected","sgRNAs not detected","sgRNA total","reads assigned","reads total","fraction reads assigned","Gini index")
+  colnames(summary.stats.table)=c("sample","sgRNA detected","sgRNAs not detected","reads assigned","reads total","fraction reads assigned","Gini index")
+
 
 }
 
@@ -364,9 +370,14 @@ plot1=ggplot(data=raw_freq_r, aes(x=readcount, y=frequency, colour=sample, fill=
   labs(y="count",x="reads per RSL-guide")
 
 
+# x_lim=40
+# y_lim=500000
 
-x_lim=40
-y_lim=500000
+# better lim specification
+x_lim=40 
+freqs.lim.i=raw_freq_r%>%filter(readcount>=1, readcount<=x_lim)
+y_lim=round(max(freqs.lim.i$frequency)+0.1*(max(freqs.lim.i$frequency)))
+
 
 plot2=ggplot(data=raw_freq_r, aes(x=readcount, y=frequency, colour=sample, fill=sample)) + geom_bar(stat="identity") +
   facet_wrap(~sample)+

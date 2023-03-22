@@ -207,7 +207,7 @@ This plot is saved as **`r fname`**.
 
 <br />
 
-Table \@ref(tab:data-countingstats-table) presents summary statistics of sgRNA quantification. Total number of sgRNAs in the library was n=`r summary.stats[1,6]`.
+Table \@ref(tab:data-countingstats-table) presents summary statistics of sgRNA quantification. Total number of sgRNAs in the library was n=`r tot_sgRNAs`.
 
 
 ```{asis, echo=!is.RSL}
