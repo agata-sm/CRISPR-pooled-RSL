@@ -467,14 +467,6 @@ cat(unlist(scatter_plots), sep = '\n')
 <br />
 
 
-# Comments <a name="Comments"></a>
-
-Custom text which helps to interpret the screen results.
-
-<br />
-<br />
-<br />
-
 
 # Deliverables <a name="Deliverables"></a> {#deliv}
 

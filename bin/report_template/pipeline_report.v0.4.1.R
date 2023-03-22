@@ -166,8 +166,6 @@ if(!is.RSL){
   summary.stats=read.delim(file.summary.stats, header = TRUE, sep = "\t", quote = "\"", dec = ".", fill = TRUE, row.names=NULL)
   summary.stats$sample=factor(summary.stats$Label, levels=samples.tab$library)
   summary.stats$detected=summary.stats$TotalsgRNAs-summary.stats$Zerocounts
-  summary.stats.table=summary.stats[,c(14,15,7,4,3,5,8)]
-  summary.stats.table=summary.stats.table[match(samples.tab$library, summary.stats.table$sample),]
 
   seq_plot2=ggplot(data=summary.stats.table, aes(x=sample, y=Mapped, fill=sample)) + geom_bar(stat="identity") +
       scale_fill_viridis(discrete=TRUE, alpha=0.35,option="turbo") +
@@ -183,6 +181,9 @@ if(!is.RSL){
   summary.stats$detected=format(as.numeric(summary.stats$detected), nsmall=0, big.mark=",")
   summary.stats$Reads=format(as.numeric(summary.stats$Reads), nsmall=0, big.mark=",")
   summary.stats$Mapped=format(as.numeric(summary.stats$Mapped), nsmall=0, big.mark=",")
+
+  summary.stats.table=summary.stats[,c(14,15,7,4,3,5,8)]
+  summary.stats.table=summary.stats.table[match(samples.tab$library, summary.stats.table$sample),]
 
   colnames(summary.stats.table)=c("sample","sgRNA detected","sgRNAs not detected","reads assigned","reads total","fraction reads assigned","Gini index")
 
