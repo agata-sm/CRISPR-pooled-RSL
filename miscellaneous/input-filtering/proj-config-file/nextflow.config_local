@@ -1,23 +1,24 @@
 params {
-	// paths to tech replicates of input library sequencing, path to R1 only
-	fastq_rep1 = "/path/to/fastq_r1_R1_001.fastq.gz"
-	fastq_rep2 = "/path/to/fastq_r2_R1_001.fastq.gz"
+	// allocation
+	project = "snic2022-22-1180"
 
-	librarydesign = "/path/to/Brunello_Library_USE_THIS_ONLY.csv"
+	// run name
+	projname = "inputrun"
 
-	projname = "Brunello_v2022"
+	// path to file proj.properties
+	properties = "/path/to/inputrun.properties"
 
-	// should reference data set be used
-	// TRUE if yes, FALSE if no
-	usereference = "TRUE"
+	// library design file
+	librarydesign = "/path/to/Brunello_Library_USE_THIS_ONLY.eol.csv"
 
-	// please define regardless of whether they are used or not; if not use dummy values
+	// use reference data
+	usereference = "TRUE" // or "FALSE"
 
 	// path to count table with evaluation data set
-	refdatacnttable = "/path/to/PROJ.UMIcounts.csv"
+	refdatacnttable = "/proj/sllstore2017103/software/tests/ref_data/Heldin2020/Calle_Heldin.UMIcounts.csv"
 
-	refdatapref = "PROJ"
+	refdatapref = "Calle_Heldin.UMIcounts"
 
-	// additional filtering by RowSums to remove low abundance RSL-sgRNA combinations
+	// additional filtering by RowSums to remove low abundance RSL-sgRNA combinations in reference data
 	filtRowSums = 1
 }
