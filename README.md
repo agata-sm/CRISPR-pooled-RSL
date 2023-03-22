@@ -3,7 +3,11 @@ Pipeline for processing data from pooled CRISPR screens with RSL barcodes.
 
 ## Instructions for training
 
-3 February 2023
+**24 February 2023**
+
+Please check file training-24ii2023.md
+
+**3 February 2023**
 
 Please check file training-2ii2023.md
 
@@ -109,6 +113,12 @@ reads:
 
 ```
 module load java/OracleJDK_11.0.9
+module load bioinfo-tools
+#module load Nextflow/latest
+module load Nextflow/22.10.1
+
+export NXF_HOME=/proj/sllstore2017103/software/nextflow_tmp
+
 nextflow run /proj/sllstore2017103/software/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -profile cluster,singularity
 ```
 
@@ -116,6 +126,12 @@ RSL:
 
 ```
 module load java/OracleJDK_11.0.9
+module load bioinfo-tools
+#module load Nextflow/latest
+module load Nextflow/22.10.1
+
+export NXF_HOME=/proj/sllstore2017103/software/nextflow_tmp
+
 nextflow run /proj/sllstore2017103/software/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -entry RSL -profile cluster,singularity
 ```
 

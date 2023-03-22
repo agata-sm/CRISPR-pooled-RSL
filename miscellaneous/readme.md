@@ -13,6 +13,7 @@ This is a pipeline to filter **input libraries** sequenced in two technical repl
 
 The pipeline uses Singularity / Apptainer containers.
 
+
 Usage:
 
 ```
@@ -66,8 +67,6 @@ params {
 	// additional filtering by RowSums to remove low abundance RSL-sgRNA combinations in reference data
 	filtRowSums = 1
 }
-
-
 ```
 
 * `inputrun.properties` has format appropriate for `CrisprCounter.jar` and is described in detail elsewhere;
