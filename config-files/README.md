@@ -100,7 +100,11 @@ HighGFP_REP2_R1_001.fastq.gz	HighGFP_REP2	HighGFP	rep2
 
 
 ```
-name	reference	treatment
-replicate-1	LowGFP_REP1	HighGFP_REP1
-replicate-2	LowGFP_REP2	HighGFP_REP2
+name	reference	treatment    group
+replicate-1	LowGFP_REP1	HighGFP_REP1    1
+replicate-2	LowGFP_REP2	HighGFP_REP2    1
 ```
+
+`Group` refers to a group of contrasts for which the effect size (log2FC) should be presented as a scatter plot. If a group contains more than 2 comparisons, all combinations will be plotted; if a comparison is not to be plotted on the scatter plots, a unique value should be assigned as `group`.
+
+
