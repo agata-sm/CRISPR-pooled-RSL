@@ -250,9 +250,6 @@ The violin and box plot combination with removed outliers is to demonstrate the 
 
 ```
 
-<br />
-<br />
-
 ```{r reads-per-guide-boxplot-log, echo=FALSE, fig.show='show', fig.width=10, cache=FALSE, fig.cap="Number of reads per sgRNA, log scale."}
 
 ```
@@ -450,11 +447,9 @@ for (i in c(1:contrasts.pairs.number)){
 
 ```{r eval=!is.RSL, echo=FALSE, results='asis'}
 options(knitr.duplicate.label = "allow")
-scatter_plots <- vector(mode = "list", length = n.cont)
-
-#for (i in c(1:length(scatter_plots))){
+scatter_plots <- vector(mode = "list", length = length(pairs_to_plot))
  
-for (i in c(1:pairs_to_plot)){
+for (i in c(1:length(pairs_to_plot))){
     scatter_plots[[i]] <- knitr::knit_child("crispr_report_int_scatter.Rmd", quiet = TRUE, envir = environment())
 }
 

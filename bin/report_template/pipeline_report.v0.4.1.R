@@ -147,8 +147,8 @@ if(is.RSL){
   tot_sgRNAs=seqstats[1,3]
 
   seqstats$sgRNA_file=format(as.numeric(seqstats$sgRNA_file), nsmall=0, big.mark=",")
-  summary.stats$reads_assigned_file=format(as.numeric(summary.stats$reads_assigned_file), nsmall=0, big.mark=",")
-  summary.stats$reads_total=format(as.numeric(summary.stats$reads_total), nsmall=0, big.mark=",")
+  seqstats$reads_assigned_file=format(as.numeric(seqstats$reads_assigned_file), nsmall=0, big.mark=",")
+  seqstats$reads_total=format(as.numeric(seqstats$reads_total), nsmall=0, big.mark=",")
 
   ##change
   seqstats=seqstats[,c(8,2,7,4,5,6)]
