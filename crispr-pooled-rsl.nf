@@ -173,6 +173,10 @@ lib_ch= Channel.fromPath(params.librarydesign, checkIfExists:true)
 		.set { lib_ch }
 
 
+//metadata channles
+sampleInfo_ch=Channel.fromPath(params.sampleinfo, checkIfExists:true)
+comparisonsInfo_ch=Channel.fromPath(params.comparisons, checkIfExists:true)
+
 
 /////////////////////////////
 // processes
@@ -206,7 +210,7 @@ workflow {
 
 	//report
 	mageck_res_reads_gene_ch=mageck_rra_reads.out.gene_summary_reads_ch
-	report_reads(mageck_res_reads_gene_ch.collect())
+	report_reads(mageck_res_reads_gene_ch.collect(), sampleInfo_ch, comparisonsInfo_ch)
 
 	//QC
 	fastqc(fastqr1_ch2)

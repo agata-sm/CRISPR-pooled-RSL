@@ -191,11 +191,14 @@ process report_reads {
 
     input:
     path('*')
+    path sampleInfo_ch
+    path comparisonsInfo_ch
 
     output:
     path "report.reads"
     path "results/reads/rra_annotation"
     path "${params.verfile}"
+
 
     script:
     """
@@ -207,13 +210,8 @@ process report_reads {
     cp ${params.sampleinfo} ${params.projname}/metadata
     cp ${params.comparisons} ${params.projname}/metadata
     cp -r ${projectDir}/bin/report_template/* .
-    sampleInfo="\$(basename ${params.sampleinfo})"
-    comparisonsInfo="\$(basename ${params.sampleinfo})"
-    
-    echo "/$sampleInfo"
-    echo "/$comparisonsInfo"
-
-    Rscript report_launcher.R $params.projname $params.projname reads $params.organism /$sampleInfo /$comparisonsInfo
+  
+    Rscript report_launcher.R $params.projname $params.projname reads $params.organism $sampleInfo_ch $comparisonsInfo_ch
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
