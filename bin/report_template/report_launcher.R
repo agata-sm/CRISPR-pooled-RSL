@@ -14,6 +14,8 @@ organism <- args[4]
 metadata.fname<-args[5]
 comparisons.fname<-args[6]
 
+user.run=Sys.getenv("USER")
+
 #wrk.dir=file.path(proj.dir,"results",data.type,"report")
 wrk.dir=file.path(paste("report",data.type,sep="."))
 dir.create(wrk.dir, recursive = TRUE)

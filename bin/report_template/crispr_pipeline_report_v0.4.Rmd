@@ -18,7 +18,7 @@ bibliography: references.bib
 
 
 
-Run by: `r Sys.getenv("USER")` 
+Run by: `r user.run` 
 
 CRISPR screen report for project `r proj.name.pref`, analysis based on `r data.type`.
 
