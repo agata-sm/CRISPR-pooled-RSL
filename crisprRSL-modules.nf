@@ -211,7 +211,7 @@ process report_reads {
     cp ${params.comparisons} ${params.projname}/metadata
     cp -r ${projectDir}/bin/report_template/* .
   
-    Rscript report_launcher.R $params.projname $params.projname reads $params.organism $sampleInfo_ch $comparisonsInfo_ch
+    Rscript report_launcher.R $params.projname $params.projname reads $params.organism $sampleInfo_ch $comparisonsInfo_ch \$USER
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
@@ -368,7 +368,7 @@ process report_RSL {
     cp ${params.sampleinfo} ${params.projname}/metadata
     cp ${params.comparisons} ${params.projname}/metadata
     cp -r ${projectDir}/bin/report_template/* .
-    Rscript report_launcher.R $params.projname $params.projname RSL $params.organism  $sampleInfo_ch $comparisonsInfo_ch
+    Rscript report_launcher.R $params.projname $params.projname RSL $params.organism  $sampleInfo_ch $comparisonsInfo_ch \$USER
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
