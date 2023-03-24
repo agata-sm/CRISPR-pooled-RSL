@@ -24,10 +24,6 @@ params.metadatadir = 'metadata'
 
 params.fastqR1 = "$params.fastqdir/*R1*fastq.gz"
 
-//get file names
-params.sampleinfoFname="${params.sampleinfo##*/}"
-params.comparisonsFname="${params.comparisons##*/}"
-
 
 
 // if input based filtering is not desired
@@ -91,9 +87,6 @@ log.info """\
  control file: ${params.libctrl_string}
 
  outdir       : ${params.outdir}
-
-metadata fname: ${params.sampleinfoFname}
-comparisons fname: ${params.comparisonsFname}
 
  """
  .stripIndent()
