@@ -735,7 +735,8 @@ for (i in c(1:contrasts.pairs.number)){
 
     pl2_int=ggplotly(pl2.d, tooltip=c("text"))
 
-    scatters[[i]]=pl2_int
+    comp.name.i=paste(contr.pair.i[1],contr.pair.i[2], sep=" ")
+    scatters[[comp.name.i]]=pl2_int
 
   }
 }
