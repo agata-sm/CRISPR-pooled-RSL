@@ -168,6 +168,10 @@ if(!is.RSL){
   summary.stats$sample=factor(summary.stats$Label, levels=samples.tab$library)
   summary.stats$detected=summary.stats$TotalsgRNAs-summary.stats$Zerocounts
 
+  summary.stats.table=summary.stats[,c(14,15,7,4,3,5,8)]
+  summary.stats.table=summary.stats.table[match(samples.tab$library, summary.stats.table$sample),]
+
+
   seq_plot2=ggplot(data=summary.stats.table, aes(x=sample, y=Mapped, fill=sample)) + geom_bar(stat="identity") +
       scale_fill_viridis(discrete=TRUE, alpha=0.35,option="turbo") +
       theme_bw() +
@@ -179,12 +183,9 @@ if(!is.RSL){
 
   tot_sgRNAs=summary.stats[1,6]
 
-  summary.stats$detected=format(as.numeric(summary.stats$detected), nsmall=0, big.mark=",")
-  summary.stats$Reads=format(as.numeric(summary.stats$Reads), nsmall=0, big.mark=",")
-  summary.stats$Mapped=format(as.numeric(summary.stats$Mapped), nsmall=0, big.mark=",")
-
-  summary.stats.table=summary.stats[,c(14,15,7,4,3,5,8)]
-  summary.stats.table=summary.stats.table[match(samples.tab$library, summary.stats.table$sample),]
+  summary.stats.table$detected=format(as.numeric(summary.stats.table$detected), nsmall=0, big.mark=",")
+  summary.stats.table$Reads=format(as.numeric(summary.stats.table$Reads), nsmall=0, big.mark=",")
+  summary.stats.table$Mapped=format(as.numeric(summary.stats.table$Mapped), nsmall=0, big.mark=",")
 
   colnames(summary.stats.table)=c("sample","sgRNA detected","sgRNAs not detected","reads assigned","reads total","fraction reads assigned","Gini index")
 
