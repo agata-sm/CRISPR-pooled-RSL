@@ -601,13 +601,13 @@ gseaPvalCO=0.1
 ```
 
 
-```{asis, echo=c(!is.RSL, gene_id_status)}
+```{asis, echo=!is.RSL, eval=gene_id_status)}
 Rank score used for this analysis is log2(median fold change) across four sgRNAs per each gene.
 log2FC is used to test for enrichment amongst genes under positive selection and
 -log2(FC) is used to test for enrichment amongst genes under negative selection.
 ```
 
-```{asis, echo=c(!is.RSL, gene_id_status)}
+```{asis, echo=!is.RSL, eval=gene_id_status)}
 Rank score used for this analysis is log2 fold change as reported in RRA analysis (MAGeCK), breaking ties by rank from RRA analysis.
 log2FC is used to test for enrichment amongst genes under positive selection and
 -log2(FC) is used to test for enrichment amongst genes under negative selection.
