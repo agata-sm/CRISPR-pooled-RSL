@@ -207,8 +207,8 @@ process report_reads {
     cp ${params.sampleinfo} ${params.projname}/metadata
     cp ${params.comparisons} ${params.projname}/metadata
     cp -r ${projectDir}/bin/report_template/* .
-    sampleInfo="basename ${params.sampleinfo}"
-    comparisonsInfo="basename ${params.sampleinfo}"
+    sampleInfo="\$(basename ${params.sampleinfo})"
+    comparisonsInfo="\$(basename ${params.sampleinfo})"
     
     echo "/$sampleInfo"
     echo "/$comparisonsInfo"
