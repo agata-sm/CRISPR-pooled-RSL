@@ -28,6 +28,7 @@ is.RSL=isTRUE(data.type=="RSL")
 comparisons.file=file.path(proj.dir,"metadata",comparisons.fname)
 samples.file=file.path(proj.dir,"metadata",metadata.fname)
 
+
 #indata dirs
 mageck_datadir=file.path(proj.dir,"results",data.type,"rra_mageck")
 

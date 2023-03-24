@@ -24,6 +24,12 @@ params.metadatadir = 'metadata'
 
 params.fastqR1 = "$params.fastqdir/*R1*fastq.gz"
 
+//get file names
+params.sampleinfoFname="${params.sampleinfo##*/}"
+params.comparisonsFname="${params.comparisons##*/}"
+
+
+
 // if input based filtering is not desired
 params.libraryinputfilt=""
 
@@ -70,6 +76,8 @@ if( "${params.mageckCountNorm}" == "control" ){
 }
 
 
+
+
 log.info """\
  CRISPR - N F   P I P E L I N E
  ===================================
@@ -83,6 +91,10 @@ log.info """\
  control file: ${params.libctrl_string}
 
  outdir       : ${params.outdir}
+
+metadata fname: ${params.sampleinfoFname}
+comparisons fname: ${params.comparisonsFname}
+
  """
  .stripIndent()
 
@@ -116,6 +128,8 @@ comparisonf.withReader {
 
 println ""
 println ""
+
+
 
 /////////////////////////////
 // channels
