@@ -55,7 +55,7 @@ dir.create(resdir, recursive = TRUE)
 plotdir=file.path(resdir,"plots")
 dir.create(plotdir)
 
-plotdir_qc=file.path(plotdir,"QC_plots")
+plotdir_qc=file.path(resdir,"QC_plots")
 dir.create(plotdir_qc)
 
 ## ---- prep_environment
