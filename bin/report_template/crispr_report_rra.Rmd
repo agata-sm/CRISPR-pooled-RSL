@@ -131,6 +131,15 @@ if (organism=="mm"){
 
 }
 
+
+#should the GSEA be run - only is ids used in the count table correspond to db
+geneIDs.check=gene_names$id
+genes_ID=length(geneIDs.check[is.na(geneIDs.check)==FALSE])
+genes_noID=length(geneIDs.check[is.na(geneIDs.check)==TRUE])
+
+gene_id_status=genes_ID>genes_noID
+
+
 ```
 
 ```{r include=FALSE, cache=FALSE}
@@ -541,6 +550,15 @@ p2.2
 
 #### Functional Analysis {.tabset}
 
+
+
+```{asis, echo=!gene_id_status}
+Functional analysis was not performed for this experiment because feature IDs did not match gene IDs in the functional annoatation database.
+```
+
+
+```{asis, echo=gene_id_status}
+
 The goal of functional analysis is to determine whether members of a gene set ***S*** tend to occur toward the top (or bottom) of the list ***L***, 
 in which case the gene set ***S*** is correlated with the phenotypic class distinction.
 
@@ -572,6 +590,7 @@ The enrichment plot shows a green line representing the running ES for a given G
 For more information on the GSEA analysis please refer to [GSEA User Guide](https://www.gsea-msigdb.org/gsea/doc/GSEAUserGuideFrame.html), section "GSEA Statistics".
 
 
+```
 
 ```{r include=FALSE}
 #cutoffs for categories for plot printing and stat significance
@@ -582,13 +601,13 @@ gseaPvalCO=0.1
 ```
 
 
-```{asis, echo=is.RSL}
+```{asis, echo=c(!is.RSL, gene_id_status)}
 Rank score used for this analysis is log2(median fold change) across four sgRNAs per each gene.
 log2FC is used to test for enrichment amongst genes under positive selection and
 -log2(FC) is used to test for enrichment amongst genes under negative selection.
 ```
 
-```{asis, echo=!is.RSL}
+```{asis, echo=c(!is.RSL, gene_id_status)}
 Rank score used for this analysis is log2 fold change as reported in RRA analysis (MAGeCK), breaking ties by rank from RRA analysis.
 log2FC is used to test for enrichment amongst genes under positive selection and
 -log2(FC) is used to test for enrichment amongst genes under negative selection.
@@ -607,10 +626,14 @@ In addition, the treeplot is produced if the number of significant categories is
 <br />
 <br />
 
-##### Negative Selection {.tabset}
 
 
-```{r include=FALSE}
+`r if(gene_id_status){"##### Negative Selection {.tabset}"}`
+
+
+
+
+```{r include=FALSE, eval=gene_id_status}
 #negative selection
 
 #selection for txt
@@ -653,14 +676,17 @@ if (data.type == "reads"){
 <br />
 <br />
 
-###### Gene Ontology
 
-```{r include=FALSE}
+
+`r if(gene_id_status){"###### Gene Ontology"}`
+
+
+```{r include=FALSE, eval=gene_id_status}
 functest="GO" 
 print(paste(selection,functest,sep="."))
 ```
 
-```{r, child='crispr_report_gsea_prep.Rmd'}
+```{r, eval=gene_id_status, child='crispr_report_gsea_prep.Rmd'}
 ```
 
 
@@ -668,14 +694,17 @@ print(paste(selection,functest,sep="."))
 <br />
 <br />
 
-###### Reactome
+`r if(gene_id_status){"###### Reactome"}`
 
-```{r include=FALSE}
+
+
+
+```{r include=FALSE, eval=gene_id_status}
 functest="reactome"
 print(paste(selection,functest,sep="."))
 ```
 
-```{r, child='crispr_report_gsea_prep.Rmd'}
+```{r, eval=gene_id_status, child='crispr_report_gsea_prep.Rmd'}
 ```
 
 
@@ -684,10 +713,10 @@ print(paste(selection,functest,sep="."))
 <br />
 
 
+`r if(gene_id_status){"##### Positive Selection {.tabset}"}`
 
-##### Positive Selection {.tabset}
 
-```{r include=FALSE}
+```{r include=FALSE, eval=gene_id_status}
 #positive selection
 
 #selection for txt
@@ -722,15 +751,16 @@ if (data.type == "reads"){
 <br />
 <br />
 
-###### Gene Ontology
+`r if(gene_id_status){"###### Gene Ontology"}`
 
-```{r include=FALSE}
+
+```{r include=FALSE, eval=gene_id_status}
 functest="GO" 
 print(paste(selection,functest,sep="."))
 
 ```
 
-```{r, child='crispr_report_gsea_prep.Rmd'}
+```{r, eval=gene_id_status, child='crispr_report_gsea_prep.Rmd'}
 ```
 
 
@@ -738,14 +768,16 @@ print(paste(selection,functest,sep="."))
 <br />
 <br />
 
-###### Reactome
 
-```{r include=FALSE}
+`r if(gene_id_status){"###### Reactome"}`
+
+
+```{r include=FALSE, eval=gene_id_status}
 functest="reactome"
 print(paste(selection,functest,sep="."))
 ```
 
-```{r, child='crispr_report_gsea_prep.Rmd'}
+```{r, eval=gene_id_status, child='crispr_report_gsea_prep.Rmd'}
 ```
 
 <br />
