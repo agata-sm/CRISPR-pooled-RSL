@@ -727,8 +727,11 @@ for (i in c(1:contrasts.pairs.number)){
     pl2.d=pl2+geom_point(aes(df_scatter[,4], df_scatter[,5], color = density)) + scale_color_viridis()
 
     fig_n=fig_n+1
-    ggsave(filename=paste("Figure",fig_n,"log2FCscatterplot",colnames(df_scatter)[2],colnames(df_scatter)[3],"comparison_group",g,i,"pdf",sep="."),path=plotdir,device="pdf")
 
+    # comparison group is not correctly assigned 
+#    ggsave(filename=paste("Figure",fig_n,"log2FCscatterplot",colnames(df_scatter)[2],colnames(df_scatter)[3],"comparison_group",g,i,"pdf",sep="."),path=plotdir,device="pdf")
+
+    ggsave(filename=paste("Figure",fig_n,"log2FCscatterplot",colnames(df_scatter)[2],colnames(df_scatter)[3],"pdf",sep="."),path=plotdir,device="pdf")
 
     pl2_int=ggplotly(pl2.d, tooltip=c("text"))
 
