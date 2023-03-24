@@ -134,10 +134,17 @@ Project specific changes up to this section. Please make any further changes wit
 sgRNA - RSL combinations which were detected in only one of the technical replicates and together less than 4 times in two technical replicates were removed from the data. The remaining detected sgRNA - RSL combinations were summarised per sgRNA.
 ```
 
+
+```{asis, echo=!is.RSL}
+* Analysis of screen results was performed uing Robust Rank Aggregation test (rra) from `MAGeCK` [@mageck].
+```
+
+```{asis, echo=is.RSL}
+* Analysis of screen results: RSL counts (number of RSL tags per sgRNA) are ranked by log2(Fold Change) between conditions of interest and subject to GSEA-like enrichment analysis to detect genes enriched and depleted in the screen, as implemented in  `MAGeCK pathway` [@mageck].
+```
+
 * Statistical analyses, plotting and report generation were perfomed in `R` [@R-base].
 
-
-* Analysis of screen results was performed uing Robust Rank Aggregation test (rra) from `MAGeCK` [@mageck].
 
 * Functional annotation of ranked gene lists was performed by GSEA Enrichment test [@gsea] implemented in `clusterprofiler` [@clusterprofiler]. The ranking metric used in this analysis was log2 fold change. The annotation term databases were **Gene Ontology** [@GO] and **reactome** [@reactome]. Plots visualising the enriched categories were made using `enrichplot` [@enrichplot].
 

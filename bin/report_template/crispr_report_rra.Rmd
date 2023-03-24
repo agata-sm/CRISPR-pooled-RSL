@@ -295,8 +295,10 @@ dat$group[dat$group=="sig" & dat$Score>0] <-"up"
 dat$group[dat$group=="sig" & dat$Score<0] <-"dn"
 
 dat_plot=dat[dat$FDR<=0.8,]
+#Score is in fact Log2FC
+dat_plot$Score=as.numeric(dat_plot$Score)
 
-p_v1=ggplot(dat_plot, aes(x=Score, y=logFDR, color=group, text=paste(id,"; Score",round(Score, digits=3),"; FDR",round(FDR, digits=4)))) + 
+p_v1=ggplot(dat_plot, aes(x=Score, y=logFDR, color=group ,  text=paste(id,"; log2FC",round(Score, digits=3),"; FDR", round(FDR, digits=3))  ))+ 
   geom_point(alpha=0.5) + scale_color_manual(values=mycolour) +
   theme_bw() + theme(legend.position = "none")+
   ylab("-log10(FDR)") + xlab(xaxis)
@@ -338,20 +340,18 @@ plot_lfc_alpha=ggplot(dat_sorted, aes(x=id,y=Score,color=group, fill=group)) +
 figurecap=paste("LogFC by (alphabetially sorted) gene in comparison\n",i, "project",proj.name.pref,".\n Analysis type:",data.type)
 
 fig_n1="99"
-fname=paste("Figure",fig_n1,"Sorted_lfc",i,"pdf",sep=".")
-pdf(file.path(plotdir.i,fname))
+fname_qc=paste("Figure",fig_n1,"Sorted_lfc",i,"pdf",sep=".")
+pdf(file.path(plotdir_qc,fname_qc))
 plot_lfc_alpha + ggtitle(figurecap)
 dev.off()
-
-
 
 
 ```
 
 
 
-Volcano plot shows statistical significance as False Discovery Rate, FDR (here shown as -log10(FDR)) versus magnitude of change 
-`r if(!is.RSL){"(log2(fold change))"}` `r if(is.RSL){"RRA score"}`. 
+Volcano plot shows statistical significance as False Discovery Rate, FDR (here shown as -log10(FDR)) versus magnitude of change (log2(fild change)).
+
 It enables quick visual identification of genes with large fold changes that are also statistically significant.
 
 The results of abundance analysis at the gene level are visualised on the interactive volcano plot where the statistically significant genes

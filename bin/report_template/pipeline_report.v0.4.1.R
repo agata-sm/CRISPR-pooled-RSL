@@ -25,8 +25,8 @@ is.RSL=isTRUE(data.type=="RSL")
 
 
 #metadata
-comparisons.file=file.path(proj.dir,"metadata","comparisons.txt")
-samples.file=file.path(proj.dir,"metadata","metadata.txt")
+comparisons.file=file.path(proj.dir,"metadata",comparisons.fname)
+samples.file=file.path(proj.dir,"metadata",metadata.fname)
 
 #indata dirs
 mageck_datadir=file.path(proj.dir,"results",data.type,"rra_mageck")
@@ -734,6 +734,7 @@ for (i in c(1:contrasts.pairs.number)){
 
   }
 }
+
 
 
 ## ---- contrast-scatters-plot
