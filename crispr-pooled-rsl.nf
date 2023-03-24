@@ -244,7 +244,7 @@ workflow RSL {
 
 	// //report
 	mageck_res_RSL_gene_ch=mageck_rra_RSL.out.rsl_rra_mageck_ch
-	report_RSL(mageck_res_RSL_gene_ch.collect())
+	report_RSL(mageck_res_RSL_gene_ch.collect(), sampleInfo_ch, comparisonsInfo_ch)
 
 	//QC
 	//fastqc(fastqr1_ch2)
