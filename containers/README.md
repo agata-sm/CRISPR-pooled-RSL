@@ -9,7 +9,12 @@ This directory contains Dockerfiles and auxiliary files for generating the follo
 
 * `crisprcounter-perl` created for this pipeline; can only be built locally;
 
-Custom containers `mageck-perl`  and `rpckg-crispr-rep` can be obtained from Dockerhub or built locally using Docker and transferred to Rackham. `crisprcounter-perl` can only be built locally and transferred to Rackham, as it contains `CrisprCounter.jar` which cannot be distributed with this pipeline. 
+* `rpckg-input-report` created for Input library processing pipeline;
+
+* `perl518_list_someutils` created for Input library processing pipeline;
+
+
+Custom containers `mageck-perl`, `rpckg-input-report`, `perl518_list_someutils`  and `rpckg-crispr-rep` can be obtained from Dockerhub or built locally using Docker and transferred to Rackham. `crisprcounter-perl` can only be built locally and transferred to Rackham, as it contains `CrisprCounter.jar` which cannot be distributed with this pipeline. 
 
 The images are Docker images, but as we cannot use Docker on Rackham, they are automatically converted to Singularity images by the pipeline.
 
@@ -33,10 +38,15 @@ singularity pull --name agatasm-mageck-perl.img docker://agatasm/mageck-perl
 singularity pull --name agatasm-rpckg-crispr-rep.img docker://agatasm/rpckg-crispr-rep
 
 singularity pull --name staphb-fastqc.img docker://staphb/fastqc
+
+singularity pull --name agatasm-rpckg-input-report.img docker://agatasm/rpckg-input-report
+
+singularity pull --name agatasm-perl518_list_someutils.img docker://agatasm/perl518_list_someutils
+
 ```
 
 
-Please note that installing `rpckg-crispr-rep` requires more CPU usage than is normally accepted on the login node, therefore should be done on an interactive session instead.
+Please note that installing `rpckg-crispr-rep` and `rpckg-input-report` requires more CPU usage than is normally accepted on the login node, therefore should be done on an interactive session instead.
 
 
 ## Building the image from Dockerfile locally

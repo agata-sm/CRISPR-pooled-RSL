@@ -20,7 +20,7 @@ File below can be used to perform analysis on the dataset that:
 
 * sample info and comparisons are saved in `/proj/AB1234/tst_data/metadata`;
 
-* organism is human `hs`; the other choice is mouse `mm`;
+* organism is human `hs`; the other accepted choice is mouse `mm`;
 
 
 Analysis parameters that can be modified are:
@@ -73,7 +73,7 @@ params {
 
 Two files describing the samples and their relationships are required by the pipeline. Format requirements:
 
-* Should be named as indicated and follow the tab-delimited format;
+* Should follow the tab-delimited format;
 
 * Column names and order needs to be preserved;
 

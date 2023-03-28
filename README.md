@@ -63,7 +63,7 @@ To use github from command line you need to setup [Personal Access Token PTA](ht
 * MAGeCK
 
 
-These dependencies are included in singularity containers, please see section *Containers*
+These dependencies are included in singularity containers, please see section *Containers*.
 
 ## Usage
 
@@ -75,13 +75,14 @@ Two main pipeline modes are analysis based on reads (default) or analysis based 
 Tu run the main workflow for analysis based on **reads**
 
 ```
-nextflow run /proj/sllstore2017103/software/CRISPR-pooled-RSL/crispr-pooled-rsl.nf 
+export pipelineDir="/proj/sllstore2017103/software/CRISPR-pooled-RSL/"
+nextflow run $pipelineDir/crispr-pooled-rsl.nf 
 ```
 
 To run the alternative workflow for analysis based on **RSL counts**
 
 ```
-nextflow run /proj/sllstore2017103/software/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -entry RSL
+nextflow run $pipelineDir/crispr-pooled-rsl.nf -entry RSL
 ```
 
 The pipeline can be run on Rackham (recommended) or locally.
@@ -91,7 +92,6 @@ The pipeline can be run on Rackham (recommended) or locally.
 
 **This is the preferred way to run the pipeline.** All other ways have not been recently tested.
 
-The file `nextflow.config` in *the directory where the pipeline is installed* contains profiles for pipeline execution. This is different than `nextflow.config` in the project directory where the code is run.
 
 To run the pipeline in this mode, each process is submitted as a separate job to SLURM queue. This saves time (tasks are parallelised). The process executing the main pipeline code is run in the login node until the run is completed.
 
@@ -114,12 +114,14 @@ reads:
 ```
 module load java/OracleJDK_11.0.9
 module load bioinfo-tools
-#module load Nextflow/latest
 module load Nextflow/22.10.1
 
 export NXF_HOME=/proj/sllstore2017103/software/nextflow_tmp
+export APPTAINERENV_TMPDIR="/proj/sllstore2017103/software/containers"
 
-nextflow run /proj/sllstore2017103/software/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -profile cluster,singularity
+export pipelineDir="/proj/sllstore2017103/software/CRISPR-pooled-RSL/"
+
+nextflow run $pipelineDir/crispr-pooled-rsl.nf -profile cluster,singularity
 ```
 
 RSL:
@@ -131,8 +133,11 @@ module load bioinfo-tools
 module load Nextflow/22.10.1
 
 export NXF_HOME=/proj/sllstore2017103/software/nextflow_tmp
+export APPTAINERENV_TMPDIR="/proj/sllstore2017103/software/containers"
 
-nextflow run /proj/sllstore2017103/software/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -entry RSL -profile cluster,singularity
+export pipelineDir="/proj/sllstore2017103/software/CRISPR-pooled-RSL/"
+
+nextflow run $pipelineDir/crispr-pooled-rsl.nf -entry RSL -profile cluster,singularity
 ```
 
 
@@ -172,29 +177,29 @@ To run the pipeline several configuration and metadata files need to present in 
 To run the pipeline simply type:
 
 ```
-nextflow run /path/to/CRISPR-pooled-RSL/crispr-pooled-rsl.nf
+nextflow run $pipelineDir/crispr-pooled-rsl.nf
 ```
 
-Where `/path/to` is the directory where the pipeline is installed.
+Where `$pipelineDir` is the directory where the pipeline is installed (see above).
 
 
 To resume the run (if it was interrupted or you realised some arguments need to be changed):
 
 ```
-nextflow run /path/to/CRISPR-pooled-RSL/crispr-pooled-rsl.nf -resume
+nextflow run $pipelineDir/crispr-pooled-rsl.nf -resume
 ```
 
 
 ### locally 
 
-*Currently it is not recommended to run the workflow in this manner. To do this, you need to make sure all depemdencies are installed and use the default profile or have singularity installed and use profile singularity; you may need to edit nextflow.config to do this.*
+*Currently it is not recommended to run the workflow in this manner. To do this, you need to make sure all dependencies are installed and use the default profile or have singularity installed and use profile singularity; you may need to edit nextflow.config to do this.*
 
-(reads analysis only)
+(reads analysis only due to high memory requirements for RSL-sgRNA summarisation)
 
 Nextflow and the dependencies need to be installed. The procedure is the same as for the interactive session on Rackham (all dependencies need to be installed).
 
 ```
-nextflow run /path/to/CRISPR-pooled-RSL/crispr-pooled-rsl.nf
+nextflow run $pipelineDir/crispr-pooled-rsl.nf
 ```
 
 
@@ -207,15 +212,24 @@ There are two configuration files used by the pipeline. While they both are call
 * `nextflow.config` in project working directory - contains information related to the project: paths to input library, input fastq files, metadata and analysis parameters. Please see directory `config-files` for examples and more detailed explanation.
 
 
+Project specific config file `myProj.config` can be used:
+
+```
+nextflow run $pipelineDir/crispr-pooled-rsl.nf -entry RSL -profile cluster,singularity -c myProj.config
+```
+
+
+
 ### Metadata files
 
-Two files describing the samples and their relationships are required by the pipeline. They should be named as indicated and follow the tab-delimited format. Column order needs to be preserved.
+Two files describing the samples and their relationships are required by the pipeline. The paths to these files are given in the run specific config file. The files have to follow the tab-delimited format. Column order needs to be preserved.
 
 * `metadata.txt` -  information on file name for each sample and experimental groups (treatments, etc);
 
 * `comparisons.txt` - information on comparisons to be analysed.
 
 Please see directory `config-files` for examples and more detailed explanation.
+
 
 ## Misc tools
 
@@ -237,6 +251,10 @@ Four containers are used by the pipeline:
 * `rpckg-crispr-rep` created for this pipeline; obtained from Dockerhub or built locally;
 
 * `crisprcounter-perl` created for this pipeline; can only be built locally;
+
+* `rpckg-input-report` created for Input library processing pipeline;
+
+* `perl518_list_someutils` created for Input library processing pipeline;
 
 Custom containers `mageck-perl`  and `rpckg-crispr-rep` can be obtained from Dockerhub or built locally using Docker and transferred to Rackham. `crisprcounter-perl` can only be built locally and transferred to Rackham, as it contains `CrisprCounter.jar` which cannot be distributed with this pipeline. 
 

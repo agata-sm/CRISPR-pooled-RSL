@@ -134,14 +134,16 @@ You can now recompile the report.
 The comand is:
 
 ```
-Rscript report_launcher.R PROJNAME PROJNAME data-type org
+Rscript report_launcher.R PROJNAME PROJNAME data-type org /path/to/metadata.txt /path/to/comparisons.txt 
 ```
 
+Usually `/path/to/metadata.txt` and `/path/to/comparisons.txt` are located at directory `PROJNAME/metadata`.
 
-In our case PROJNAME is `Yumeng_total_23ii2023`, data type is reads and organism is hs:
+
+In our case PROJNAME is `Test_total_23ii2023`, data type is reads and organism is hs:
 
 ```
-Rscript report_launcher.R Yumeng_total_23ii2023 Yumeng_total_23ii2023 reads hs
+Rscript report_launcher.R Test_total_23ii2023 Test_total_23ii2023 reads hs Test_total_23ii2023/metadata/metadata.txt Test_total_23ii2023/metadata/comparisons.txt 
 ```
 
 
@@ -155,14 +157,16 @@ Time for a cup of your beverage of choice, as it takes a while to complete.
 This pipeline was tested recently and the last run can be found at
 
 ```
-/proj/sllstore2017103/software/tests/input-lib-test
+/proj/sllstore2017103/nbis5351/tests_mar23/input/noref
 ```
 
 
 The command to run this pipeline is:
 
 ```
-nextflow run /proj/sllstore2017103/software/tests_2023/CRISPR-pooled-RSL/miscellaneous/input-filtering/Input-filter.nf -profile cluster
+export pipelineDir="/proj/sllstore2017103/software/CRISPR-pooled-RSL"
+
+nextflow run $pipelineDir/miscellaneous/input-filtering/Input-filter.nf -profile cluster,singularity
 ```
 
 
