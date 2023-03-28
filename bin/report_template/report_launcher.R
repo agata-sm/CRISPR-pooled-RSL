@@ -5,7 +5,7 @@ rm(list=ls())
 library(knitr)
 args <- commandArgs(TRUE)
 
-if (length(args) < 6) stop("Not all args are set; required: projdir proj.name.prefix data.type organism (hs or mm) metadata.fname comparisons.fname /$USER")
+if (length(args) < 6) stop("Not all args are set; required: projdir proj.name.prefix data.type organism (hs or mm) metadata.fname comparisons.fname")
 
 proj.dir <- args[1]
 proj.name.pref <- args[2]
@@ -13,7 +13,9 @@ data.type <- args[3]
 organism <- args[4]
 metadata.fname<-args[5]
 comparisons.fname<-args[6]
-user.run<-args[7]
+
+user.run = Sys.getenv("USER")
+
 
 
 #user.run=Sys.getenv("USER")
