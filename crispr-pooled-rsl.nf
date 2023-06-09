@@ -22,7 +22,7 @@ params.outdir = "${params.projdir}/${params.resdir}"
 params.logdir = 'logs'
 params.metadatadir = 'metadata'
 
-params.fastqR1 = "$params.fastqdir/*R1*fastq.gz"
+params.fastqR1 = "$params.fastqdir/*R1*fastq.gz" //// OBS! this has probably caused unexplained behaviour when more than one instance of R1 is present in file names; fix this!
 
 
 
