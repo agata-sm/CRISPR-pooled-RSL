@@ -1,24 +1,13 @@
 # CRISPR-pooled-RSL
 Pipeline for processing data from pooled CRISPR screens with RSL barcodes.
 
-## Instructions for training
-
-**24 February 2023**
-
-Please check file training-24ii2023.md
-
-**3 February 2023**
-
-Please check file training-2ii2023.md
-
-
 ## About
 
 This pipeline performs two types of analyses of pooled CRISPR screens:
 
-(1) based on all reads, using MAGeCK workflow for Robust Rank Aggregation (RRA);
+(1) based on total read counts per guide, using MAGeCK workflow for Robust Rank Aggregation (RRA);
 
-(2) based on RSL counts, using custom processing scripts and MAGeCK workflow for GSEA to select enriched / depleted guides.
+(2) based on RSL counts, using custom processing scripts and MAGeCK workflow for pathway analysis2 to select enriched / depleted guides.
 
 The results of (1) and (2) are used in Gene Set Enrichment Analysis (GSEA) to produce functional annotation.
 
@@ -171,7 +160,7 @@ module load R_packages/4.1.1
 module load FastQC/0.11.9
 ```
 
-To run the pipeline several configuration and metadata files need to present in the working directory. They are described in detail below, and the examples are given in `config-files`.
+To run the pipeline several configuration and metadata files need to be present in the working directory. They are described in detail below, and the examples are given in `config-files`.
 
 To run the pipeline simply type:
 
