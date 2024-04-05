@@ -38,7 +38,7 @@ require(DOSE)
 
 
 
-```{asis, echo=!is.RSL}
+```{asis, echo=is.RSL}
 Rank score used for this analysis is log2(median fold change) across four sgRNAs per each gene.
 log2FC is used to test for enrichment amongst genes under positive selection and
 -log2(FC) is used to test for enrichment amongst genes under negative selection.
