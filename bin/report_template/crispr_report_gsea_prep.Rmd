@@ -148,6 +148,7 @@ gse.summary=as.data.frame(cbind(gse.res@result$Description,gse.res@result$ONTOLO
 colnames(gse.summary)=c("Description","ontology","ID","NES","p.adjust")
 lfc_vect=lfc_vect
 }
+
 if (functest=="reactome"){
 	
 	gse.res <- gsePathway(gene_list_entrez.nd, 
@@ -163,6 +164,7 @@ colnames(gse.summary)=c("Description","ID","NES","p.adjust")
 
 lfc_vect=lfc_vect.entrez
 }
+
 
 # for plot printing conditionals
 n_sigCat=nrow(gse.summary)
@@ -182,6 +184,7 @@ tab_n_sv=tab_n_sv+1
 fnametab=paste("Table",tab_n_sv,"GSEA",functest,i,selection,"tsv",sep=".")
 save_GSEA_GO(GSEAres=gse.res, file=fnametab, dir=resdir.i)
 
+show_gsea=FALSE
 ```
 
 
