@@ -184,7 +184,7 @@ tab_n_sv=tab_n_sv+1
 fnametab=paste("Table",tab_n_sv,"GSEA",functest,i,selection,"tsv",sep=".")
 save_GSEA_GO(GSEAres=gse.res, file=fnametab, dir=resdir.i)
 
-show_gsea=FALSE
+#show_gsea=FALSE
 ```
 
 
@@ -193,4 +193,5 @@ Significant `r functest` categories in comparison `r i` in genes under `r select
 
 ```{r, child=if (show_gsea==TRUE) 'crispr_report_gsea.Rmd'}
 ```
+
 
