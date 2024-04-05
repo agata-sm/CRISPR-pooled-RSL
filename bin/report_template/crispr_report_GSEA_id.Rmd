@@ -20,7 +20,7 @@ knitr::opts_chunk$set(echo = FALSE,
                       collapse = TRUE, 
                       warning = FALSE, 
                       message = FALSE,
-                      error=TRUE)
+                      error=FALSE)
 
 source("./crispr_pipeline_report_functions.R")
 
@@ -85,26 +85,19 @@ rep.g.gsea$rra.rank=rep.g.gsea$neg.rank # lfc for the plot colouring
 # for GSEA
 # score for "reads" is neg.score / pos.score ; can also be log FC
 # score for "RSL" is neg.score / pos.score
-# RRA score used by default for RSL (set in the child document crispr_report_gsea_prep.Rmd)
 
-#score.type="RRA"
 score.type="logFC"
 
 
 if (data.type == "reads"){
   rep.g.gsea$lfc=rep.g.gsea$neg.lfc # lfc for the plot colouring
   rep.g.gsea$score.for.gsea=-rep.g.gsea$neg.lfc # default SCORE for the GSEA test
-  #rep.g.gsea$score.for.gsea=rep.g.gsea$rra.score # default SCORE for the GSEA test
-  #rep.g.gsea$score.for.gsea=rank(-rep.g.gsea$rra.rank)
 
 
 } else if (data.type == "RSL"){
-    #rep.g.gsea$score.for.gsea=rep.g.gsea$rra.score # rra score
-    #rep.g.gsea$score.for.gsea=rank(-rep.g.gsea$rra.rank)
     rep.g.gsea$score.for.gsea=-rep.g.gsea$median.logFC # default SCORE for the GSEA test: median log2FC from 4 guides per gene
 }
 
-#rep.g.gsea$score.for.gsea=-log10(1e6*rep.g.gsea$rra.score)
 
 ```
 
@@ -167,19 +160,11 @@ rep.g.gsea$rra.rank=rep.g.gsea$pos.rank # lfc for the plot colouring
 if (data.type == "reads"){
   rep.g.gsea$lfc=rep.g.gsea$pos.lfc # lfc for the plot colouring
   rep.g.gsea$score.for.gsea=rep.g.gsea$pos.lfc # default SCORE for the GSEA test
-  #rep.g.gsea$score.for.gsea=rep.g.gsea$rra.score # default SCORE for the GSEA test
-  #rep.g.gsea$score.for.gsea=rank(-rep.g.gsea$rra.rank) #THIS works best
-  #rep.g.gsea$score.for.gsea=-log10(1e6*rep.g.gsea$rra.score)
 
 } else if (data.type == "RSL"){
-    #rep.g.gsea$score.for.gsea=rep.g.gsea$rra.score # default SCORE for the GSEA test
-    #rep.g.gsea$score.for.gsea=rank(-rep.g.gsea$rra.rank)#THIS works best
-    #rep.g.gsea$score.for.gsea=-log10(1e6*rep.g.gsea$rra.score)
     rep.g.gsea$score.for.gsea=rep.g.gsea$median.logFC
 
 }
-
-#rep.g.gsea$score.for.gsea=-log10(1e6*rep.g.gsea$rra.score)
 
 
 ```

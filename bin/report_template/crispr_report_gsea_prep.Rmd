@@ -52,16 +52,8 @@ if (data.type == "RSL"){
 }
 
 if (score.type == "RRA"){
-
-	#this works in RStudio  ONLY
-	#rep.g.gsea$score.for.gsea=-log10(rep.g.gsea$score.for.gsea)
-	#this below not a great idea
-	#rep.g.gsea$score.for.gsea=rank(-log10(rep.g.gsea$score.for.gsea),ties.method="first") #using just -log10(score) gives "Not all stats values are finite numbers"
-	# 
-
 	rep.g.gsea=rep.g.gsea[order(rep.g.gsea$score.for.gsea, decreasing=TRUE),]
 }else if (score.type == "logFC"){
-	#rep.g.gsea$score.for.gsea=rank(rep.g.gsea$score.for.gsea,ties.method="first") #the data is already sorted by rank; lowest score means lowest p value thus higher rank
 	rep.g.gsea=rep.g.gsea[order(rep.g.gsea$score.for.gsea, decreasing=TRUE),]
 }
 
