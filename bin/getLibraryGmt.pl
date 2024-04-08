@@ -36,6 +36,7 @@ if ($ARGV[0]eq qw '-h'){
 	print "--outfile: /path/to/outfile.gmt\n";
 	print "--outfile_con: /path/to/outfile.sgRNAcontrols.txt\n";	
 	print "--outfile_gcon: /path/to/outfile.genecontrols.txt\n";	
+	print "--outfile_lib: /path/to/outfile.librarydefinition.txt with corrected line endings (unix)\n";	
 	print "-h prints this message\n";
 }
 
@@ -48,7 +49,8 @@ else{
 		'infile=s'		=>	\(my $input_lib_design),
 		'outfile=s'		=>	\(my $outfile),
 		'outfile_con=s'		=>	\(my $outfile_ctrl),
-		'outfile_gcon=s'		=>	\(my $outfile_gctrl)
+		'outfile_gcon=s'		=>	\(my $outfile_gctrl),
+		'outfile_lib=s'		=>	\(my $outfile_lib)
 	) or die "Error in command line arguments";
 
 
@@ -63,7 +65,7 @@ else{
 	open (INFILE_INPUT_LIBDES, "<", $input_lib_design) or die "Cannot open file with processed input library $input_lib_design: $!";
 	while (<INFILE_INPUT_LIBDES>){
 
-
+    	# change line endings to \n
 		# my $newline;
 		# for ("\r", "\n", "\r\n", "\n\r", "\r\r", "\n\n") {
     	# 	$newline = 'text'.$_."text";

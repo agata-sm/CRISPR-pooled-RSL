@@ -230,7 +230,7 @@ workflow RSL {
 	// count reads
 	crispr_counter(fastqr1_ch)
 
-	filter_RSL(crispr_counter.out.rsl_countstable_ch, lib_ch)
+	filter_RSL(crispr_counter.out.rsl_countstable_ch, prep_library_files.out.lib_definition_ch)
 
 	// mageck contrasts RSL
 	cntRSL_ch=filter_RSL.out.rsl_countstable_filt_ch
