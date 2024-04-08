@@ -53,9 +53,6 @@ else{
 		'outfile_lib=s'		=>	\(my $outfile_lib)
 	) or die "Error in command line arguments";
 
-
-	my $outfile_lib="library_def.tsv";
-
 	open (OUTFILE_CTRL, ">", $outfile_ctrl) or die "Cannot open outfile $outfile_ctrl: $!";
 	open (OUTFILE_GCTRL, ">", $outfile_gctrl) or die "Cannot open outfile $outfile_gctrl: $!";
 
