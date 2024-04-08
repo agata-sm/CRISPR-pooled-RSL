@@ -52,14 +52,31 @@ else{
 	) or die "Error in command line arguments";
 
 
+	my $outfile_lib="library_def.tsv";
+
 	open (OUTFILE_CTRL, ">", $outfile_ctrl) or die "Cannot open outfile $outfile_ctrl: $!";
 	open (OUTFILE_GCTRL, ">", $outfile_gctrl) or die "Cannot open outfile $outfile_gctrl: $!";
 
+	open(OUTFILE_LIB, ">, $outfile_lib") or die "Cannot open outfile $outfile_lib: $!";
 
 	my %gene_guide;
 	open (INFILE_INPUT_LIBDES, "<", $input_lib_design) or die "Cannot open file with processed input library $input_lib_design: $!";
 	while (<INFILE_INPUT_LIBDES>){
+
+
+		# my $newline;
+		# for ("\r", "\n", "\r\n", "\n\r", "\r\r", "\n\n") {
+    	# 	$newline = 'text'.$_."text";
+    	# 	$newline =~ s/$1/\n/g if m/(\r\n?|\n\r?)/;
+    	# 	print OUTFILE_LIB "$newline\n";
+    	# }
+    	# chomp $newline;
+
+    	# change line endings to \n from \r\n
+ 		$_=~s/[\r\n]+//;
 		chomp $_;
+		print OUTFILE_LIB "$_\n";
+
 		my @line=split /,/;	
 
 		unless ($_ =~m/Guide\t.*\tGene/){
@@ -79,6 +96,9 @@ else{
 	}	
 	close(INFILE_INPUT_LIBDES);
 	close(OUTFILE_CTRL);
+
+	close(OUTFILE_LIB);
+
 
 	open (OUTFILE, ">", $outfile) or die "Cannot open outfile $outfile: $!";
 
