@@ -57,7 +57,7 @@ else{
 	open (OUTFILE_CTRL, ">", $outfile_ctrl) or die "Cannot open outfile $outfile_ctrl: $!";
 	open (OUTFILE_GCTRL, ">", $outfile_gctrl) or die "Cannot open outfile $outfile_gctrl: $!";
 
-	open(OUTFILE_LIB, ">, $outfile_lib") or die "Cannot open outfile $outfile_lib: $!";
+	open(OUTFILE_LIB, ">", $outfile_lib") or die "Cannot open outfile $outfile_lib: $!";
 
 	my %gene_guide;
 	open (INFILE_INPUT_LIBDES, "<", $input_lib_design) or die "Cannot open file with processed input library $input_lib_design: $!";
