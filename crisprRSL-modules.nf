@@ -285,7 +285,7 @@ process filter_RSL {
 
     #change line endings to unix just in case the library def file was edited on Win
     
-    perl -pe 'if ( s/\r\n?/\n/g ) { $f=1 }; if ( $f || ! $m ) { s/([^\n])\z/$1\n/ }; $m=1' ${lib_def} > Library_definition.csv
+    perl -pe 'if ( s/\r\n?/\n/g ) { \$f=1 }; if ( \$f || ! \$m ) { s/([^\n])\z/\$1\n/ }; \$m=1' ${lib_def} > Library_definition.csv
 
     perl ${params.scripts}/processUMIcounts.v0.14.pl --filter CO=${params.filtRowSums} --infile $rsl_countstable --input_lib $params.libraryinputfilt --outdir . --input_lib_design Library_definition.csv
 
