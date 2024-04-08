@@ -279,7 +279,7 @@ process filter_RSL {
     path "${params.verfile}"
     path "Library_definition.csv"
 
-    script:
+    shell:
     '''
     #module load perl_modules/5.26.2
 
