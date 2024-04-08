@@ -269,6 +269,7 @@ process filter_RSL {
 
     input:
     path rsl_countstable
+    path lib_def
 
     output:
     path "${params.projname}.RSL.perguide.tsv", emit: rsl_countstable_filt_ch
@@ -276,12 +277,17 @@ process filter_RSL {
     path "${params.projname}.nonfilt_reads.perguide.tsv"
     path "${params.projname}.readme.log"
     path "${params.verfile}"
+    path "Library_definition.csv"
 
     script:
     """
     #module load perl_modules/5.26.2
 
-    perl ${params.scripts}/processUMIcounts.v0.14.pl --filter CO=${params.filtRowSums} --infile $rsl_countstable --input_lib $params.libraryinputfilt --outdir . --input_lib_design $params.librarydesign
+    #change line endings to unix just in case the library def file was edited on Win
+    
+    perl -pe 'if ( s/\r\n?/\n/g ) { $f=1 }; if ( $f || ! $m ) { s/([^\n])\z/$1\n/ }; $m=1' ${lib_def} > Library_definition.csv
+
+    perl ${params.scripts}/processUMIcounts.v0.14.pl --filter CO=${params.filtRowSums} --infile $rsl_countstable --input_lib $params.libraryinputfilt --outdir . --input_lib_design Library_definition.csv
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
