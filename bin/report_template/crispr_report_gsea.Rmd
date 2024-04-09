@@ -106,7 +106,6 @@ and additionally, size of the gene set as dot size ("Count").
 
 
 
-
 ```{r dev='png', echo=FALSE, fig.show='show',fig.width=15, cache=FALSE, fig.cap=figurecap.dot,eval=print_plots}
 gsea.plot[[1]]
 fig_n=fig_n+1
@@ -141,15 +140,28 @@ ggsave(filename=paste("Figure",fig_n,functest,"GSEA.heatplot",i,selection,"pdf",
 <br />
 <br />
 
-```{asis, echo=print_treeplot}
+
+```{r eval=print_treeplot, error=TRUE}
+# check if tree plot throws error, if yes do not render it
+treeplot_err=NULL
+gsea.plot[[3]]
+treeplot_err=rlang::last_error()
+
+plot_treeplot=is.null(treeplot_err)
+```
+
+
+
+
+```{asis, echo=plot_treeplot}
 Clustering of top enriched categories is presented on treeplot.
 ```
 
 
-```{r dev='png', fig.show='show',fig.dim=c(15, 5), cache=FALSE, fig.cap=figurecap.tree,eval=print_treeplot}
-#gsea.plot[[3]]
+```{r dev='png', fig.show='show',fig.dim=c(15, 5), cache=FALSE, fig.cap=figurecap.tree,eval=plot_treeplot}
+gsea.plot[[3]]
 fig_n=fig_n+1
-#ggsave(filename=paste("Figure",fig_n,functest,"GSEA.treetplot",i,selection,"pdf",sep="."),path=plotdir.i,device="pdf")
+ggsave(filename=paste("Figure",fig_n,functest,"GSEA.treetplot",i,selection,"pdf",sep="."),path=plotdir.i,device="pdf")
 
 ```
 
