@@ -226,8 +226,8 @@ dev.off()
 if(is.RSL){
 if(seqstatsSTAUS){
 
-fname="sgRNAassignStatistics.tsv"
-save.table(df=seqstats, file=fname, dir=resdir)
+fname_table="sgRNAassignStatistics.tsv"
+save.table(df=seqstats, file=fname_table, dir=resdir)
 }
 }
 

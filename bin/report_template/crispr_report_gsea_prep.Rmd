@@ -171,6 +171,7 @@ n_sigCat=nrow(gse.summary)
 print_plots=n_sigCat>print.plots.CO
 print_treeplot=n_sigCat>print.treeplot.CO
 show_gsea=n_sigCat>0
+plot_treeplot=FALSE #set to TRUE if rendering based on error occurence
 
 
 if (n_sigCat <20){
