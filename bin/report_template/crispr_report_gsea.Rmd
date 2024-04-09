@@ -141,7 +141,7 @@ ggsave(filename=paste("Figure",fig_n,functest,"GSEA.heatplot",i,selection,"pdf",
 <br />
 
 
-```{r eval=print_treeplot, error=TRUE, fig.show='hide', include=FALSE, message=FALSE}
+```{r eval=print_treeplot, error=TRUE, fig.show='hide', echo=FALSE, message=FALSE, warning=FALSE}
 # mock error to prevent rlang::last_error throwing one
 foo=left_join(gse.summary,rep.g.gsea,by="id")
 
