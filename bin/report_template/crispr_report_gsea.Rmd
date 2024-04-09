@@ -143,7 +143,7 @@ ggsave(filename=paste("Figure",fig_n,functest,"GSEA.heatplot",i,selection,"pdf",
 
 ```{r eval=print_treeplot, error=TRUE, fig.show='hide', include=FALSE, message=FALSE}
 # mock error to prevent rlang::last_error throwing one
-foo=is.null(foo_foo)
+foo=left_join(gse.summary,rep.g.gseam,by="id")
 
 # check if tree plot throws error, if yes do not render it
 treeplot_err=NULL
