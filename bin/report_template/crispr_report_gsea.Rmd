@@ -141,31 +141,16 @@ ggsave(filename=paste("Figure",fig_n,functest,"GSEA.heatplot",i,selection,"pdf",
 <br />
 
 
-```{r eval=print_treeplot, error=TRUE, fig.show='hide', echo=FALSE, message=FALSE, warning=FALSE}
-# mock error to prevent rlang::last_error throwing one
-foo=left_join(gse.summary,rep.g.gsea,by="id")
 
-# check if tree plot throws error, if yes do not render it
-treeplot_err=NULL
-gsea.plot[[3]]
-treeplot_err=rlang::last_error()
-
-plot_treeplot=is.null(treeplot_err)
-```
-
-
-
-
-```{asis, echo=plot_treeplot}
+```{asis, echo=print_treeplot}
 Clustering of top enriched categories is presented on treeplot.
 ```
 
 
-```{r dev='png', fig.show='show',fig.dim=c(15, 5), cache=FALSE, fig.cap=figurecap.tree,eval=plot_treeplot}
+```{r dev='png', fig.show='show',fig.dim=c(15, 5), cache=FALSE, fig.cap=figurecap.tree,eval=print_treeplot}
 gsea.plot[[3]]
 fig_n=fig_n+1
-ggsave(filename=paste("Figure",fig_n,functest,"GSEA.treetplot",i,selection,"pdf",sep="."),path=plotdir.i,device="pdf")
-
+ggsave(filename=paste("Figure",fig_n,functest,"GSEA.treeplot",i,selection,"pdf",sep="."),path=plotdir.i,device="pdf")
 ```
 
 
