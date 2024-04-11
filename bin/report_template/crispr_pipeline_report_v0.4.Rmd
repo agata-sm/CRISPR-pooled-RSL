@@ -94,7 +94,7 @@ source("./crispr_pipeline_report_functions.R")
 
 <!-- 
 Here we have written about the project.
-OBS! Remove the comment block signs (`<!--`  and   `-->` of this is to be included.) 
+OBS! Remove the comment block signs if this is to be included.
  -->
 
 
@@ -106,8 +106,9 @@ OBS! Remove the comment block signs (`<!--`  and   `-->` of this is to be includ
 
 <!-- 
 Custom text which helps to interpret the screen results.
-OBS! Remove the comment block signs (`<!--`  and   `-->` of this is to be included.) 
+OBS! Remove the comment block signs if this is to be included.
  -->
+
 
 
 <br />
