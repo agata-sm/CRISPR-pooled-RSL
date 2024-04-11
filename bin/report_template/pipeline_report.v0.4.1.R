@@ -681,7 +681,7 @@ scatters=vector(mode = "list")
 
 for (i in c(1:contrasts.pairs.number)){
 
-#for (i in c(1:pairs_to_plot)){
+#for (i in c(1:length(pairs_to_plot))){
 
   contr.pair.i=contrasts.pairs.mtx[,i]
 
@@ -750,5 +750,19 @@ for (i in c(1:contrasts.pairs.number)){
 }
 
 
-## ---- nn
+## ---- contrast-scatters-save-child
+
+knitr::set_parent("./crispr_pipeline_report_v0.4.Rmd")
+outdir_scatters="./interactive_scatterplots"
+dir.create(outdir_scatters)
+
+
+for (i in c(1:length(scatters))){
+  name=names(scatters[i])
+  outfile_scatter=paste("Interactive_scatterplot",name,"html",sep=".")
+
+  knitr::render("crispr_report_int_scatter.Rmd", quiet = TRUE, envir = environment(), output_file=outfile_scatter, output_dir=outdir_scatters)
+
+}
+
 
