@@ -61,13 +61,14 @@ process prep_library_files {
     path "library.gmt" , emit: lib_gmt_ch
     path "library.ctrl_sgRNAs.txt" , emit: lib_ctrls_sgRNA_ch
     path "library.ctrl_genes.txt" , emit: lib_ctrls_gene_ch
+    path "library.definition.txt" , emit: lib_definition_ch
     path "${params.verfile}"
 
     script:
     """
     #module load perl_modules/5.18.4
 
-    perl ${params.scripts}/getLibraryGmt.pl --infile $lib_ch --outfile library.gmt --outfile_con library.ctrl_sgRNAs.txt --outfile_gcon library.ctrl_genes.txt
+    perl ${params.scripts}/getLibraryGmt.pl --infile ${lib_ch} --outfile library.gmt --outfile_con library.ctrl_sgRNAs.txt --outfile_gcon library.ctrl_genes.txt --outfile_lib library.definition.txt
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
@@ -110,7 +111,7 @@ process mageck_count_reads {
         echo $ctrls_sgRNA_ch
         echo $ctrls_gene_ch
 
-        mageck count --norm-method $params.mageckCountNorm ${params.ctrl_type} ${params.ctrl_file} --pdf-report -l $params.librarydesign -n $params.projname --fastq $fastqr1_ch --sample-label $smpls_ch
+        mageck count --norm-method ${params.mageckCountNorm} ${params.ctrl_type} ${params.ctrl_file} --pdf-report -l ${params.librarydesign} -n ${params.projname} --fastq ${fastqr1_ch} --sample-label ${smpls_ch}
 
         echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
         date >>${params.verfile}
@@ -133,7 +134,7 @@ process mageck_count_reads {
         #module load R_packages/4.1.1
         #module load pandoc/2.17.1.1
 
-        mageck count --norm-method $params.mageckCountNorm --pdf-report -l $params.librarydesign -n $params.projname --fastq $fastqr1_ch --sample-label $smpls_ch
+        mageck count --norm-method ${params.mageckCountNorm} --pdf-report -l ${params.librarydesign} -n ${params.projname} --fastq ${fastqr1_ch} --sample-label ${smpls_ch}
         
         echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
         date >>${params.verfile}
@@ -173,7 +174,7 @@ process mageck_rra_reads {
     #module load R_packages/4.1.1
     #module load pandoc/2.17.1.1
 
-    mageck test -k $cnttable -c $smplRef -t $smplTreat -n ${comparisonID}/${comparisonID} --norm-method none --pdf-report
+    mageck test -k ${cnttable} -c ${smplRef} -t ${smplTreat} -n ${comparisonID}/${comparisonID} --norm-method none --pdf-report
     
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
@@ -211,7 +212,7 @@ process report_reads {
     cp ${params.comparisons} ${params.projname}/metadata
     cp -r ${projectDir}/bin/report_template/* .
   
-    Rscript report_launcher.R $params.projname $params.projname reads $params.organism $sampleInfo_ch $comparisonsInfo_ch
+    Rscript report_launcher.R ${params.projname} ${params.projname} reads ${params.organism} ${sampleInfo_ch} ${comparisonsInfo_ch}
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
@@ -269,6 +270,7 @@ process filter_RSL {
 
     input:
     path rsl_countstable
+    path lib_definition
 
     output:
     path "${params.projname}.RSL.perguide.tsv", emit: rsl_countstable_filt_ch
@@ -280,8 +282,8 @@ process filter_RSL {
     script:
     """
     #module load perl_modules/5.26.2
-
-    perl ${params.scripts}/processUMIcounts.v0.14.pl --filter CO=${params.filtRowSums} --infile $rsl_countstable --input_lib $params.libraryinputfilt --outdir . --input_lib_design $params.librarydesign
+        
+    perl ${params.scripts}/processUMIcounts.v0.14.pl --filter CO=${params.filtRowSums} --infile ${rsl_countstable} --input_lib ${params.libraryinputfilt} --outdir . --input_lib_design ${lib_definition}
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
@@ -289,9 +291,7 @@ process filter_RSL {
     perl -v >>${params.verfile}
     echo "processUMIcounts.v0.14.pl" >>${params.verfile}
     """
-
-
-}
+    }
 
 
 
@@ -321,9 +321,9 @@ process mageck_rra_RSL {
     #module load perl_modules/5.18.4
 
     mkdir $comparisonID
-    perl ${params.scripts}/rank_log2FC.v0.3.pl -i $cnttable -o ${comparisonID}/${comparisonID}.rank_log2FC.tsv -r $smplRef -t $smplTreat
+    perl ${params.scripts}/rank_log2FC.v0.3.pl -i ${cnttable} -o ${comparisonID}/${comparisonID}.rank_log2FC.tsv -r ${smplRef} -t ${smplTreat}
 
-    mageck pathway --gmt-file $lib_gmt --method rra --ranking-column 4 --ranking-column-2 3 --gene-ranking ${comparisonID}/${comparisonID}.rank_log2FC.tsv -n ${comparisonID}/${comparisonID}.${params.projname}
+    mageck pathway --gmt-file ${lib_gmt} --method rra --ranking-column 4 --ranking-column-2 3 --gene-ranking ${comparisonID}/${comparisonID}.rank_log2FC.tsv -n ${comparisonID}/${comparisonID}.${params.projname}
 
     cp "${comparisonID}/${comparisonID}.${params.projname}.pathway_summary.txt" "${comparisonID}/${comparisonID}.${params.projname}.gene_rra_summary.txt"
     
@@ -368,7 +368,7 @@ process report_RSL {
     cp ${params.sampleinfo} ${params.projname}/metadata
     cp ${params.comparisons} ${params.projname}/metadata
     cp -r ${projectDir}/bin/report_template/* .
-    Rscript report_launcher.R $params.projname $params.projname RSL $params.organism  $sampleInfo_ch $comparisonsInfo_ch
+    Rscript report_launcher.R ${params.projname} ${params.projname} RSL ${params.organism}  ${sampleInfo_ch} ${comparisonsInfo_ch}
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
@@ -396,8 +396,8 @@ process fastqc {
     #module load bioinfo-tools
     #module load FastQC/0.11.9
     
-    echo "fastqc $fastqr1"
-    fastqc $fastqr1
+    echo "fastqc ${fastqr1}"
+    fastqc ${fastqr1}
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}

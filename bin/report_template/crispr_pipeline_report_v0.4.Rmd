@@ -92,14 +92,24 @@ source("./crispr_pipeline_report_functions.R")
 
 # Project Description <a name="Project-Description"></a>
 
+<!-- 
 Here we have written about the project.
+OBS! Remove the comment block signs if this is to be included.
+ -->
+
+
 
 <br />
 <br />
 
 # Comments <a name="Comments"></a>
 
+<!-- 
 Custom text which helps to interpret the screen results.
+OBS! Remove the comment block signs if this is to be included.
+ -->
+
+
 
 <br />
 <br />
@@ -231,7 +241,13 @@ Gini index (coefficient) is a measure of inequality in data; it ranges between 0
 ```{r data_countingstats-save, include=FALSE,cache=FALSE}
 
 ```
-This table is saved as **`r fname`**.
+
+
+
+```{asis, echo=is.RSL}
+This table is saved as **`r fname_table`**.
+```
+
 
 
 <br />
@@ -323,7 +339,7 @@ These plots are saved as **`r fname`**.
 ## Statistical Analysis of sgRNA Abundance <a name="mageck"></a>
 
 
-MAGeCK is a tool designed to identify positively and negatively selected sgRNAs and genes in genome scale CRISPR/Cas9 knockout experiments. It encompasses four steps: read count normalization, mean-variance modeling, sgRNA ranking and gene ranking (ref).
+MAGeCK is a tool designed to identify positively and negatively selected sgRNAs and genes in genome scale CRISPR/Cas9 knockout experiments. It encompasses four steps: read count normalization, mean-variance modeling, sgRNA ranking and gene ranking [@mageck].
 
 sgRNAs are ranked based on P-values calculated from the negative binomial model, and a modified robust ranking aggregation (α-RRA) algorithm is used to identify positively or negatively selected genes. More specifically, α-RRA assumes that if a gene has no effect on selection, then sgRNAs targeting this gene should be uniformly distributed across the ranked list of all the sgRNAs. α-RRA ranks genes by comparing the skew in rankings to the uniform null model, and prioritizes genes whose sgRNA rankings are consistently higher than expected. α-RRA calculates the statistical significance of the skew by permutation.
 

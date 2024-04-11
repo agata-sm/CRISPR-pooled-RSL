@@ -368,8 +368,7 @@ Please note only genes with FDR<=0.8 are plotted (n=`r nrow(dat_plot)`).
 
 
 This plot is saved as a static plot in file
-
- `r paste0(fname, " .")`
+**`r paste0(fname, " .")`**
 
 
 
@@ -468,7 +467,7 @@ Gene rank plot depicts the relationship of gene rank and its
 Please note only genes with FDR<=0.8 are plotted (n=`r nrow(dat_plot)`).
 
 
-This plot is interactive. Its static version is saved in file `r fname`.
+This plot is interactive. Its static version is saved in file **`r fname`**.
 
 
 ```{r dev='png', echo=FALSE, fig.show='show',fig.dim=c(6, 6), cache=FALSE, fig.cap=figurecap}
@@ -533,7 +532,7 @@ Visualisation of ranks of individual sgRNAs targeting each gene adds more inform
 The guide rank plots visualize the rank of sgRNAs targeting top genes (n=10) under negative and positive selection. 
 Rank plots for top 20 genes changed in each direction are saved in file
 ```
- `r if(!is.RSL){paste0(fname, " .")}`
+**`r if(!is.RSL){paste0(fname, " .")}`**
 
 
 
