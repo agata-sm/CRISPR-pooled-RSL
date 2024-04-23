@@ -753,16 +753,15 @@ for (i in c(1:contrasts.pairs.number)){
 ## ---- contrast-scatters-save-child
 
 knitr::set_parent("./crispr_pipeline_report_v0.4.Rmd")
-outdir_scatters="./interactive_scatterplots"
+outdir_scatters=file.path(wrk.dir,"interactive_scatterplots") ## wrk.dir inherited from report_launcher.R
 dir.create(outdir_scatters)
-
 
 for (i in c(1:length(scatters))){
   name=names(scatters[i])
   outfile_scatter=paste("Interactive_scatterplot",name,"html",sep=".")
 
-  knitr::render("crispr_report_int_scatter.Rmd", quiet = TRUE, envir = environment(), output_file=outfile_scatter, output_dir=outdir_scatters)
-
+  rmarkdown::render("crispr_report_scatter_standalone.Rmd", quiet = TRUE, envir = environment(), output_file=outfile_scatter, output_dir=outdir_scatters)
 }
+
 
 

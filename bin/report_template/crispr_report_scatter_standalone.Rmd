@@ -1,0 +1,51 @@
+---
+title: Appendix to CRISPR screen report <br> Project `r proj.name.pref`
+author: CRISPR Functional Genomics
+output:
+  bookdown::html_document2:
+    theme: journal
+    highlight: kate
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      collapsed: no
+    css: "style.css"
+    fig_width: 5
+    fig_height: 5
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+bibliography: references.bib
+---
+
+
+
+<!-- 
+This is a child document for presentation of interactive scatterplots as standalone documents
+It inherits env and varialbles from 
+crispr_pipeline_report_v0.4.Rmd
+pipeline_report.v0.4.1.R
+ -->
+
+
+
+```{r include=FALSE,cache=FALSE}
+
+library(knitr)
+library(bookdown)
+
+
+knitr::opts_chunk$set(echo = FALSE, 
+                      collapse = TRUE, 
+                      warning = FALSE, 
+                      message = FALSE)
+
+
+source("./crispr_pipeline_report_functions.R")
+
+fig.caption=paste0("Scatter plot depicting log2 fold changes in comparisons ", name, ".")
+```
+
+
+```{r dev='png', echo=FALSE, fig.show='show',fig.width=8, cache=FALSE, fig.cap=fig.caption}
+scatters[[i]]
+```
+
