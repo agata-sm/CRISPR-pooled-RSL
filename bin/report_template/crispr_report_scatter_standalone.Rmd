@@ -46,6 +46,6 @@ fig.caption=paste0("Scatter plot depicting log2 fold changes in comparisons ", n
 
 
 ```{r dev='png', echo=FALSE, fig.show='show',fig.width=8, cache=FALSE, fig.cap=fig.caption}
-scatters[[i]]
+scatters[i]
 ```
 
