@@ -41,11 +41,11 @@ knitr::opts_chunk$set(echo = FALSE,
 
 source("./crispr_pipeline_report_functions.R")
 
-fig.caption=paste0("Scatter plot depicting log2 fold changes in comparisons ", name, ".")
+fig.caption=paste0("Scatter plot depicting log2 fold changes in comparisons ", comp.name.i, ".")
 ```
 
 
 ```{r dev='png', echo=FALSE, fig.show='show',fig.width=8, cache=FALSE, fig.cap=fig.caption}
-scatters[i]
+pl2_int
 ```
 

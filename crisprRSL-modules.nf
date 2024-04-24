@@ -49,7 +49,7 @@ params.verfile="software.versions"
 
 
 process prep_library_files {
-    publishDir params.libdirOut, mode:'copy'
+    //publishDir params.libdirOut, mode:'copy'
 
     label 'small'
 
@@ -79,6 +79,58 @@ process prep_library_files {
 
 }
 
+
+process cp_library_files {
+    publishDir params.libdirOut, mode:'copy'
+
+    label 'small'
+    
+    input:
+    path lib_ch
+    path lib_gmt_ch
+    path ctrls_gene_ch
+
+    output:
+    path "library_files/*"
+
+
+    script:
+
+
+    if ( "${workflow}"== "RSL" ){
+    """
+        mkdir -p library_files/RSL
+        cp ${lib_gmt_ch} library_files/RSL
+        cp ${lib_ch} library_files/RSL
+    """
+    }
+
+    else{
+
+
+        if ( "${params.mageckCountNorm}"== "control" ){
+        
+        """
+        mkdir -p library_files/reads
+        cp ${params.ctrl_file} library_files/reads
+        cp ${lib_ch} library_files/reads
+
+        """
+
+
+        }else{
+
+        """
+        mkdir -p library_files/reads
+        cp ${lib_ch} library_files/reads
+
+        """
+
+        }
+    }
+
+
+}
 
 process mageck_count_reads {
     publishDir params.readsCntOut, mode:'copy'
@@ -194,6 +246,7 @@ process report_reads {
     path('*')
     path sampleInfo_ch
     path comparisonsInfo_ch
+    path scattersInfo_ch
 
     output:
     path "report.reads"
@@ -210,9 +263,10 @@ process report_reads {
     mkdir ${params.projname}/metadata
     cp ${params.sampleinfo} ${params.projname}/metadata
     cp ${params.comparisons} ${params.projname}/metadata
+    cp ${params.scatters} ${params.projname}/metadata
     cp -r ${projectDir}/bin/report_template/* .
   
-    Rscript report_launcher.R ${params.projname} ${params.projname} reads ${params.organism} ${sampleInfo_ch} ${comparisonsInfo_ch}
+    Rscript report_launcher.R ${params.projname} ${params.projname} reads ${params.organism} ${sampleInfo_ch} ${comparisonsInfo_ch} ${scattersInfo_ch}
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
@@ -351,6 +405,7 @@ process report_RSL {
     path('*')
     path sampleInfo_ch
     path comparisonsInfo_ch
+    path scattersInfo_ch
 
   
     output:
@@ -367,8 +422,10 @@ process report_RSL {
     mkdir ${params.projname}/metadata
     cp ${params.sampleinfo} ${params.projname}/metadata
     cp ${params.comparisons} ${params.projname}/metadata
+    cp ${params.scatters} ${params.projname}/metadata
     cp -r ${projectDir}/bin/report_template/* .
-    Rscript report_launcher.R ${params.projname} ${params.projname} RSL ${params.organism}  ${sampleInfo_ch} ${comparisonsInfo_ch}
+
+    Rscript report_launcher.R ${params.projname} ${params.projname} reads ${params.organism} ${sampleInfo_ch} ${comparisonsInfo_ch} ${scattersInfo_ch}
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}

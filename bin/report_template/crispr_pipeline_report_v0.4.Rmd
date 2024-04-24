@@ -454,14 +454,18 @@ Log2 fold changes for each gene were plotted for each pair of comparisons (inter
 
 
 
-```{r contrast_scatters, eval=!is.RSL, echo=FALSE, include=FALSE}
+```{r contrast_scatters_file, eval=!is.RSL, echo=FALSE, include=FALSE}
 
 ```
 
+
+
+<!--
 
 ```{r contrast-scatters-save-child, eval=!is.RSL, echo=FALSE, include=FALSE}
 
 ```
+-->
 
 
 
@@ -488,6 +492,7 @@ for (i in c(1:contrasts.pairs.number)){
 <!-- 
 This outputs the scatter plots in the main document; instead they are now otuput as separate files
 OBS! Error is displayed if no suitable groups were found, i.e. the values "group" in comparisons.txt are all unique
+
 
 ```{r eval=!is.RSL, echo=FALSE, results='asis'}
 options(knitr.duplicate.label = "allow")

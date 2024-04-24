@@ -631,6 +631,87 @@ cor_hm_sgRNA +theme(aspect.ratio = 1) + theme(plot.margin = unit(c(0, 0, 0, 0), 
 
 
 
+## ---- contrast_scatters_file
+
+if (scatters.fname !="NULL"){
+  
+  outdir_scatters=file.path(wrk.dir,"interactive_scatterplots") ## wrk.dir inherited from report_launcher.R
+  dir.create(outdir_scatters)
+
+
+  scatters_df=read.delim(scatters.fname, sep="\t", header=TRUE)
+
+
+  #produce the plots
+
+  for (i in c(1:nrow(scatters_df))) {
+
+    contrasts_fname=paste(scatters_df[i,1],scatters_df[i,2],sep=".")
+
+      res.df=data.frame()
+      for (j in c( scatters_df[i,1], scatters_df[i,2)){
+     
+        if(!is.RSL){
+          res.df.i=as.data.frame(cbind(all.res[[j]]$neg.lfc,all.res[[j]]$id ))
+          colnames(res.df.i)=c("lfc","id")
+          res.df.i$comparison=j
+          res.df=rbind(res.df,res.df.i)
+        }
+        if(is.RSL){
+          res.df.i=as.data.frame(cbind(all.res[[j]]$median.logFC,all.res[[j]]$id ))
+          colnames(res.df.i)=c("lfc","id")
+          res.df.i$comparison=j
+          res.df=rbind(res.df,res.df.i)
+        }
+      }
+
+      res.df$lfc=as.numeric(res.df$lfc)
+      df_scatter=spread(res.df,comparison,lfc)
+
+      #add this to avoid error in density distribution
+      #https://stackoverflow.com/questions/53075331/error-using-geom-density-2d-in-r-computation-failed-in-stat-density2d-b
+      #Error in MASS::kde2d(x, y, ...) : 
+      #  missing or infinite values in the data are not allowed
+      # OBS! this still does not work for RSL data, so will only be run for reads data
+      pseudocount=0.01
+      df_scatter[,4]=df_scatter[,2]+pseudocount
+      df_scatter[,5]=df_scatter[,3]+pseudocount
+
+      df_scatter$density <- get_density(df_scatter[,2], df_scatter[,3], n = 100)
+
+      pl2=ggplot(df_scatter, aes(x=df_scatter[,4],y=df_scatter[,5], text=paste(id,"; lfc",colnames(df_scatter)[2],round(df_scatter[,2],digits=3),"; lfc",colnames(df_scatter)[3],round(df_scatter[,3],digits=3)) ))+
+        geom_point() +
+        theme_bw() +
+         xlab(paste0("log2 Fold Change in ",colnames(df_scatter)[2])) + ylab(paste0("log2 Fold Change in ",colnames(df_scatter)[3]))
+
+
+      pl2.d=pl2+geom_point(aes(df_scatter[,4], df_scatter[,5], color = density)) + scale_color_viridis()
+
+      fig_n=fig_n+1
+
+      ggsave(filename=paste("Figure",fig_n,"log2FCscatterplot",colnames(df_scatter)[2],colnames(df_scatter)[3],"pdf",sep="."),path=plotdir,device="pdf")
+
+      pl2_int=ggplotly(pl2.d, tooltip=c("text"))
+
+      comp.name.i=paste(contr.pair.i[1],contr.pair.i[2], sep=" and ") # used in child
+
+      knitr::set_parent("./crispr_pipeline_report_v0.4.Rmd")
+      outfile_scatter=paste("Interactive_scatterplot",contrasts_fname,"html",sep=".")
+
+      rmarkdown::render("crispr_report_scatter_standalone.Rmd", quiet = TRUE, envir = environment(), output_file=outfile_scatter, output_dir=outdir_scatters)
+  }
+
+
+}
+
+
+
+#############################################################
+#############################################################
+#############################################################
+
+
+## ---- this_below_is_outdated
 
 ## ---- contrast_scatters
 
