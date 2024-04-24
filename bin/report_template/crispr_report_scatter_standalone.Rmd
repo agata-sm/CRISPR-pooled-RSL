@@ -27,7 +27,7 @@ pipeline_report.v0.4.1.R
 
 
 
-```{r include=FALSE,cache=FALSE}
+```{r include=FALSE,cache=FALSE, error=TRUE}
 
 library(knitr)
 library(bookdown)
@@ -36,7 +36,8 @@ library(bookdown)
 knitr::opts_chunk$set(echo = FALSE, 
                       collapse = TRUE, 
                       warning = FALSE, 
-                      message = FALSE)
+                      message = FALSE,
+                      error=TRUE)
 
 
 source("./crispr_pipeline_report_functions.R")
@@ -45,7 +46,7 @@ fig.caption=paste0("Scatter plot depicting log2 fold changes in comparisons ", c
 ```
 
 
-```{r dev='png', echo=FALSE, fig.show='show',fig.width=8, cache=FALSE, fig.cap=fig.caption}
+```{r dev='png', echo=FALSE, fig.show='show',fig.width=8, cache=FALSE,error=TRUE, fig.cap=fig.caption}
 pl2_int
 ```
 

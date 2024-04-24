@@ -454,7 +454,7 @@ Log2 fold changes for each gene were plotted for each pair of comparisons (inter
 
 
 
-```{r contrast_scatters_file, eval=!is.RSL, echo=FALSE, include=FALSE}
+```{r contrast_scatters_file, eval=!is.RSL, echo=FALSE, include=FALSE, }
 
 ```
 
@@ -462,7 +462,7 @@ Log2 fold changes for each gene were plotted for each pair of comparisons (inter
 
 <!--
 
-```{r contrast-scatters-save-child, eval=!is.RSL, echo=FALSE, include=FALSE}
+```{r contrast-scatters-save-child, eval=!is.RSL, echo=FALSE, include=FALSE, error=TRUE}
 
 ```
 -->

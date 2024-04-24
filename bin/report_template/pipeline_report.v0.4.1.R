@@ -649,7 +649,7 @@ if (scatters.fname !="NULL"){
     contrasts_fname=paste(scatters_df[i,1],scatters_df[i,2],sep=".")
 
       res.df=data.frame()
-      for (j in c( scatters_df[i,1], scatters_df[i,2)){
+      for (j in c( scatters_df[i,1], scatters_df[i,2])){
      
         if(!is.RSL){
           res.df.i=as.data.frame(cbind(all.res[[j]]$neg.lfc,all.res[[j]]$id ))
