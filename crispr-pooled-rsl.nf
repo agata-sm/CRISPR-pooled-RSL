@@ -199,7 +199,7 @@ workflow {
 	prep_library_files(lib_ch)
 	ctrls_sgRNA_ch=prep_library_files.out.lib_ctrls_sgRNA_ch
 	ctrls_gene_ch=prep_library_files.out.lib_ctrls_gene_ch
-	cp_library_files(lib_ch, prep_library_files.out.lib_gmt_ch, prep_library_files.out.ctrls_gene_ch)
+	cp_library_files(lib_ch, prep_library_files.out.lib_gmt_ch, prep_library_files.out.lib_ctrls_gene_ch)
 
 	//count reads
 	mageck_count_reads(fastqr1_ch, smpls_ch, ctrls_sgRNA_ch, ctrls_gene_ch)
@@ -231,6 +231,7 @@ workflow RSL {
 	
 	//prep library files
 	prep_library_files(lib_ch)
+	cp_library_files(lib_ch, prep_library_files.out.lib_gmt_ch, prep_library_files.out.lib_ctrls_gene_ch)
 
 	// count reads
 	crispr_counter(fastqr1_ch)
