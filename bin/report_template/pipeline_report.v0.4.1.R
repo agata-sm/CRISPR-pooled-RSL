@@ -693,7 +693,7 @@ if (scatters.fname !="NULL"){
 
       pl2_int=ggplotly(pl2.d, tooltip=c("text"))
 
-      comp.name.i=paste(contr.pair.i[1],contr.pair.i[2], sep=" and ") # used in child
+      comp.name.i=paste(scatters_df[i,1],scatters_df[i,2], sep=" and ") # used in child
 
       knitr::set_parent("./crispr_pipeline_report_v0.4.Rmd")
       outfile_scatter=paste("Interactive_scatterplot",contrasts_fname,"html",sep=".")
