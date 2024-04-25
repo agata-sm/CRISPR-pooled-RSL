@@ -176,7 +176,7 @@ lib_ch= Channel.fromPath(params.librarydesign, checkIfExists:true)
 		.set { lib_ch }
 
 
-//metadata channles
+//metadata channels
 sampleInfo_ch=Channel.fromPath(params.sampleinfo, checkIfExists:true)
 comparisonsInfo_ch=Channel.fromPath(params.comparisons, checkIfExists:true)
 scattersInfo_ch=Channel.fromPath(params.scatters, checkIfExists:true)
@@ -184,7 +184,7 @@ scattersInfo_ch=Channel.fromPath(params.scatters, checkIfExists:true)
 
 /////////////////////////////
 // processes
-include { prep_library_files; cp_library_files; mageck_count_reads; mageck_rra_reads; report_reads; crispr_counter; filter_RSL; mageck_rra_RSL; report_RSL; fastqc } from './crisprRSL-modules.nf'
+include { prep_library_files; cp_library_files_reads;cp_library_files_RSL; mageck_count_reads; mageck_rra_reads; report_reads; crispr_counter; filter_RSL; mageck_rra_RSL; report_RSL; fastqc } from './crisprRSL-modules.nf'
 
 
 
@@ -199,7 +199,7 @@ workflow {
 	prep_library_files(lib_ch)
 	ctrls_sgRNA_ch=prep_library_files.out.lib_ctrls_sgRNA_ch
 	ctrls_gene_ch=prep_library_files.out.lib_ctrls_gene_ch
-	cp_library_files(lib_ch, prep_library_files.out.lib_gmt_ch, prep_library_files.out.lib_ctrls_gene_ch)
+	cp_library_files_reads(lib_ch, prep_library_files.out.lib_ctrls_gene_ch)
 
 	//count reads
 	mageck_count_reads(fastqr1_ch, smpls_ch, ctrls_sgRNA_ch, ctrls_gene_ch)
@@ -231,7 +231,7 @@ workflow RSL {
 	
 	//prep library files
 	prep_library_files(lib_ch)
-	cp_library_files(lib_ch, prep_library_files.out.lib_gmt_ch, prep_library_files.out.lib_ctrls_gene_ch)
+	cp_library_files_RSL(lib_ch, prep_library_files.out.lib_gmt_ch)
 
 	// count reads
 	crispr_counter(fastqr1_ch)

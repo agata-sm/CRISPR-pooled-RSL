@@ -80,57 +80,40 @@ process prep_library_files {
 }
 
 
-process cp_library_files {
+process cp_library_files_reads {
     publishDir params.libdirOut, mode:'copy'
 
     label 'small'
     
     input:
     path lib_ch
-    path lib_gmt_ch
     path ctrls_gene_ch
 
     output:
-    path "library_files/*"
+    path "reads/*"
 
 
     script:
 
-
-    if ( "${workflow}"== "RSL" ){
-    """
-        mkdir -p library_files/RSL
-        cp ${lib_gmt_ch} library_files/RSL
-        cp ${lib_ch} library_files/RSL
-    """
-    }
-
-    else{
-
-
         if ( "${params.mageckCountNorm}"== "control" ){
         
         """
-        mkdir -p library_files/reads
-        cp ${params.ctrl_file} library_files/reads
-        cp ${lib_ch} library_files/reads
-
+        mkdir -p reads
+        cp ${params.ctrl_file} reads
+        cp ${lib_ch} reads
         """
-
 
         }else{
 
         """
-        mkdir -p library_files/reads
-        cp ${lib_ch} library_files/reads
-
+        mkdir -p reads
+        cp ${lib_ch} reads
         """
 
         }
-    }
-
 
 }
+
 
 process mageck_count_reads {
     publishDir params.readsCntOut, mode:'copy'
@@ -316,6 +299,29 @@ process crispr_counter {
     """
 
 }
+
+process cp_library_files_RSL {
+    publishDir params.libdirOut, mode:'copy'
+
+    label 'small'
+    
+    input:
+    path lib_ch
+    path lib_gmt_ch
+
+    output:
+    path "RSL/*"
+
+
+    script:
+
+    """
+    mkdir -p RSL
+    cp ${lib_gmt_ch} RSL
+    cp ${lib_ch} RSL
+    """
+}
+
 
 process filter_RSL {
     publishDir params.filterRSLOut, mode:'copy'
