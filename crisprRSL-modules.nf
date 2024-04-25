@@ -31,7 +31,7 @@ params.fastqc="FastQC"
 params.fastqcOut="${params.outdir}/${params.fastqc}"
 
 params.libdir="library"
-params.libdirOut="${params.outdir}/${params.libdir}"
+params.libdirOut="${params.projdir}/${params.libdir}"
 
 // assets
 params.countertemplate="${projectDir}/assets/template.properties"
