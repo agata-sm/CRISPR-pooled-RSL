@@ -31,7 +31,7 @@ params.fastqc="FastQC"
 params.fastqcOut="${params.outdir}/${params.fastqc}"
 
 params.libdir="library"
-params.libdirOut="${params.outdir}/${params.libdir}"
+params.libdirOut="${params.projdir}/${params.libdir}"
 
 // assets
 params.countertemplate="${projectDir}/assets/template.properties"
@@ -49,7 +49,7 @@ params.verfile="software.versions"
 
 
 process prep_library_files {
-    publishDir params.libdirOut, mode:'copy'
+    //publishDir params.libdirOut, mode:'copy'
 
     label 'small'
 
@@ -76,6 +76,41 @@ process prep_library_files {
     perl -v >>${params.verfile}
     echo "getLibraryGmt.pl" >>${params.verfile}
     """
+
+}
+
+
+process cp_library_files_reads {
+    publishDir params.libdirOut, mode:'copy'
+
+    label 'small'
+    
+    input:
+    path lib_ch
+    path ctrls_gene_ch
+
+    output:
+    path "reads/*"
+
+
+    script:
+
+        if ( "${params.mageckCountNorm}"== "control" ){
+        
+        """
+        mkdir -p reads
+        cp ${params.ctrl_file} reads
+        cp ${lib_ch} reads
+        """
+
+        }else{
+
+        """
+        mkdir -p reads
+        cp ${lib_ch} reads
+        """
+
+        }
 
 }
 
@@ -107,10 +142,6 @@ process mageck_count_reads {
     if ( "${params.mageckCountNorm}"== "control" ){
 
         """
-        echo $smpls_ch
-        echo $ctrls_sgRNA_ch
-        echo $ctrls_gene_ch
-
         mageck count --norm-method ${params.mageckCountNorm} ${params.ctrl_type} ${params.ctrl_file} --pdf-report -l ${params.librarydesign} -n ${params.projname} --fastq ${fastqr1_ch} --sample-label ${smpls_ch}
 
         echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
@@ -124,11 +155,6 @@ process mageck_count_reads {
     }else{
 
         """
-        echo $smpls_ch
-        echo $ctrls_sgRNA_ch
-        echo $ctrls_gene_ch
-
-
         #module load bioinfo-tools
         #module load MAGeCK/0.5.9.4
         #module load R_packages/4.1.1
@@ -194,6 +220,7 @@ process report_reads {
     path('*')
     path sampleInfo_ch
     path comparisonsInfo_ch
+    path scattersInfo_ch
 
     output:
     path "report.reads"
@@ -210,15 +237,16 @@ process report_reads {
     mkdir ${params.projname}/metadata
     cp ${params.sampleinfo} ${params.projname}/metadata
     cp ${params.comparisons} ${params.projname}/metadata
+    cp ${params.scatters} ${params.projname}/metadata
     cp -r ${projectDir}/bin/report_template/* .
   
-    Rscript report_launcher.R ${params.projname} ${params.projname} reads ${params.organism} ${sampleInfo_ch} ${comparisonsInfo_ch}
+    Rscript report_launcher.R ${params.projname} ${params.projname} reads ${params.organism} ${sampleInfo_ch} ${comparisonsInfo_ch} ${scattersInfo_ch}
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
     echo "process ** report_reads **" >>${params.verfile}
     R --version >>${params.verfile}
-    echo "please check Session Info in the report for package versions"
+    echo "please check Session Info in the report for package versions" >>${params.verfile}
     """
 
 }
@@ -241,8 +269,6 @@ process crispr_counter {
 
     script:
     """
-    echo "$fastqr1_ch"
-
     #module load perl_modules/5.18.4
 
     perl ${params.scripts}/makeCounterConfig.pl --template $params.countertemplate --samples $params.sampleinfo --library $params.librarydesign --prefix $params.projname --outdir . --fastqdir $params.fastqdir
@@ -262,6 +288,29 @@ process crispr_counter {
     """
 
 }
+
+process cp_library_files_RSL {
+    publishDir params.libdirOut, mode:'copy'
+
+    label 'small'
+    
+    input:
+    path lib_ch
+    path lib_gmt_ch
+
+    output:
+    path "RSL/*"
+
+
+    script:
+
+    """
+    mkdir -p RSL
+    cp ${lib_gmt_ch} RSL
+    cp ${lib_ch} RSL
+    """
+}
+
 
 process filter_RSL {
     publishDir params.filterRSLOut, mode:'copy'
@@ -351,6 +400,7 @@ process report_RSL {
     path('*')
     path sampleInfo_ch
     path comparisonsInfo_ch
+    path scattersInfo_ch
 
   
     output:
@@ -367,14 +417,16 @@ process report_RSL {
     mkdir ${params.projname}/metadata
     cp ${params.sampleinfo} ${params.projname}/metadata
     cp ${params.comparisons} ${params.projname}/metadata
+    cp ${params.scatters} ${params.projname}/metadata
     cp -r ${projectDir}/bin/report_template/* .
-    Rscript report_launcher.R ${params.projname} ${params.projname} RSL ${params.organism}  ${sampleInfo_ch} ${comparisonsInfo_ch}
+
+    Rscript report_launcher.R ${params.projname} ${params.projname} RSL ${params.organism} ${sampleInfo_ch} ${comparisonsInfo_ch} ${scattersInfo_ch}
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
     echo "process ** report_RSL **" >>${params.verfile}
     R --version >>${params.verfile}
-    echo "please check Session Info in the report for package versions"
+    echo "please check Session Info in the report for package versions" >>${params.verfile}
     """
 
 }
@@ -396,7 +448,6 @@ process fastqc {
     #module load bioinfo-tools
     #module load FastQC/0.11.9
     
-    echo "fastqc ${fastqr1}"
     fastqc ${fastqr1}
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}

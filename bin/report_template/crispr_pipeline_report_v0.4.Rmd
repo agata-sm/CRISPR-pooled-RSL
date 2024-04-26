@@ -438,10 +438,6 @@ pairwise sample correlations. Rank based Spearman correlation coefficients betwe
 
 
 
-<!-- 
-### Scatter Plots
-
- -->
 
 `r if(!is.RSL){"### Scatter Plots"}`
 
@@ -453,34 +449,16 @@ Log2 fold changes for each gene were plotted for each pair of comparisons (inter
 ```
 
 
-```{r contrast_scatters, eval=!is.RSL, echo=FALSE, include=FALSE}
+
+```{r contrast_scatters_file, eval=!is.RSL, echo=FALSE, include=FALSE, }
 
 ```
 
 
-<!-- 
-  This works for non-interactive plots
 
-```{r dev='png', echo=FALSE, fig.show='show',fig.width=10, cache=FALSE, fig.cap="Scatter plots depicting log2 fold changes in each pair of comparisons."}
-for (i in c(1:contrasts.pairs.number)){
-  print(scatters[[i]])
-}
+```{asis, echo=!is.RSL}
+The interactive plots are saved as separate documents in directory **`r outdir_scatters`**.
 ```
- -->
-
-
-```{r eval=!is.RSL, echo=FALSE, results='asis'}
-options(knitr.duplicate.label = "allow")
-scatter_plots <- vector(mode = "list", length = length(pairs_to_plot))
- 
-for (i in c(1:length(pairs_to_plot))){
-    scatter_plots[[i]] <- knitr::knit_child("crispr_report_int_scatter.Rmd", quiet = TRUE, envir = environment())
-}
-
-cat(unlist(scatter_plots), sep = '\n')
-```
-
-
 
 
 

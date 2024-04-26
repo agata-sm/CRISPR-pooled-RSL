@@ -53,6 +53,7 @@ else{
 		'outfile_lib=s'		=>	\(my $outfile_lib)
 	) or die "Error in command line arguments";
 
+
 	open (OUTFILE_CTRL, ">", $outfile_ctrl) or die "Cannot open outfile $outfile_ctrl: $!";
 	open (OUTFILE_GCTRL, ">", $outfile_gctrl) or die "Cannot open outfile $outfile_gctrl: $!";
 
@@ -62,7 +63,7 @@ else{
 	open (INFILE_INPUT_LIBDES, "<", $input_lib_design) or die "Cannot open file with processed input library $input_lib_design: $!";
 	while (<INFILE_INPUT_LIBDES>){
 
-    	# change line endings to \n
+    	# change line endings to \n 
 		# my $newline;
 		# for ("\r", "\n", "\r\n", "\n\r", "\r\r", "\n\n") {
     	# 	$newline = 'text'.$_."text";
