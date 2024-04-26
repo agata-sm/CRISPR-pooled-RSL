@@ -142,10 +142,6 @@ process mageck_count_reads {
     if ( "${params.mageckCountNorm}"== "control" ){
 
         """
-        echo $smpls_ch
-        echo $ctrls_sgRNA_ch
-        echo $ctrls_gene_ch
-
         mageck count --norm-method ${params.mageckCountNorm} ${params.ctrl_type} ${params.ctrl_file} --pdf-report -l ${params.librarydesign} -n ${params.projname} --fastq ${fastqr1_ch} --sample-label ${smpls_ch}
 
         echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
@@ -159,11 +155,6 @@ process mageck_count_reads {
     }else{
 
         """
-        echo $smpls_ch
-        echo $ctrls_sgRNA_ch
-        echo $ctrls_gene_ch
-
-
         #module load bioinfo-tools
         #module load MAGeCK/0.5.9.4
         #module load R_packages/4.1.1
@@ -255,7 +246,7 @@ process report_reads {
     date >>${params.verfile}
     echo "process ** report_reads **" >>${params.verfile}
     R --version >>${params.verfile}
-    echo "please check Session Info in the report for package versions"
+    echo "please check Session Info in the report for package versions" >>${params.verfile}
     """
 
 }
@@ -278,8 +269,6 @@ process crispr_counter {
 
     script:
     """
-    echo "$fastqr1_ch"
-
     #module load perl_modules/5.18.4
 
     perl ${params.scripts}/makeCounterConfig.pl --template $params.countertemplate --samples $params.sampleinfo --library $params.librarydesign --prefix $params.projname --outdir . --fastqdir $params.fastqdir
@@ -431,13 +420,13 @@ process report_RSL {
     cp ${params.scatters} ${params.projname}/metadata
     cp -r ${projectDir}/bin/report_template/* .
 
-    Rscript report_launcher.R ${params.projname} ${params.projname} reads ${params.organism} ${sampleInfo_ch} ${comparisonsInfo_ch} ${scattersInfo_ch}
+    Rscript report_launcher.R ${params.projname} ${params.projname} RSL ${params.organism} ${sampleInfo_ch} ${comparisonsInfo_ch} ${scattersInfo_ch}
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
     echo "process ** report_RSL **" >>${params.verfile}
     R --version >>${params.verfile}
-    echo "please check Session Info in the report for package versions"
+    echo "please check Session Info in the report for package versions" >>${params.verfile}
     """
 
 }
@@ -459,7 +448,6 @@ process fastqc {
     #module load bioinfo-tools
     #module load FastQC/0.11.9
     
-    echo "fastqc ${fastqr1}"
     fastqc ${fastqr1}
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
