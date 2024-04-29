@@ -1,0 +1,2 @@
+file	sample	condition	group
+LowGFP_REP1_R1_001.fastq.gz	LowGFP_REP1	LowGFP	rep1

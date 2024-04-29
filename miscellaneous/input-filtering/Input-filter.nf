@@ -49,7 +49,17 @@ cutoffs_ch= Channel.of( 0, 1, 2, 3, 4, 5, 7, 10 )
 // 		.set {cnts_ch}
 
 
-input_properties_ch=Channel.fromPath(params.properties, checkIfExists:true)
+//input_properties_ch=Channel.fromPath(params.properties, checkIfExists:true)
+
+// fastq file paths channel - list of paths
+fastqr1_ch= Channel.fromPath(params.sampleinfo, checkIfExists:true)
+	fastqr1_ch
+	    .splitCsv(header:true, sep: '\t', strip: true)
+	    .map{ (it.file) }
+	    .collect { "${params.fastqdir}/$it" }
+	    //.view()
+	    .set { fastqr1_ch }
+
 
 
 /////////////////////////////
@@ -64,7 +74,7 @@ include { crispr_counter; filter_input; report } from './Input-filter-modules.nf
 
 workflow {
 
-	crispr_counter(input_properties_ch)
+	crispr_counter(fastqr1_ch)
 
 	//filter input library using different cutoffs
 	cnts_ch= crispr_counter.out.countstable_ch
