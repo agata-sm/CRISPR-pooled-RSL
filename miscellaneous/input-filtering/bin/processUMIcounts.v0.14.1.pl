@@ -239,6 +239,9 @@ else{
 	my %gene_guide;
 	open (INFILE_INPUT_LIBDES, "<", $input_lib_design) or die "Cannot open file with processed input library $input_lib_design: $!";
 	while (<INFILE_INPUT_LIBDES>){
+	    # change line endings to \n from \r\n #### OBS! added this here, absent in the main pipeline
+ 		$_=~s/[\r\n]+//;
+
 		chomp $_;
 
 		unless ($_ =~m/Guide/){ #this file is header-less but just in case

@@ -13,6 +13,9 @@ params.counterRSLOut="${params.outdir}/${params.counterRSL}"
 // scripts
 params.scripts="${projectDir}/bin"
 
+// assets
+params.countertemplate="${projectDir}/assets/template.properties"
+
 
 /// modules
 
@@ -22,7 +25,7 @@ process crispr_counter {
     label 'big_mem'
 
     input:
-    path "${params.projname}.properties"
+    path fastqr1_ch
 
     output:
     path "${params.projname}.csv", emit: countstable_ch
@@ -32,7 +35,9 @@ process crispr_counter {
 
     script:
     """
-    java -Xmx${task.memory.giga}g -jar ${params.crisprcounterpath}/CrisprCounter.jar ${params.properties} &> counter.stdout.txt
+    perl ${params.scripts}/makeCounterConfig.pl --template $params.countertemplate --samples $params.sampleinfo --library $params.librarydesign --prefix $params.projname --outdir . --fastqdir $params.fastqdir
+
+    java -Xmx${task.memory.giga}g -jar ${params.crisprcounterpath}/CrisprCounter.jar ${params.projname}.properties &> counter.stdout.txt
 
     perl ${params.scripts}/parseCrisprCounter.pl -i counter.stdout.txt -o counter.stdout.parsed.txt
 
