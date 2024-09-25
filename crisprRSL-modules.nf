@@ -220,7 +220,6 @@ process report_reads {
     path('*')
     path sampleInfo_ch
     path comparisonsInfo_ch
-    path scattersInfo_ch
 
     output:
     path "report.reads"
@@ -240,7 +239,7 @@ process report_reads {
     cp ${params.scatters} ${params.projname}/metadata
     cp -r ${projectDir}/bin/report_template/* .
   
-    Rscript report_launcher.R ${params.projname} ${params.projname} reads ${params.organism} ${sampleInfo_ch} ${comparisonsInfo_ch} ${scattersInfo_ch}
+    Rscript report_launcher.R ${params.projname} ${params.projname} reads ${params.organism} ${sampleInfo_ch} ${comparisonsInfo_ch} ${params.scatters}
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
@@ -400,7 +399,6 @@ process report_RSL {
     path('*')
     path sampleInfo_ch
     path comparisonsInfo_ch
-    path scattersInfo_ch
 
   
     output:
@@ -420,7 +418,7 @@ process report_RSL {
     cp ${params.scatters} ${params.projname}/metadata
     cp -r ${projectDir}/bin/report_template/* .
 
-    Rscript report_launcher.R ${params.projname} ${params.projname} RSL ${params.organism} ${sampleInfo_ch} ${comparisonsInfo_ch} ${scattersInfo_ch}
+    Rscript report_launcher.R ${params.projname} ${params.projname} RSL ${params.organism} ${sampleInfo_ch} ${comparisonsInfo_ch} ${params.scatters}
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}

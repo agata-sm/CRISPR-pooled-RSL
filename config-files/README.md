@@ -99,6 +99,14 @@ HighGFP_REP1_R1_001.fastq.gz	HighGFP_REP1	HighGFP	rep1
 HighGFP_REP2_R1_001.fastq.gz	HighGFP_REP2	HighGFP	rep2
 ```
 
+**Important** Sample name (column `sample`) requirements: 
+
+        * alphanumeric characters (letters, digits and `_`) are allowed
+
+        * must not start with a digit
+
+        * must not contain hyphen `-`
+
 
 * `comparisons.txt` - information on comparisons to be analysed.
 

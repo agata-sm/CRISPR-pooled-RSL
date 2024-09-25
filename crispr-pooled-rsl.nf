@@ -179,7 +179,6 @@ lib_ch= Channel.fromPath(params.librarydesign, checkIfExists:true)
 //metadata channels
 sampleInfo_ch=Channel.fromPath(params.sampleinfo, checkIfExists:true)
 comparisonsInfo_ch=Channel.fromPath(params.comparisons, checkIfExists:true)
-scattersInfo_ch=Channel.fromPath(params.scatters, checkIfExists:false)
 
 
 /////////////////////////////
@@ -215,7 +214,7 @@ workflow {
 
 	//report
 	mageck_res_reads_gene_ch=mageck_rra_reads.out.gene_summary_reads_ch
-	report_reads(mageck_res_reads_gene_ch.collect(), sampleInfo_ch, comparisonsInfo_ch, scattersInfo_ch)
+	report_reads(mageck_res_reads_gene_ch.collect(), sampleInfo_ch, comparisonsInfo_ch)
 
 	//QC
 	fastqc(fastqr1_ch2)
@@ -250,7 +249,7 @@ workflow RSL {
 
 	// //report
 	mageck_res_RSL_gene_ch=mageck_rra_RSL.out.rsl_rra_mageck_ch
-	report_RSL(mageck_res_RSL_gene_ch.collect(), sampleInfo_ch, comparisonsInfo_ch, scattersInfo_ch)
+	report_RSL(mageck_res_RSL_gene_ch.collect(), sampleInfo_ch, comparisonsInfo_ch)
 
 	//QC
 	//fastqc(fastqr1_ch2)
