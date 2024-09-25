@@ -179,7 +179,7 @@ lib_ch= Channel.fromPath(params.librarydesign, checkIfExists:true)
 //metadata channels
 sampleInfo_ch=Channel.fromPath(params.sampleinfo, checkIfExists:true)
 comparisonsInfo_ch=Channel.fromPath(params.comparisons, checkIfExists:true)
-scattersInfo_ch=Channel.fromPath(params.scatters)
+scattersInfo_ch=Channel.fromPath(params.scatters, checkIfExists:false)
 
 
 /////////////////////////////
