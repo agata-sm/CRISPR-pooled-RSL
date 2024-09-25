@@ -177,6 +177,8 @@ process mageck_rra_reads {
 
     label 'mid_mem'
 
+    tag {comparisonID}
+
     input:
     tuple path(cnttable), val(comparisonID), val(smplRef), val(smplTreat)
 
@@ -347,6 +349,9 @@ process mageck_rra_RSL {
     publishDir params.mageckRSLOut, mode:'copy'
 
     label 'mid_mem'
+
+    tag {comparisonID}
+
 
     input:
     tuple path(cnttable), path(lib_gmt), val(comparisonID), val(smplRef), val(smplTreat)
