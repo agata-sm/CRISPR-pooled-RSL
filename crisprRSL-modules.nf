@@ -238,7 +238,6 @@ process report_reads {
     mkdir ${params.projname}/metadata
     cp ${params.sampleinfo} ${params.projname}/metadata
     cp ${params.comparisons} ${params.projname}/metadata
-    cp ${params.scatters} ${params.projname}/metadata
     cp -r ${projectDir}/bin/report_template/* .
   
     Rscript report_launcher.R ${params.projname} ${params.projname} reads ${params.organism} ${sampleInfo_ch} ${comparisonsInfo_ch} ${params.scatters}
@@ -420,7 +419,6 @@ process report_RSL {
     mkdir ${params.projname}/metadata
     cp ${params.sampleinfo} ${params.projname}/metadata
     cp ${params.comparisons} ${params.projname}/metadata
-    cp ${params.scatters} ${params.projname}/metadata
     cp -r ${projectDir}/bin/report_template/* .
 
     Rscript report_launcher.R ${params.projname} ${params.projname} RSL ${params.organism} ${sampleInfo_ch} ${comparisonsInfo_ch} ${params.scatters}
