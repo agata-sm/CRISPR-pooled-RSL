@@ -235,11 +235,19 @@ process report_reads {
     #module load pandoc/2.10.1
 
     cp -r ${params.projdir} .
+    cp -r ${projectDir}/bin/report_template/* .
+    
     mkdir ${params.projname}/metadata
     cp ${params.sampleinfo} ${params.projname}/metadata
     cp ${params.comparisons} ${params.projname}/metadata
-    cp -r ${projectDir}/bin/report_template/* .
   
+      if ["${params.scatters}" != "none"]
+    do
+        cp ${params.scatters} ${params.projname}/metadata
+    done
+
+
+
     Rscript report_launcher.R ${params.projname} ${params.projname} reads ${params.organism} ${sampleInfo_ch} ${comparisonsInfo_ch} ${params.scatters}
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
@@ -250,6 +258,7 @@ process report_reads {
     """
 
 }
+
 
 
 process crispr_counter {
@@ -416,10 +425,11 @@ process report_RSL {
     #module load pandoc/2.10.1
 
     cp -r ${params.projdir} .
+    cp -r ${projectDir}/bin/report_template/* .
+
     mkdir ${params.projname}/metadata
     cp ${params.sampleinfo} ${params.projname}/metadata
     cp ${params.comparisons} ${params.projname}/metadata
-    cp -r ${projectDir}/bin/report_template/* .
 
     Rscript report_launcher.R ${params.projname} ${params.projname} RSL ${params.organism} ${sampleInfo_ch} ${comparisonsInfo_ch} ${params.scatters}
 
