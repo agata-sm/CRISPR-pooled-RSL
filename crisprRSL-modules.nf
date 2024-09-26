@@ -246,7 +246,7 @@ process report_reads {
         cp ${params.scatters} ${params.projname}/metadata
     done
 
-
+    cp ${params.scatters} .
 
     Rscript report_launcher.R ${params.projname} ${params.projname} reads ${params.organism} ${sampleInfo_ch} ${comparisonsInfo_ch} ${params.scatters}
 
