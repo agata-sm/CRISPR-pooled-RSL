@@ -241,7 +241,7 @@ process report_reads {
     cp ${params.sampleinfo} ${params.projname}/metadata
     cp ${params.comparisons} ${params.projname}/metadata
   
-      if ["${params.scatters}" != "none"]
+      if [["${params.scatters}" != "none"]]
     do
         cp ${params.scatters} ${params.projname}/metadata
     done
