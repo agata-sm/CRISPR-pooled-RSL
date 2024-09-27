@@ -241,12 +241,10 @@ process report_reads {
     cp ${params.sampleinfo} ${params.projname}/metadata
     cp ${params.comparisons} ${params.projname}/metadata
   
-      if [[ "${params.scatters}" != "none" ]]
-    do
-        cp ${params.scatters} ${params.projname}/metadata
-    done
-
-    cp ${params.scatters} .
+    if [[ ! "${params.scatters}" == "none" ]];
+    then
+        cp ${params.scatters} .
+    fi
 
     Rscript report_launcher.R ${params.projname} ${params.projname} reads ${params.organism} ${sampleInfo_ch} ${comparisonsInfo_ch} ${params.scatters}
 
