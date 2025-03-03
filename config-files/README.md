@@ -45,7 +45,7 @@ params {
         fastqdir = "/proj/AB1234/tst_data/fastq/"
         sampleinfo = "/proj/AB1234/tst_data/metadata/metadata.txt"
         comparisons = "/proj/AB1234/tst_data/metadata/comparisons.txt"
-        scatters = "/proj/AB1234/tst_data/metadata/scatters.txt"
+        scatters = "/proj/AB1234/tst_data/metadata/scatters.txt" // or "none" if no scatters are to be plotted
 
         organism = "hs"
         
@@ -81,7 +81,6 @@ Two files describing the samples and their relationships are required by the pip
 
 * Column names and order needs to be preserved;
 
-* No trailing empty lines are allowed (last line end-of-line character is ok);
 
 * **Sample names cannot start with a digit**.
 
@@ -101,7 +100,7 @@ HighGFP_REP2_R1_001.fastq.gz	HighGFP_REP2	HighGFP	rep2
 
 **Important** Sample name (column `sample`) requirements: 
 
-        * alphanumeric characters (letters, digits and `_`) are allowed
+        * alphanumeric characters (letters, digits and `_`) and `.` are allowed
 
         * must not start with a digit
 
@@ -122,7 +121,7 @@ replicate-2	LowGFP_REP2	HighGFP_REP2
 
 ## Output parameters
 
-It is possible to output a document containing a collection of **scatter plots of log2FC values** in a series of *comparison pairs* of choice. This is set by parameter `scatters` by providing a path to file `scatters.txt` which lists *comparisons* to be plotted on scatter plots (by their comparison **name** used in file `comparisons.txt`). Arbitrary number of pairs for scatter plots can be defined, just be mindufl of file size and its memory footprint when displaying, as these plots are interactive.
+It is possible to output a document containing a collection of **scatter plots of log2FC values** in a series of *comparison pairs* of choice. This is set by parameter `scatters` by providing a *full path* to file `scatters.txt` which lists *comparisons* to be plotted on scatter plots (by their comparison **name** used in file `comparisons.txt`). Arbitrary number of pairs for scatter plots can be defined, just be mindufl of file size and its memory footprint when displaying, as these plots are interactive.
 
 If no scatters are to be plotted, please use `scatters = "none"` as the value of the `scatters` parameter (the parameter should be set).
 

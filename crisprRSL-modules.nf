@@ -66,8 +66,6 @@ process prep_library_files {
 
     script:
     """
-    #module load perl_modules/5.18.4
-
     perl ${params.scripts}/getLibraryGmt.pl --infile ${lib_ch} --outfile library.gmt --outfile_con library.ctrl_sgRNAs.txt --outfile_gcon library.ctrl_genes.txt --outfile_lib library.definition.txt
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
@@ -155,11 +153,6 @@ process mageck_count_reads {
     }else{
 
         """
-        #module load bioinfo-tools
-        #module load MAGeCK/0.5.9.4
-        #module load R_packages/4.1.1
-        #module load pandoc/2.17.1.1
-
         mageck count --norm-method ${params.mageckCountNorm} --pdf-report -l ${params.librarydesign} -n ${params.projname} --fastq ${fastqr1_ch} --sample-label ${smpls_ch}
         
         echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
@@ -197,10 +190,6 @@ process mageck_rra_reads {
     script:
     """
     mkdir $comparisonID
-    #module load bioinfo-tools
-    #module load MAGeCK/0.5.9.4
-    #module load R_packages/4.1.1
-    #module load pandoc/2.17.1.1
 
     mageck test -k ${cnttable} -c ${smplRef} -t ${smplTreat} -n ${comparisonID}/${comparisonID} --norm-method none --pdf-report
     
@@ -231,9 +220,6 @@ process report_reads {
 
     script:
     """
-    #module load  R_packages/4.1.1
-    #module load pandoc/2.10.1
-
     cp -r ${params.projdir} .
     cp -r ${projectDir}/bin/report_template/* .
     
@@ -276,8 +262,6 @@ process crispr_counter {
 
     script:
     """
-    #module load perl_modules/5.18.4
-
     perl ${params.scripts}/makeCounterConfig.pl --template $params.countertemplate --samples $params.sampleinfo --library $params.librarydesign --prefix $params.projname --outdir . --fastqdir $params.fastqdir
   
     java -Xmx${task.memory.giga}g -jar ${params.crisprcounterpath}/CrisprCounter.jar ${params.projname}.properties &> counter.stdout.txt
@@ -336,9 +320,7 @@ process filter_RSL {
     path "${params.verfile}"
 
     script:
-    """
-    #module load perl_modules/5.26.2
-        
+    """        
     perl ${params.scripts}/processUMIcounts.v0.14.pl --filter CO=${params.filtRowSums} --infile ${rsl_countstable} --input_lib ${params.libraryinputfilt} --outdir . --input_lib_design ${lib_definition}
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
@@ -373,12 +355,6 @@ process mageck_rra_RSL {
 
     script:
     """
-    #module load bioinfo-tools
-    #module load MAGeCK/0.5.9.4
-    #module load R_packages/4.1.1
-    #module load pandoc/2.17.1.1
-    #module load perl_modules/5.18.4
-
     mkdir $comparisonID
     perl ${params.scripts}/rank_log2FC.v0.3.pl -i ${cnttable} -o ${comparisonID}/${comparisonID}.rank_log2FC.tsv -r ${smplRef} -t ${smplTreat}
 
@@ -419,9 +395,6 @@ process report_RSL {
 
     script:
     """
-    #module load  R_packages/4.1.1
-    #module load pandoc/2.10.1
-
     cp -r ${params.projdir} .
     cp -r ${projectDir}/bin/report_template/* .
 
@@ -454,9 +427,6 @@ process fastqc {
 
     script:
     """
-    #module load bioinfo-tools
-    #module load FastQC/0.11.9
-    
     fastqc ${fastqr1}
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}

@@ -23,6 +23,9 @@ This pipeline performs two types of analyses of pooled CRISPR screens:
 The results of (1) and (2) are used in Gene Set Enrichment Analysis (GSEA) to produce functional annotation.
 
 
+**Note March 2025**: The pipeline has been adjusted for running on Dardel (PDC). The former Rackham specifc config file is still available, for reference.
+
+
 ### Processing of RSL data
 
 This part of the pipeline contains scripts for processing data from RSL barcoded screens.
