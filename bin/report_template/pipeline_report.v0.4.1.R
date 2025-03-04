@@ -75,8 +75,11 @@ library(magrittr)
 library(MASS)
 library(cowplot)
 
+
+library(ExperimentHub)
+setExperimentHubOption("CACHE", ".")
 library(MAGeCKFlute)
-#library(idr)
+
 library(edgeR)
 
 library(fgsea)
