@@ -311,6 +311,7 @@ process filter_RSL {
     input:
     path rsl_countstable
     path lib_definition
+    path inputfilt
 
     output:
     path "${params.projname}.RSL.perguide.tsv", emit: rsl_countstable_filt_ch
@@ -321,7 +322,7 @@ process filter_RSL {
 
     script:
     """        
-    perl ${params.scripts}/processUMIcounts.v0.14.pl --filter CO=${params.filtRowSums} --infile ${rsl_countstable} --input_lib ${params.libraryinputfilt} --outdir . --input_lib_design ${lib_definition}
+    perl ${params.scripts}/processUMIcounts.v0.14.pl --filter CO=${params.filtRowSums} --infile ${rsl_countstable} --input_lib ${inputfilt} --outdir . --input_lib_design ${lib_definition}
 
     echo "Software versions for crispr-pooled-rsl.nf" >${params.verfile}
     date >>${params.verfile}
