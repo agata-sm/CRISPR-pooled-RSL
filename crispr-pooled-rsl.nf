@@ -176,10 +176,16 @@ lib_ch= Channel.fromPath(params.librarydesign, checkIfExists:true)
 		.set { lib_ch }
 
 
+// input library filtering
+inputfilt_ch= Channel.fromPath(params.libraryinputfilt, checkIfExists:true)
+	inputfilt_ch
+		//.view()
+		.set { inputfilt_ch }
+
+
 //metadata channels
 sampleInfo_ch=Channel.fromPath(params.sampleinfo, checkIfExists:true)
 comparisonsInfo_ch=Channel.fromPath(params.comparisons, checkIfExists:true)
-scattersInfo_ch=Channel.fromPath(params.scatters, checkIfExists:true)
 
 
 /////////////////////////////
@@ -215,7 +221,7 @@ workflow {
 
 	//report
 	mageck_res_reads_gene_ch=mageck_rra_reads.out.gene_summary_reads_ch
-	report_reads(mageck_res_reads_gene_ch.collect(), sampleInfo_ch, comparisonsInfo_ch, scattersInfo_ch)
+	report_reads(mageck_res_reads_gene_ch.collect(), sampleInfo_ch, comparisonsInfo_ch)
 
 	//QC
 	fastqc(fastqr1_ch2)
@@ -236,7 +242,7 @@ workflow RSL {
 	// count reads
 	crispr_counter(fastqr1_ch)
 
-	filter_RSL(crispr_counter.out.rsl_countstable_ch, prep_library_files.out.lib_definition_ch)
+	filter_RSL(crispr_counter.out.rsl_countstable_ch, prep_library_files.out.lib_definition_ch, inputfilt_ch)
 
 	// mageck contrasts RSL
 	cntRSL_ch=filter_RSL.out.rsl_countstable_filt_ch
@@ -250,7 +256,7 @@ workflow RSL {
 
 	// //report
 	mageck_res_RSL_gene_ch=mageck_rra_RSL.out.rsl_rra_mageck_ch
-	report_RSL(mageck_res_RSL_gene_ch.collect(), sampleInfo_ch, comparisonsInfo_ch, scattersInfo_ch)
+	report_RSL(mageck_res_RSL_gene_ch.collect(), sampleInfo_ch, comparisonsInfo_ch)
 
 	//QC
 	//fastqc(fastqr1_ch2)

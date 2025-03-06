@@ -4,7 +4,7 @@
 
 There are two configuration files used by the pipeline. While they both are called `nextflow.config`, they are located in different directories and serve different purposes.
 
-* `nextflow.config` in pipeline directory - contains information related to running the pipeline on Rackham, profiles and paths to container directory and `CrisprCounter.jar`; usually this file should not be modified;
+* `nextflow.config` in pipeline directory - contains information related to running the pipeline on Rackham / Dardel, profiles and paths to container directory and `CrisprCounter.jar`; usually this file should not be modified;
 
 * `nextflow.config` in project working directory - contains information related to the project: paths to input library, input fastq files, metadata and analysis parameters. 
 
@@ -25,11 +25,13 @@ File below can be used to perform analysis on the dataset that:
 
 Analysis parameters that can be modified are:
 
-* cutoff for RowSums when filtering off RSL-sgRNA artefacts `filtRowSums` when performing signal filtration based on input library sequencing; this is applied after the input-based sequencing and is designed to remove RSL-sgRNA combinations present at very low abundance throughout the experiment;
+* cutoff for **RowSums** when filtering off RSL-sgRNA artefacts `filtRowSums` when performing signal filtration based on input library sequencing; this is applied after the input-based sequencing and is designed to remove RSL-sgRNA combinations present at very low abundance throughout the experiment; this setting has no effect on read-based analysis;
 
 * normalisation used by `MAGeCK` when read counting; one of `total`, `median`, `control`;
 
-Normalisation method `control` requires a file with control sgRNAs or genes. This file is generated from the library definition file `librarydesign` and contains features labeled as `CON*`; alternatively a custom file with feature list (one per line) can be provided. Please note that if no custom control file is used, it's entry should be nonetheless populated with `control_file = ""`, such as in  the example below.
+Normalisation method `control` requires a file with control sgRNAs or genes. This file is generated from the library definition file `librarydesign` and contains features labeled as `CON*`; alternatively a custom file with feature list (one per line) can be provided. Please note that if no custom control file is used, it's entry should be nonetheless populated with `control_file = ""`, such as in the example below.
+
+
 
 ```
 params {
@@ -43,6 +45,8 @@ params {
         fastqdir = "/proj/AB1234/tst_data/fastq/"
         sampleinfo = "/proj/AB1234/tst_data/metadata/metadata.txt"
         comparisons = "/proj/AB1234/tst_data/metadata/comparisons.txt"
+        scatters = "/proj/AB1234/tst_data/metadata/scatters.txt" // or "none" if no scatters are to be plotted
+
         organism = "hs"
         
         //////////////////////////////
@@ -77,7 +81,6 @@ Two files describing the samples and their relationships are required by the pip
 
 * Column names and order needs to be preserved;
 
-* No trailing empty lines are allowed (last line end-of-line character is ok);
 
 * **Sample names cannot start with a digit**.
 
@@ -95,16 +98,31 @@ HighGFP_REP1_R1_001.fastq.gz	HighGFP_REP1	HighGFP	rep1
 HighGFP_REP2_R1_001.fastq.gz	HighGFP_REP2	HighGFP	rep2
 ```
 
+**Important** Sample name (column `sample`) requirements: 
+
+        * alphanumeric characters (letters, digits and `_`) and `.` are allowed
+
+        * must not start with a digit
+
+        * must not contain hyphen `-`
+
 
 * `comparisons.txt` - information on comparisons to be analysed.
 
 
 ```
-name	reference	treatment    group
-replicate-1	LowGFP_REP1	HighGFP_REP1    1
-replicate-2	LowGFP_REP2	HighGFP_REP2    1
+name	reference	treatment
+replicate-1	LowGFP_REP1	HighGFP_REP1
+replicate-2	LowGFP_REP2	HighGFP_REP2
 ```
 
-`Group` refers to a group of contrasts for which the effect size (log2FC) should be presented as a scatter plot. If a group contains more than 2 comparisons, all combinations will be plotted; if a comparison is not to be plotted on the scatter plots, a unique value should be assigned as `group`.
+**name** in this file refers to comparison name (and will be referenced in the report).
+
+
+## Output parameters
+
+It is possible to output a document containing a collection of **scatter plots of log2FC values** in a series of *comparison pairs* of choice. This is set by parameter `scatters` by providing a *full path* to file `scatters.txt` which lists *comparisons* to be plotted on scatter plots (by their comparison **name** used in file `comparisons.txt`). Arbitrary number of pairs for scatter plots can be defined, just be mindufl of file size and its memory footprint when displaying, as these plots are interactive.
+
+If no scatters are to be plotted, please use `scatters = "none"` as the value of the `scatters` parameter (the parameter should be set).
 
 
