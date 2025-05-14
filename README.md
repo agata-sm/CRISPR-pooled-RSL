@@ -14,6 +14,8 @@ The results of (1) and (2) are used in Gene Set Enrichment Analysis (GSEA) to pr
 
 **Note March 2025**: The pipeline has been adjusted for running on Dardel (PDC). The former Rackham specifc config file is still available, for reference.
 
+**Note May 2025**: The config files have been updated for running on Dardel (PDC). The former Rackham specifc config files are still available, for reference.
+
 
 ### Processing of RSL data
 
@@ -29,6 +31,19 @@ To install the pipeline
 
 ```
 git clone https://github.com/agata-sm/CRISPR-pooled-RSL.git
+```
+
+To update the pipeline, when standing in the pipeline directory
+
+```
+git pull
+```
+
+**to run (May 2025)**
+
+```
+cd /cfs/klemming/projects/supr/sllstore2017103/software/CRISPR-pooled-RSL
+git pull
 ```
 
 To use github from command line you need to setup [Personal Access Token PTA](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token). For the purpose of this task, the token is used in the same way as the password would be.
@@ -79,11 +94,120 @@ nextflow run $pipelineDir/crispr-pooled-rsl.nf -entry RSL
 
 The pipeline can be run on Rackham (recommended) or locally.
 
-
-### using SLURM queue on Rackham
+### using SLURM queue on Dardel
 
 **This is the preferred way to run the pipeline.** All other ways have not been recently tested.
 
+To run the pipeline in this mode, each process is submitted as a separate job to SLURM queue. This saves time (tasks are parallelised). The process executing the main pipeline code is run in the login node until the run is completed.
+
+It is more practical to run the pipeline in the background. This protects the run from accidental session interruption - for example when you connect remotely to the server and the session disconnects.
+
+You can use several programs to achieve this, in this example we use [screen](https://linux.die.net/man/1/screen), which is usually already installed in your Linux distribtion. 
+
+All the commands are run on the login node.
+
+To access `screen` on Dardel, you need to load some modules:
+
+```
+module load PDC/23.12
+module load screen
+```
+
+You can then start `screen`. Depending on the settings of your local system, you may need to add arguments to the `screen` command. On MacOS:
+
+```
+screen -T xterm
+```
+
+This command opens a new shell, which later can be detached from the current session on the login node. The nextflow process, which controls the pipeline execution, will run in this new shell.
+
+To start, we need to load necessary modules:
+
+
+```
+module load nextflow/24.04.2
+module load singularity/4.1.1-cpeGNU-23.12
+```
+
+We can / should set up nextflow and singularity cache paths, to avoid overcrowding user home directory with temporary files:
+
+```
+export NXF_HOME="/cfs/klemming/projects/supr/sllstore2017103/nbis_dardel/nxf"
+export NXF_SINGULARITY_CACHEDIR="/cfs/klemming/projects/supr/sllstore2017103/nbis_dardel/nxf"
+```
+
+The pipeline in the test runs have been run from another directory:
+
+```
+export pipelineDir="/cfs/klemming/projects/supr/sllstore2017103/nbis_dardel/CRISPR-pooled-RSL"
+```
+
+**to run after updating pipeline as indicated above (May 2025)**
+
+**reads workflow**
+
+```
+export pipelineDir="/cfs/klemming/projects/supr/sllstore2017103/software/CRISPR-pooled-RSL"
+nextflow run ${pipelineDir}/crispr-pooled-rsl.nf -profile cluster,singularity
+```
+
+**RSL workflow**
+
+```
+export pipelineDir="/cfs/klemming/projects/supr/sllstore2017103/software/CRISPR-pooled-RSL"
+nextflow run ${pipelineDir}/crispr-pooled-rsl.nf -profile cluster,singularity -entry RSL
+```
+
+#### Config files on Dardel
+
+Project specific `nextflow.config`, which resides in the pipeline execution directory contains paths on Dardel.
+
+
+`nextflow.config`:
+
+```
+params {
+        librarydesign = "/cfs/klemming/projects/supr/sllstore2017103/nbis_dardel/tst1_Xiaonan_HEK/Brunello_Library_USE_THIS_ONLY.csv"
+        libraryinputfilt = "/cfs/klemming/projects/supr/sllstore2017103/software/tests/input-lib-test/Brunello_x2022/results/input_filtered/Brunello_x2022.3/Brunello_x2022.filtered.csv"
+
+        project = "naiss2025-22-65"
+
+        projname = "Xiaonan_HEK_tst2"
+
+        fastqdir = "/cfs/klemming/projects/supr/sllstore2017103/B.Schmierer_24_03_Hakan_Xiaonan_Maarten_Rong_Mohan/files/P30654/FASTQ/Xiaonan_FASTQ/"
+        sampleinfo = "/cfs/klemming/projects/supr/sllstore2017103/nbis_dardel/tst1_Xiaonan_HEK/metadata_XZ.txt"
+        comparisons = "/cfs/klemming/projects/supr/sllstore2017103/nbis_dardel/tst1_Xiaonan_HEK/comparisons_XZ.txt"
+        scatters = "/cfs/klemming/projects/supr/sllstore2017103/nbis_dardel/tst1_Xiaonan_HEK/scatters.txt"
+
+
+        organism = "hs"
+
+        //////////////////////////////
+        // RSL filtering params
+        filtRowSums = "8"
+
+
+        /////////////////////////////
+        // names of the paramteres and available values are in commented headers
+
+         //mageck count params
+        // norm-method (total, median, control)
+        mageckCountNorm = "control"
+        // type of control list (sgRNA, gene)
+        mageckCountCtrl = "gene"
+        // file with control genes; if path not given (see below), features marked CON* in librarydesign file will be used
+        //control_file = "/proj/software/tests/crispr-screen-test/gprc_ctrl.txt"
+        control_file = "/cfs/klemming/projects/supr/sllstore2017103/nbis_dardel/tst1_Xiaonan_HEK/Control_Olfac_gene.txt"
+        // no custom file, use CON* features from file librarydesign
+        control_file = ""
+}
+```
+
+
+
+### using SLURM queue on Rackham
+
+**This used to be the preferred way to run the pipeline.**  Dardel is now the national HPC resource, and hence the preferred running environment.
 
 To run the pipeline in this mode, each process is submitted as a separate job to SLURM queue. This saves time (tasks are parallelised). The process executing the main pipeline code is run in the login node until the run is completed.
 
