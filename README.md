@@ -82,7 +82,7 @@ Two main pipeline modes are analysis based on reads (default) or analysis based 
 Tu run the main workflow for analysis based on **reads**
 
 ```
-export pipelineDir="/proj/sllstore2017103/software/CRISPR-pooled-RSL/"
+export pipelineDir="/path/to/CRISPR-pooled-RSL/"
 nextflow run $pipelineDir/crispr-pooled-rsl.nf 
 ```
 
