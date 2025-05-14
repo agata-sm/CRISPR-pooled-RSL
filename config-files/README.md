@@ -1,5 +1,9 @@
 # Configuration and metadata files
 
+## Note related to Dardel
+
+The example config file `nextflow.config_dardel` has been added. Please note the paths in this file were used in the test run, and most likely should be updated to the final location of annotation files.
+
 ## Config files
 
 There are two configuration files used by the pipeline. While they both are called `nextflow.config`, they are located in different directories and serve different purposes.
