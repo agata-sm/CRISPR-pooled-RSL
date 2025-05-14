@@ -1,0 +1,35 @@
+params {
+        librarydesign = "/cfs/klemming/projects/supr/sllstore2017103/nbis_dardel/tst1_Xiaonan_HEK/Brunello_Library_USE_THIS_ONLY.csv"
+        libraryinputfilt = "/cfs/klemming/projects/supr/sllstore2017103/software/tests/input-lib-test/Brunello_x2022/results/input_filtered/Brunello_x2022.3/Brunello_x2022.filtered.csv"
+
+        project = "naiss2025-22-65"
+
+        projname = "Xiaonan_HEK_tst2"
+
+        fastqdir = "/cfs/klemming/projects/supr/sllstore2017103/B.Schmierer_24_03_Hakan_Xiaonan_Maarten_Rong_Mohan/files/P30654/FASTQ/Xiaonan_FASTQ/"
+        sampleinfo = "/cfs/klemming/projects/supr/sllstore2017103/nbis_dardel/tst1_Xiaonan_HEK/metadata_XZ.txt"
+        comparisons = "/cfs/klemming/projects/supr/sllstore2017103/nbis_dardel/tst1_Xiaonan_HEK/comparisons_XZ.txt"
+        scatters = "/cfs/klemming/projects/supr/sllstore2017103/nbis_dardel/tst1_Xiaonan_HEK/scatters.txt"
+
+
+        organism = "hs"
+
+        //////////////////////////////
+        // RSL filtering params
+        filtRowSums = "8"
+
+
+        /////////////////////////////
+        // names of the paramteres and available values are in commented headers
+
+         //mageck count params
+        // norm-method (total, median, control)
+        mageckCountNorm = "control"
+        // type of control list (sgRNA, gene)
+        mageckCountCtrl = "gene"
+        // file with control genes; if path not given (see below), features marked CON* in librarydesign file will be used
+        //control_file = "/proj/software/tests/crispr-screen-test/gprc_ctrl.txt"
+        // no custom file, use CON* features from file librarydesign
+        control_file = "/cfs/klemming/projects/supr/sllstore2017103/nbis_dardel/tst1_Xiaonan_HEK/Control_Olfac_gene.txt"
+
+}
