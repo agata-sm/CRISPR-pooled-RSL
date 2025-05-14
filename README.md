@@ -158,6 +158,9 @@ export pipelineDir="/cfs/klemming/projects/supr/sllstore2017103/software/CRISPR-
 nextflow run ${pipelineDir}/crispr-pooled-rsl.nf -profile cluster,singularity -entry RSL
 ```
 
+**OBS!** To detach from `screen` session, press `Ctrl-a` (together), then `d`.
+
+
 #### Config files on Dardel
 
 Project specific `nextflow.config`, which resides in the pipeline execution directory contains paths on Dardel.
