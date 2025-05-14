@@ -158,7 +158,11 @@ export pipelineDir="/cfs/klemming/projects/supr/sllstore2017103/software/CRISPR-
 nextflow run ${pipelineDir}/crispr-pooled-rsl.nf -profile cluster,singularity -entry RSL
 ```
 
-**OBS!** To detach from `screen` session, press `Ctrl-a` (together), then `d`.
+**OBS!** To detach from `screen` session, press `Ctrl-a` (together), then `d`. 
+
+To reconnect: screen -r
+
+To view the progress of the jobs in the queue: `squeue -u $USER`
 
 
 #### Config files on Dardel
