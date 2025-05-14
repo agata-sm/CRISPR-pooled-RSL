@@ -92,7 +92,7 @@ To run the alternative workflow for analysis based on **RSL counts**
 nextflow run $pipelineDir/crispr-pooled-rsl.nf -entry RSL
 ```
 
-The pipeline can be run on Rackham (recommended) or locally.
+The pipeline can be run on HPC, currently Dardel at PDC (recommended) or locally.
 
 ### using SLURM queue on Dardel
 
